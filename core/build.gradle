@@ -10,7 +10,7 @@ def cloudCommandFrameworkVersion = "1.8.4"
 def glowingEntitiesVersion = "1.4.9"
 
 dependencies {
-  api project(":api")
+  implementation project(":api")
   compileOnly "io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT"
 
   implementation("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")

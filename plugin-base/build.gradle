@@ -11,7 +11,7 @@ java {
 }
 
 dependencies {
-  api project(":core")
+  implementation project(":core")
   compileOnly "io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT"
 
   implementation("cloud.commandframework:cloud-paper:1.8.4")
@@ -45,33 +45,16 @@ tasks.withType(Javadoc).configureEach {
   enabled = false
 }
 
-//tasks {
-//  shadowJar {
-//    archiveFileName.set("DreamAPI.jar")
-//    mergeServiceFiles()
-//    from(sourceSets.main.output)
-//    configurations = [project.configurations.runtimeClasspath]
-//    dependencies {
-//      include(dependency(":api"))
-//      include(dependency(":core"))
-//    }
-//    manifest {
-//      attributes(
-//        "Main-Class": "fr.dreamin.dreamapi.plugin.DreamPlugin"
-//      )
-//    }
-//  }
-//
-//  artifacts {
-//    archives shadowJar
-//  }
-//
-//}
+tasks.shadowJar {
+  archiveClassifier.set("all")
+  mergeServiceFiles()
+}
+
 
 publishing {
   publications {
     mavenJava(MavenPublication) {
-      from components.java
+      artifact(tasks.shadowJar)
 
       groupId = group
       artifactId = name
