@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.item.event;
 
-import fr.dreamin.dreamapi.core.event.ToolsEvent;
+import fr.dreamin.dreamapi.api.event.ToolsEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

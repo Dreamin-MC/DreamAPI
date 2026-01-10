@@ -1,11 +1,12 @@
 package fr.dreamin.dreamapi.core.cuboid.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.cuboid.service.CuboidService;
 import fr.dreamin.dreamapi.api.logger.DebugMeta;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;
-import fr.dreamin.dreamapi.core.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import fr.dreamin.dreamapi.core.cuboid.event.CuboidEnterEvent;
 import fr.dreamin.dreamapi.core.cuboid.event.CuboidLeaveEvent;
 import fr.dreamin.dreamapi.api.logger.DreamLogger;

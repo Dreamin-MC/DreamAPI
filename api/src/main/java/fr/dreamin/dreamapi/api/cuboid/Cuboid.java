@@ -1,8 +1,7 @@
-package fr.dreamin.dreamapi.core.cuboid;
+package fr.dreamin.dreamapi.api.cuboid;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.core.DreamContext;
-import fr.dreamin.dreamapi.core.cuboid.service.CuboidService;
+import fr.dreamin.dreamapi.api.cuboid.service.CuboidService;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
@@ -342,7 +341,7 @@ public class Cuboid {
         if (topToBottom) currentY--;
         else currentY++;
       }
-    }.runTaskTimer(DreamContext.getPlugin(), 0L, tick);
+    }.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, tick);
   }
 
   /**
@@ -376,7 +375,7 @@ public class Cuboid {
         if (topToBottom) currentY--;
         else currentY++;
       }
-    }.runTaskTimer(DreamContext.getPlugin(), 0L, tick);
+    }.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, tick);
   }
 
   /**
@@ -414,7 +413,7 @@ public class Cuboid {
         if (topToBottom) currentY--;
         else currentY++;
       }
-    }.runTaskTimer(DreamContext.getPlugin(), 0L, tick);
+    }.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, tick);
   }
 
   public void replaceBlockDataEveryTick(final @NotNull BlockData replaced, final @NotNull BlockData newBlockData, final long tick, final boolean topToBottom) {
@@ -441,7 +440,7 @@ public class Cuboid {
         if (topToBottom) currentY--;
         else currentY++;
       }
-    }.runTaskTimer(DreamContext.getPlugin(), 0L, tick);
+    }.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, tick);
   }
 
   public int countBlocksOfMaterial(Material material) {

@@ -6,7 +6,6 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.core.DreamContext;
 import fr.dreamin.dreamapi.api.annotations.Internal;
 import fr.dreamin.dreamapi.core.item.Items;
 import io.papermc.paper.datacomponent.DataComponentType;
@@ -358,7 +357,7 @@ public class ItemBuilder {
   }
 
   public ItemBuilder setCooldown(final float seconds, final @NotNull String value) {
-    return this.setCooldown(seconds, new NamespacedKey(DreamContext.getPlugin(), value));
+    return this.setCooldown(seconds, new NamespacedKey(DreamAPI.getAPI().plugin(), value));
   }
 
   // ###############################################################

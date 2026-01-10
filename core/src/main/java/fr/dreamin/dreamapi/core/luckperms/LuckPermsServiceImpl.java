@@ -1,9 +1,9 @@
 package fr.dreamin.dreamapi.core.luckperms;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.luckperms.LuckPermsService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
-import fr.dreamin.dreamapi.core.DreamContext;
 import fr.dreamin.dreamapi.core.team.TeamService;
 import fr.dreamin.dreamapi.core.team.TeamServiceImpl;
 import io.papermc.paper.chat.ChatRenderer;
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @DreamAutoService(value = LuckPermsService.class, dependencies = {TeamServiceImpl.class})
-public class LuckPermsServiceImpl implements LuckPermsService, DreamService, Listener {
+public final class LuckPermsServiceImpl implements LuckPermsService, DreamService, Listener {
 
   private final @NotNull Plugin plugin;
 
@@ -179,9 +179,9 @@ public class LuckPermsServiceImpl implements LuckPermsService, DreamService, Lis
 
     Component prefixComponent = Component.empty(), suffixComponent = Component.empty();
     if (prefix != null)
-      prefixComponent = DreamContext.LEGACY_COMPONENT_SERIALIZER.deserialize(prefix);
+      prefixComponent = DreamAPI.LEGACY_COMPONENT_SERIALIZER.deserialize(prefix);
     if (suffix != null)
-      suffixComponent = DreamContext.LEGACY_COMPONENT_SERIALIZER.deserialize(suffix);
+      suffixComponent = DreamAPI.LEGACY_COMPONENT_SERIALIZER.deserialize(suffix);
 
     final var color = prefixComponent.color();
 

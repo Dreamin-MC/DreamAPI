@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.core.luckperms;
+package fr.dreamin.dreamapi.api.luckperms;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.core.cuboid.MemoryCuboid;
+import fr.dreamin.dreamapi.api.cuboid.MemoryCuboid;
 import fr.dreamin.dreamapi.core.bukkit.module.BukkitLocationModule;
 import org.bukkit.Location;
 

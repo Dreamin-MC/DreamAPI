@@ -6,7 +6,7 @@ import cloud.commandframework.annotations.CommandPermission;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.cmd.DreamCmd;
 import fr.dreamin.dreamapi.api.recipe.RecipeCraftingType;
-import fr.dreamin.dreamapi.api.recipe.RecipeRegistryService;
+import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.recipe.RecipeTag;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeConditionResult;
 import fr.dreamin.dreamapi.core.recipe.builder.FurnaceBuilder;

@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.cuboid.event;
 
-import fr.dreamin.dreamapi.core.cuboid.Cuboid;
-import fr.dreamin.dreamapi.core.event.ToolsCancelEvent;
+import fr.dreamin.dreamapi.api.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.event.ToolsCancelEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

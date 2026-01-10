@@ -10,19 +10,17 @@ import fr.dreamin.dreamapi.api.item.RegisteredItem;
 import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
 import fr.dreamin.dreamapi.core.animation.AnimationServiceImpl;
 import fr.dreamin.dreamapi.core.cmd.scanner.CmdAnnotationProcessor;
-import fr.dreamin.dreamapi.api.recipe.RecipeRegistryService;
+import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.core.ApiProviderImpl;
-import fr.dreamin.dreamapi.core.DreamContext;
-import fr.dreamin.dreamapi.core.recipe.service.CategoryRegistryServiceImpl;
+import fr.dreamin.dreamapi.core.recipe.service.RecipeCategoryRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.scanner.RecipeAnnotationProcessor;
 import fr.dreamin.dreamapi.core.cuboid.service.CuboidServiceImpl;
 import fr.dreamin.dreamapi.core.event.scanner.ListenerAnnotationProcessor;
 import fr.dreamin.dreamapi.core.glowing.GlowingServiceImpl;
 import fr.dreamin.dreamapi.api.item.ItemKeys;
-import fr.dreamin.dreamapi.core.inventory.InventoryServiceImpl;
 import fr.dreamin.dreamapi.core.item.ItemRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.item.scanner.ItemAnnotationProcessor;
 import fr.dreamin.dreamapi.core.logger.DebugServiceImpl;
@@ -48,7 +46,6 @@ import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -150,7 +147,6 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     this.broadcastContext = BroadcastContext.builder().build();
 
-    DreamContext.setPlugin(this);
     this.dreamAPI = DreamAPI.getAPI();
 
     this.serviceManager = new ServiceAnnotationProcessor(this, this.preScannedClasses);
@@ -330,14 +326,13 @@ public abstract class DreamPlugin extends JavaPlugin {
     this.serviceManager.loadServiceFromClass(PlayerDebugServiceImpl.class);
     this.serviceManager.loadServiceFromClass(DebugServiceImpl.class);
     this.serviceManager.loadServiceFromClass(RecipeRegistryServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(CategoryRegistryServiceImpl.class);
+    this.serviceManager.loadServiceFromClass(RecipeCategoryRegistryServiceImpl.class);
 
     this.serviceManager.loadServiceFromClass(ItemRegistryServiceImpl.class);
 
     this.serviceManager.loadServiceFromClass(AnimationServiceImpl.class);
     this.serviceManager.loadServiceFromClass(WorldServiceImpl.class);
     this.serviceManager.loadServiceFromClass(DayCycleServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(InventoryServiceImpl.class);
     this.serviceManager.loadServiceFromClass(TeamServiceImpl.class);
 
     this.serviceManager.loadServiceFromClass(GlowingServiceImpl.class);

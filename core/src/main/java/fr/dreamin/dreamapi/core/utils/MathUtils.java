@@ -13,8 +13,12 @@ import java.util.*;
 
 /**
  * Utility class for various mathematical operations and utilities used in the game.
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ *
  */
-public class MathUtils {
+public final class MathUtils {
 
   /**
    * Shuffles the elements of an array using the Fisher-Yates shuffle algorithm.
@@ -112,7 +116,7 @@ public class MathUtils {
    * @param id The starting index.
    * @return The reversed list.
    */
-  public static List<String> reverseArray(final @NotNull List<String> array, int id) {
+  public static List<String> reverseArray(final @NotNull List<@NotNull String> array, int id) {
     final var result = new ArrayList<String>(array.size());
     for (var i = 0; i < array.size(); i++) {
       result.add(array.get((id + i) % array.size()));
@@ -149,7 +153,7 @@ public class MathUtils {
    * @param id The starting index for the reordering.
    * @return The reordered list.
    */
-  public static List<ItemStack> reorderItemsAZ(final @NotNull List<ItemStack> items, int id) {
+  public static List<ItemStack> reorderItemsAZ(final @NotNull List<@NotNull ItemStack> items, int id) {
     if (items.isEmpty()) throw new IllegalArgumentException("Invalid list of items");
 
     id = (id % items.size() + items.size()) % items.size();

@@ -8,7 +8,7 @@ import fr.dreamin.dreamapi.api.item.ItemAction;
 import fr.dreamin.dreamapi.api.item.ItemDefinition;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemTag;
-import fr.dreamin.dreamapi.core.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import fr.dreamin.dreamapi.core.item.handler.ItemHandlers;
 import fr.dreamin.example.ExamplePlugin;

@@ -1,21 +1,19 @@
 package fr.dreamin.dreamapi.core.utils;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.util.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class LocationUtils {
+public final class LocationUtils {
 
   /**
    * Calculate the opposite yaw given the current yaw.
    * @param yaw The current yaw
    * @return The opposite yaw
    */
-  public static float getOppositeYaw(float yaw) {
+  public static float getOppositeYaw(final float yaw) {
     // Normalize the yaw to be within [0, 360)
     float normalizedYaw = ((yaw % 360) + 360) % 360;
 
@@ -31,7 +29,7 @@ public class LocationUtils {
    * @param radius    The radius within which to check.
    * @return true if a location is within the radius, false otherwise.
    */
-  public static boolean hasLocationInRayon(List<Location> locList, Location centerLoc, double radius) {
+  public static boolean hasLocationInRayon(final List<@NotNull Location> locList, final Location centerLoc, final double radius) {
     for (var location : locList) {
       if (centerLoc.distance(location) <= radius) return true;
     }
@@ -45,7 +43,7 @@ public class LocationUtils {
    * @param start The start location.
    * @return The adjusted location at ground level.
    */
-  public static @Nullable Location findNearestGroundLocation(@NotNull Location start) {
+  public static @Nullable Location findNearestGroundLocation(final @NotNull Location start) {
     final int maxDepth = 400;
     final var baseY = start.getBlockY();
 

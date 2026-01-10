@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.downloader;
 
-import fr.dreamin.dreamapi.core.DreamContext;
+import fr.dreamin.dreamapi.api.DreamAPI;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -15,6 +15,10 @@ import java.util.logging.Logger;
  * Utility class for downloading files and clearing directories.
  * <p>
  * Used for resource downloads (e.g., NBT structures, JSON configs, etc.).
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ *
  */
 public final class NBTDownloader {
 
@@ -103,7 +107,7 @@ public final class NBTDownloader {
    */
   private static Logger getLogger() {
     try {
-      return DreamContext.getPlugin().getLogger();
+      return DreamAPI.getAPI().getLogger();
     } catch (Exception ignored) {}
     return Logger.getLogger("DreamAPI-NBTDownloader");
   }

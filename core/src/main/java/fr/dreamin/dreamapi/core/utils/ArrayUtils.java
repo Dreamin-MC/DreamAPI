@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class ArrayUtils {
+public final class ArrayUtils {
 
   public static int findFirstEmptyIndex(@Nullable Object @NotNull [] array) {
     for (var index = 0; index < array.length; index++) {
@@ -18,7 +18,7 @@ public class ArrayUtils {
   }
 
   public static <T> @NotNull Map<Integer, T> findAllOccurrences(@Nullable T @NotNull [] array, Predicate<T> predicate) {
-    Map<Integer, T> occurrences = new HashMap<>();
+    final var occurrences = new HashMap<Integer, T>();
 
     for (var index = 0; index < array.length; index++) {
       T t = array[index];

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class DialogServiceImpl implements DialogService {
+public final class DialogServiceImpl implements DialogService {
 
   @Override
   public void notice(@NotNull Player player, @NotNull String title, @NotNull String buttonLabel) {

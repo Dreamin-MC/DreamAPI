@@ -11,6 +11,11 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+/**
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ */
 public final class ApiPool {
 
   private static final Map<String, ApiManager> APIS = new ConcurrentHashMap<>();

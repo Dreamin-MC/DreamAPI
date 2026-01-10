@@ -1,8 +1,15 @@
 package fr.dreamin.dreamapi.core.utils;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+/**
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ */
 @Getter
+@RequiredArgsConstructor
 public enum NumberTextures {
 
   GO("ꀀ"),
@@ -18,9 +25,5 @@ public enum NumberTextures {
   NUMBER10("ꀐ");
 
   private final String texture;
-
-  NumberTextures(String texture) {
-    this.texture = texture;
-  }
 
 }

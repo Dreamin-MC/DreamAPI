@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.downloader;
 
 import com.bergerkiller.bukkit.common.map.MapTexture;
-import fr.dreamin.dreamapi.core.DreamContext;
+import fr.dreamin.dreamapi.api.DreamAPI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -17,6 +17,10 @@ import java.util.logging.Logger;
 /**
  * Utility class for downloading and manipulating images,
  * especially for converting them into {@link MapTexture} instances.
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ *
  */
 public final class PictureMapDownload {
 
@@ -132,7 +136,7 @@ public final class PictureMapDownload {
    */
   private static Logger getLogger() {
     try {
-      return DreamContext.getPlugin().getLogger();
+      return DreamAPI.getAPI().getLogger();
     } catch (Exception ignored) {}
     return Logger.getLogger("DreamAPI-PictureMapDownloader");
   }

@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class ColorPalette {
+public final class ColorPalette {
 
   private static final byte @NotNull[] colorCache;
 
@@ -22,20 +22,20 @@ public class ColorPalette {
     colorCache = out.toByteArray();
   }
 
-  public static byte getColor(int red, int green, int blue) {
+  public static byte getColor(final int red, final int green, final int blue) {
     return colorCache[(red << 16) | (green << 8) | blue];
   }
 
-  public static byte getColor(int rgba) {
+  public static byte getColor(final int rgba) {
     if ((rgba >> 24 & 0xFF) < 255) return 0;
     return colorCache[rgba & 0xFFFFFF];
   }
 
-  public static byte getColor(@NotNull Color color) {
+  public static byte getColor(final @NotNull Color color) {
     return getColor(color.getRGB());
   }
 
-  public static byte[] convertImage(@NotNull BufferedImage image) {
+  public static byte[] convertImage(final @NotNull BufferedImage image) {
     final var colors = new byte[image.getWidth() * image.getHeight()];
 
     for (var x = 0; x < image.getWidth(); x++) {

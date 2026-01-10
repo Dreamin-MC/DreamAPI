@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Provides a unified API for managing glowing effects.
  */
 @DreamAutoService(value = GlowingService.class)
-public class GlowingServiceImpl implements GlowingService, DreamService, Listener {
+public final class GlowingServiceImpl implements GlowingService, DreamService, Listener {
 
   private final Plugin plugin;
 

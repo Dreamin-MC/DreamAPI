@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.interpolation;
 
+import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
-import fr.dreamin.dreamapi.core.DreamContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
@@ -17,6 +17,10 @@ import java.util.function.Function;
  * Utility class for smooth interpolation of numbers, vectors, and locations.
  * Supports multiple easing curves and a fluent builder interface.
  * Includes synchronous and asynchronous generation modes.
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ *
  */
 public final class Interpolation {
 
@@ -226,7 +230,7 @@ public final class Interpolation {
       @NotNull Consumer<List<T>> consumer
     ) {
       return future.thenAcceptAsync(list -> {
-        Bukkit.getScheduler().runTask(DreamContext.getPlugin(), () -> consumer.accept(list));
+        Bukkit.getScheduler().runTask(DreamAPI.getAPI().plugin(), () -> consumer.accept(list));
       });
     }
   }

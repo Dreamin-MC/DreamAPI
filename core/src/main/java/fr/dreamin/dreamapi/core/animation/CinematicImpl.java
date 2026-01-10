@@ -4,10 +4,7 @@ import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.animation.ReconnectBehavior;
 import fr.dreamin.dreamapi.api.animation.camera.CameraSegment;
 import fr.dreamin.dreamapi.api.animation.Cinematic;
-import fr.dreamin.dreamapi.core.DreamContext;
 import fr.dreamin.dreamapi.core.animation.camera.CameraSegmentImpl;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -139,7 +136,7 @@ public class CinematicImpl implements Cinematic, Listener {
     final var uuid = player.getUniqueId();
     if (!this.pendingReplay.remove(uuid)) return;
 
-    Bukkit.getScheduler().runTaskLater(DreamContext.getPlugin(), () -> {
+    Bukkit.getScheduler().runTaskLater(DreamAPI.getAPI().plugin(), () -> {
       switch (this.reconnectBehavior) {
         case RESTART -> play(player);
 

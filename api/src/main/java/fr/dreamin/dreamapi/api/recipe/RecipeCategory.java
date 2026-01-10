@@ -1,6 +1,5 @@
-package fr.dreamin.dreamapi.core.recipe;
+package fr.dreamin.dreamapi.api.recipe;
 
-import fr.dreamin.dreamapi.api.recipe.RecipeTag;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;

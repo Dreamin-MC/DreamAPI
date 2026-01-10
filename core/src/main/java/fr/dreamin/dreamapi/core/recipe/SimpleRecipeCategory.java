@@ -1,5 +1,6 @@
 package fr.dreamin.dreamapi.core.recipe;
 
+import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
 import fr.dreamin.dreamapi.api.recipe.RecipeTag;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,5 @@
 package fr.dreamin.dreamapi.core.utils;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MojangAPI {
+public final class MojangAPI {
 
   private static final String PROFILE_API_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
   private static final String UUID_API_URL = "https://api.mojang.com/users/profiles/minecraft/";

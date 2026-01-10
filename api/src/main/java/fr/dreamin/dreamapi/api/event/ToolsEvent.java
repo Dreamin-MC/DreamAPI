@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.core.event;
+package fr.dreamin.dreamapi.api.event;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

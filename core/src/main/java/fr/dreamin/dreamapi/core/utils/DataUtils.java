@@ -6,28 +6,28 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class DataUtils {
+public final class DataUtils {
 
-  public static void writeByteArray(@NotNull DataOutputStream dos, byte @NotNull [] array) throws IOException {
+  public static void writeByteArray(final @NotNull DataOutputStream dos, final byte @NotNull [] array) throws IOException {
     dos.writeInt(array.length);
     dos.write(array);
   }
 
-  public static byte @NotNull [] readByteArray(@NotNull DataInputStream din) throws IOException {
+  public static byte @NotNull [] readByteArray(final @NotNull DataInputStream din) throws IOException {
     int size = din.readInt();
     byte[] array = new byte[size];
     din.readFully(array);
     return array;
   }
 
-  public static void write2DByteArray(@NotNull DataOutputStream dos, byte @NotNull [] @NotNull [] array2d) throws IOException {
+  public static void write2DByteArray(final @NotNull DataOutputStream dos, final byte @NotNull [] @NotNull [] array2d) throws IOException {
     dos.writeInt(array2d.length);
     for (var array : array2d) {
       writeByteArray(dos, array);
     }
   }
 
-  public static byte @NotNull [] @NotNull [] read2DByteArray(@NotNull DataInputStream din) throws IOException {
+  public static byte @NotNull [] @NotNull [] read2DByteArray(final @NotNull DataInputStream din) throws IOException {
     final var size2d = din.readInt();
     final var array2d = new byte[size2d][];
     for (var i = 0; i < size2d; i++) {

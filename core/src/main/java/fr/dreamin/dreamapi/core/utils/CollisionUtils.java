@@ -5,7 +5,7 @@ import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CollisionUtils {
+public final class CollisionUtils {
 
   /**
    * Get new adjusted location base on top of collision of a block.
@@ -13,7 +13,7 @@ public class CollisionUtils {
    * @param location The current location to adjust.
    * @return new location adjusted to bounding box or null if no bounding box.
    */
-  public static @Nullable Location getTopCollisionLocation(@NotNull Location location) {
+  public static @Nullable Location getTopCollisionLocation(final @NotNull Location location) {
     final var block = location.getBlock();
     final var shape = block.getCollisionShape();
     BoundingBox topBox = null;
@@ -38,7 +38,7 @@ public class CollisionUtils {
    * @param loc The current location to adjust.
    * @return new location adjusted to bounding box or null if not valid bounding box.
    */
-  public static @Nullable Location getLocateTopCollisionLocation(@NotNull Location loc) {
+  public static @Nullable Location getLocateTopCollisionLocation(final @NotNull Location loc) {
     final var block = loc.getBlock();
     final var shape = block.getCollisionShape();
 

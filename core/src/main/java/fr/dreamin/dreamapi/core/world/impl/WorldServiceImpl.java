@@ -1,8 +1,8 @@
 package fr.dreamin.dreamapi.core.world.impl;
 
+import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
-import fr.dreamin.dreamapi.core.DreamContext;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -43,7 +43,7 @@ public final class WorldServiceImpl implements WorldService, DreamService {
 
     unloadWorld(worldLabel);
 
-    Bukkit.getScheduler().runTaskAsynchronously(DreamContext.getPlugin(), () -> {
+    Bukkit.getScheduler().runTaskAsynchronously(DreamAPI.getAPI().plugin(), () -> {
       try {
         deleteDirectory(targetPath);
         copyDirectory(templatePath, targetPath);
@@ -71,7 +71,7 @@ public final class WorldServiceImpl implements WorldService, DreamService {
 
     unloadWorld(cloneWorldLabel);
 
-    Bukkit.getScheduler().runTaskAsynchronously(DreamContext.getPlugin(), () -> {
+    Bukkit.getScheduler().runTaskAsynchronously(DreamAPI.getAPI().plugin(), () -> {
       try {
         deleteDirectory(clonePath);
         copyDirectory(sourcePath, clonePath);
@@ -90,7 +90,7 @@ public final class WorldServiceImpl implements WorldService, DreamService {
     unloadWorld(worldLabel);
     final var worldPath = worldContainer.resolve(worldLabel);
 
-    Bukkit.getScheduler().runTaskAsynchronously(DreamContext.getPlugin(), () -> {
+    Bukkit.getScheduler().runTaskAsynchronously(DreamAPI.getAPI().plugin(), () -> {
       try {
         deleteDirectory(worldPath);
         logInfo("World '%s' deleted successfully.", worldLabel);
@@ -99,7 +99,7 @@ public final class WorldServiceImpl implements WorldService, DreamService {
       }
 
       if (callback != null)
-        Bukkit.getScheduler().runTask(DreamContext.getPlugin(), callback);
+        Bukkit.getScheduler().runTask(DreamAPI.getAPI().plugin(), callback);
     });
   }
 
@@ -118,7 +118,7 @@ public final class WorldServiceImpl implements WorldService, DreamService {
     };
 
     final var ticks = duration.toSeconds() * 20;
-    task.runTaskLater(DreamContext.getPlugin(), ticks);
+    task.runTaskLater(DreamAPI.getAPI().plugin(), ticks);
     tempWorlds.put(worldLabel, task);
 
     logInfo("Temporary world '%s' scheduled for deletion in %d seconds.", worldLabel, duration.toSeconds());
@@ -168,7 +168,7 @@ public final class WorldServiceImpl implements WorldService, DreamService {
         else logInfo("World '%s' loaded successfully.", worldLabel);
         if (callback != null) callback.accept(world);
       }
-    }.runTask(DreamContext.getPlugin());
+    }.runTask(DreamAPI.getAPI().plugin());
   }
 
   private void deleteDirectory(@NotNull Path path) throws IOException {
@@ -195,7 +195,7 @@ public final class WorldServiceImpl implements WorldService, DreamService {
     }
   }
 
-  private void logInfo(String msg, Object... args) { DreamContext.getPlugin().getLogger().info(String.format("[WorldService] " + msg, args)); }
-  private void logError(String msg, Object... args) { DreamContext.getPlugin().getLogger().severe(String.format("[WorldService] " + msg, args)); }
+  private void logInfo(String msg, Object... args) { DreamAPI.getAPI().getLogger().info(String.format("[WorldService] " + msg, args)); }
+  private void logError(String msg, Object... args) { DreamAPI.getAPI().getLogger().severe(String.format("[WorldService] " + msg, args)); }
 
 }

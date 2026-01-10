@@ -1,14 +1,15 @@
 package fr.dreamin.dreamapi.core.recipe;
 
+import fr.dreamin.dreamapi.api.recipe.service.RecipeCategoryRegistryService;
 import fr.dreamin.dreamapi.api.recipe.RecipeTag;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
 import java.util.Set;
 
-public final class DefaultCategories {
+public final class DefaultRecipeCategories {
 
-  public static void registerDefaults(CategoryRegistryService registryService) {
+  public static void registerDefaults(RecipeCategoryRegistryService registryService) {
     registryService.registerCategory(
       SimpleRecipeCategory.builder()
         .id("shaped")

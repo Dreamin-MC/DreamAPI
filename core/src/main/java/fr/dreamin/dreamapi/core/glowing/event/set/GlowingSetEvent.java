@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.glowing.event.set;
 
-import fr.dreamin.dreamapi.core.event.ToolsCancelEvent;
+import fr.dreamin.dreamapi.api.event.ToolsCancelEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

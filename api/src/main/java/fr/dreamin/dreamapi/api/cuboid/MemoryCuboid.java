@@ -1,6 +1,6 @@
-package fr.dreamin.dreamapi.core.cuboid;
+package fr.dreamin.dreamapi.api.cuboid;
 
-import fr.dreamin.dreamapi.core.DreamContext;
+import fr.dreamin.dreamapi.api.DreamAPI;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
@@ -104,7 +104,7 @@ public final class MemoryCuboid extends Cuboid {
         if (topToBottom) currentY--;
         else currentY++;
       }
-    }.runTaskTimer(DreamContext.getPlugin(), 0L, tick); // 20 ticks = 1 seconde
+    }.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, tick); // 20 ticks = 1 seconde
   }
 
   @Getter @Setter

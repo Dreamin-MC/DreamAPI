@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.sound;
 
-import fr.dreamin.dreamapi.core.DreamContext;
+import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.annotations.Internal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,10 @@ import java.util.function.Predicate;
 /**
  * Flexible sound handler for playing and managing sounds for players.
  * Supports Bukkit and custom sounds, with builder-based configuration.
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ *
  */
 @Getter
 @Setter
@@ -40,11 +44,11 @@ public final class SoundHandler {
   // ------------------------ BUILDER API --------------------------
   // ###############################################################
 
-  public static Builder builder(@NotNull String label) {
+  public static Builder builder(final @NotNull String label) {
     return new Builder(label);
   }
 
-  public static Builder builder(@NotNull Sound sound) {
+  public static Builder builder(final @NotNull Sound sound) {
     return new Builder(sound.name());
   }
 
@@ -92,7 +96,7 @@ public final class SoundHandler {
 
   public void play(final @NotNull Player player, final @NotNull Location location) {
     if (delayTicks <= 0) playInternal(player, location);
-    else Bukkit.getScheduler().runTaskLater(DreamContext.getPlugin(), () -> playInternal(player, location), delayTicks);
+    else Bukkit.getScheduler().runTaskLater(DreamAPI.getAPI().plugin(), () -> playInternal(player, location), delayTicks);
   }
 
   public void play(final @NotNull Collection<? extends Player> players, final @NotNull Location location) {

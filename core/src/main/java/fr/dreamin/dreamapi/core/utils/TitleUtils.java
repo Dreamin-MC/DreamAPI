@@ -4,7 +4,7 @@ import net.kyori.adventure.title.Title;
 
 import java.time.Duration;
 
-public class MinecraftUtils {
+public final class TitleUtils {
 
   /**
    *

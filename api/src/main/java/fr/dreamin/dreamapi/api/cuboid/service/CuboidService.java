@@ -1,6 +1,6 @@
-package fr.dreamin.dreamapi.core.cuboid.service;
+package fr.dreamin.dreamapi.api.cuboid.service;
 
-import fr.dreamin.dreamapi.core.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;

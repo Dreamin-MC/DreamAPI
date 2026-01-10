@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.core.event;
+package fr.dreamin.dreamapi.api.event;
 
 import lombok.Getter;
 import org.bukkit.event.Cancellable;

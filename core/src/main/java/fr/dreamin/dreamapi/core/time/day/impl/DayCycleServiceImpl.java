@@ -1,8 +1,8 @@
 package fr.dreamin.dreamapi.core.time.day.impl;
 
+import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
-import fr.dreamin.dreamapi.core.DreamContext;
 import fr.dreamin.dreamapi.core.time.SimulateTime;
 import fr.dreamin.dreamapi.core.time.day.SimulatedDayCycle;
 import org.bukkit.World;
@@ -48,7 +48,7 @@ public final class DayCycleServiceImpl implements DayCycleService, DreamService 
       .onMidnight(() -> handleGlobalCallback(this.onGlobalMidnight, String.format("Midnight in %s", world.getName())));
 
     this.cycles.put(world.getName(), cycle);
-    DreamContext.getPlugin().getLogger().info(String.format("Registered day cycle for world: %s", world.getName()));
+    DreamAPI.getAPI().getLogger().info(String.format("Registered day cycle for world: %s", world.getName()));
     return cycle;
   }
 
@@ -58,7 +58,7 @@ public final class DayCycleServiceImpl implements DayCycleService, DreamService 
       return this.cycles.get(world.getName());
 
     this.cycles.put(world.getName(), cycle);
-    DreamContext.getPlugin().getLogger().info(String.format("Registered custom day cycle for world: %s", world.getName()));
+    DreamAPI.getAPI().getLogger().info(String.format("Registered custom day cycle for world: %s", world.getName()));
     return cycle;
   }
 
@@ -68,7 +68,7 @@ public final class DayCycleServiceImpl implements DayCycleService, DreamService 
     Optional.ofNullable(this.cycles.remove(worldName))
       .ifPresent(cycle -> {
         cycle.stop();
-        DreamContext.getPlugin().getLogger().info(String.format("Removed day cycle for world: %s", worldName));
+        DreamAPI.getAPI().getLogger().info(String.format("Removed day cycle for world: %s", worldName));
       });
   }
 
@@ -76,7 +76,7 @@ public final class DayCycleServiceImpl implements DayCycleService, DreamService 
   public void clearAll() {
     this.cycles.values().forEach(SimulatedDayCycle::stop);
     this.cycles.clear();
-    DreamContext.getPlugin().getLogger().info("Cleared all simulated day cycles.");
+    DreamAPI.getAPI().getLogger().info("Cleared all simulated day cycles.");
   }
 
   @Override
@@ -158,14 +158,14 @@ public final class DayCycleServiceImpl implements DayCycleService, DreamService 
   private boolean isWorldRegistered(@NotNull String worldName) {
     final var registered = this.cycles.containsKey(worldName);
     if (registered)
-      DreamContext.getPlugin().getLogger().warning(String.format("World '%s' already has a registered day cycle.", worldName));
+      DreamAPI.getAPI().getLogger().warning(String.format("World '%s' already has a registered day cycle.", worldName));
 
     return this.cycles.containsKey(worldName);
   }
 
   private void handleGlobalCallback(Runnable action, String debugMessage) {
     if (action != null) action.run();
-    DreamContext.getPlugin().getLogger().info("[DayCycleService] " + debugMessage);
+    DreamAPI.getAPI().getLogger().info("[DayCycleService] " + debugMessage);
   }
 
 }

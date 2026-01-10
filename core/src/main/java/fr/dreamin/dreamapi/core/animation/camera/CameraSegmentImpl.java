@@ -1,8 +1,8 @@
 package fr.dreamin.dreamapi.core.animation.camera;
 
+import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.animation.camera.CameraSegment;
 import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
-import fr.dreamin.dreamapi.core.DreamContext;
 import fr.dreamin.dreamapi.core.interpolation.Interpolation;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -52,7 +52,7 @@ public record CameraSegmentImpl(
           onFrame.accept(player, i);
         i++;
       }
-    }.runTaskTimer(DreamContext.getPlugin(), 0L, 1L);
+    }.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 1L);
   }
 
   @Override

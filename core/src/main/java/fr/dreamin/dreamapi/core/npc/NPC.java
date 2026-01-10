@@ -13,7 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class NPC {
+public final class NPC {
 
   public enum NavigationType { DEFAULT, STRAIGHT_LINEAR }
 

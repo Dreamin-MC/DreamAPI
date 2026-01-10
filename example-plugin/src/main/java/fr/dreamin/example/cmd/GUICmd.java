@@ -16,6 +16,7 @@ public final class GUICmd {
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
+
   }
 
 }

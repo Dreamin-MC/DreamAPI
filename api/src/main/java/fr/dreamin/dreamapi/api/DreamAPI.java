@@ -1,5 +1,7 @@
 package fr.dreamin.dreamapi.api;
 
+import lombok.Getter;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +34,8 @@ import java.util.logging.Logger;
  * @since 1.0.0
  */
 public final class DreamAPI {
+
+  public static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.legacyAmpersand();
 
   private static IApiProvider provider;
 

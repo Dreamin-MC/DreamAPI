@@ -1,9 +1,9 @@
 package fr.dreamin.dreamapi.core.recipe.ui;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.recipe.RecipeRegistryService;
+import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.recipe.RecipeTag;
-import fr.dreamin.dreamapi.core.recipe.RecipeCategory;
+import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
 import fr.dreamin.dreamapi.core.recipe.ui.fake.FurnaceFakeGUI;
 import fr.dreamin.dreamapi.core.recipe.ui.fake.ShapedFakeGUI;
 import fr.dreamin.dreamapi.core.recipe.ui.fake.ShapelessFakeGUI;

@@ -1,8 +1,8 @@
 package fr.dreamin.dreamapi.core.team;
 
+import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
-import fr.dreamin.dreamapi.core.DreamContext;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -130,11 +130,11 @@ public final class TeamServiceImpl implements TeamService, DreamService {
 
     final var prefixComponent = (prefix == null || prefix.isBlank()) ?
       Component.empty() :
-      DreamContext.LEGACY_COMPONENT_SERIALIZER.deserialize(prefix);
+      DreamAPI.LEGACY_COMPONENT_SERIALIZER.deserialize(prefix);
 
     final var suffixComponent = (suffix == null || suffix.isBlank()) ?
       Component.empty() :
-      DreamContext.LEGACY_COMPONENT_SERIALIZER.deserialize(suffix);
+      DreamAPI.LEGACY_COMPONENT_SERIALIZER.deserialize(suffix);
 
     team.prefix(prefixComponent.color(NamedTextColor.WHITE));
     team.suffix(suffixComponent.color(NamedTextColor.WHITE));

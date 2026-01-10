@@ -3,6 +3,11 @@ package fr.dreamin.dreamapi.api.gui;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *
+ * @author Dreamin
+ * @since 0.0.1
+ */
 @Getter
 public enum PictureGui {
 

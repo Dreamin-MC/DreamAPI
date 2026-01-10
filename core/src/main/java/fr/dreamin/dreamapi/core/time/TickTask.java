@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.time;
 
-import fr.dreamin.dreamapi.core.DreamContext;
+import fr.dreamin.dreamapi.api.DreamAPI;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -178,8 +178,8 @@ public abstract class TickTask<T extends TickTask<T>> {
 
     this.tickCounter = 0;
     this.task = async
-      ? runnable.runTaskTimerAsynchronously(DreamContext.getPlugin(), delay, 1L)
-      : runnable.runTaskTimer(DreamContext.getPlugin(), delay, 1L);
+      ? runnable.runTaskTimerAsynchronously(DreamAPI.getAPI().plugin(), delay, 1L)
+      : runnable.runTaskTimer(DreamAPI.getAPI().plugin(), delay, 1L);
 
     return (T) this;
   }
