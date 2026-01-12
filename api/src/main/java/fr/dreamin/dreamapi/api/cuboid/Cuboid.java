@@ -31,7 +31,8 @@ public class Cuboid {
     this.locA = locA;
     this.locB = locB;
 
-    DreamAPI.getAPI().getService(CuboidService.class).register(this);
+    final var cuboidService = DreamAPI.getAPI().getService(CuboidService.class);
+    if (cuboidService.isAutoRegister()) cuboidService.register(this);
   }
 
   // ###############################################################

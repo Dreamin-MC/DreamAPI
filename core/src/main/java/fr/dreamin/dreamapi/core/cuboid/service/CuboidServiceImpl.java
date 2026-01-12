@@ -14,7 +14,6 @@ import fr.dreamin.dreamapi.core.glowing.GlowingServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +34,8 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
   private final @NotNull Set<Cuboid> cuboids = new HashSet<>();
   private final @NotNull Map<UUID, Set<Cuboid>> playerCuboids = new HashMap<>();
 
+  private boolean autoRegister = true;
+
   @SuppressWarnings("NullableProblems")
   private DreamLogger dreamLogger;
 
@@ -44,7 +45,6 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
 
   @Override
   public void onClose() {
-    HandlerList.unregisterAll(this);
     clear();
   }
 
@@ -65,6 +65,16 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
   @Override
   public void unregister(@NotNull Cuboid cuboid) {
     this.cuboids.remove(cuboid);
+  }
+
+  @Override
+  public boolean isAutoRegister() {
+    return this.autoRegister;
+  }
+
+  @Override
+  public void autoRegister(boolean value) {
+    this.autoRegister = value;
   }
 
   @Override

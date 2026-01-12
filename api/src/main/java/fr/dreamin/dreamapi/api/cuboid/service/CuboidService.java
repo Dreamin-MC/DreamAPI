@@ -34,6 +34,10 @@ public interface CuboidService {
    */
   void unregister(final @NotNull Cuboid cuboid);
 
+  boolean isAutoRegister();
+
+  void autoRegister(boolean value);
+
   /**
    * Clears all registered cuboids.
    *

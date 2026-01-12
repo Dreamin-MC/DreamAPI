@@ -2,6 +2,7 @@ package fr.dreamin.dreamapi.api.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.dreamin.dreamapi.api.config.Configurations;
 import lombok.Getter;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -37,7 +38,7 @@ public final class ApiManager implements Closeable {
   private ApiManager(final @NotNull Builder builder) {
     this.baseUrl = builder.baseUrl;
     this.defaultHeaders = builder.defaultHeaders;
-    this.mapper = builder.mapper != null ? builder.mapper : new ObjectMapper();
+    this.mapper = builder.mapper != null ? builder.mapper : Configurations.MAPPER;
     this.enableCache = builder.enableCache;
     this.cacheTtlMs = builder.cacheTtlMs;
 

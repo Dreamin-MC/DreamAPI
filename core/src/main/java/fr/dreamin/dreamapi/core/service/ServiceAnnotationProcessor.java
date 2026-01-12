@@ -9,6 +9,7 @@ import fr.dreamin.dreamapi.api.logger.DebugService;
 import fr.dreamin.dreamapi.api.logger.DreamLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
@@ -148,6 +149,11 @@ public final class ServiceAnnotationProcessor implements Listener {
     try {
       setStatus(service, DreamService.ServiceStatus.CLOSED);
       service.onClose();
+
+      // Unregister listener if the service is a Listener instance
+      if (service instanceof Listener ls)
+        HandlerList.unregisterAll(ls);
+
     } catch (Exception e) {
       this.plugin.getLogger().severe(String.format("[DreamService] Failed to close service %s: %s", service.getName(), e.getMessage()));
       e.printStackTrace();
