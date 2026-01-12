@@ -2,7 +2,7 @@ repositories {
   mavenCentral()
 
   maven { url 'https://mvn.lumine.io/repository/maven-public/' }
-
+  maven { url "https://oss.sonatype.org/content/groups/public/" }
 }
 
 def modelEngineVersion = "R4.0.9"
@@ -15,6 +15,8 @@ dependencies {
 
   implementation("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")
   implementation("cloud.commandframework:cloud-annotations:$cloudCommandFrameworkVersion")
+
+  implementation("com.flowpowered:flow-nbt:1.0.0")
 
   compileOnly ("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
 
