@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.core.item;
+package fr.dreamin.dreamapi.core.item.service;
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import fr.dreamin.dreamapi.api.item.*;
@@ -6,6 +6,7 @@ import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;
 import fr.dreamin.dreamapi.core.dependency.DependencyLoader;
+import fr.dreamin.dreamapi.core.item.RegisteredItemImpl;
 import fr.dreamin.dreamapi.core.item.event.PlayerItemUseEvent;
 import fr.dreamin.dreamapi.core.modelengine.listener.ModelEngineItemListener;
 import lombok.RequiredArgsConstructor;
@@ -273,21 +274,19 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
     final var newItem = event.getNewItem();
     final var oldItem = event.getOldItem();
 
-    final var registeredNew = get(newItem);
-    if (registeredNew != null) {
-      registeredNew.execute(
-        ItemAction.SET_ARMOR,
-        new ItemContext(player, newItem, event)
-      );
-    }
-
     final var registeredOld = get(oldItem);
-    if (registeredOld != null) {
+    if (registeredOld != null)
       registeredOld.execute(
         ItemAction.REMOVE_ARMOR,
         new ItemContext(player, oldItem, event)
       );
-    }
+
+    final var registeredNew = get(newItem);
+    if (registeredNew != null)
+      registeredNew.execute(
+        ItemAction.SET_ARMOR,
+        new ItemContext(player, newItem, event)
+      );
 
   }
 

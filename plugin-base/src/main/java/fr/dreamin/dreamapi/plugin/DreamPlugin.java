@@ -21,7 +21,7 @@ import fr.dreamin.dreamapi.core.cuboid.service.CuboidServiceImpl;
 import fr.dreamin.dreamapi.core.event.scanner.ListenerAnnotationProcessor;
 import fr.dreamin.dreamapi.core.glowing.GlowingServiceImpl;
 import fr.dreamin.dreamapi.api.item.ItemKeys;
-import fr.dreamin.dreamapi.core.item.ItemRegistryServiceImpl;
+import fr.dreamin.dreamapi.core.item.service.ItemRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.item.scanner.ItemAnnotationProcessor;
 import fr.dreamin.dreamapi.core.logger.DebugServiceImpl;
 import fr.dreamin.dreamapi.core.logger.PlayerDebugServiceImpl;
