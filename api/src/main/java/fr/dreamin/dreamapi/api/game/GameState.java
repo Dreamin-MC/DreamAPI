@@ -3,6 +3,7 @@ package fr.dreamin.dreamapi.api.game;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +45,7 @@ public abstract class GameState {
    */
   public final void exit(final GameState nextState) {
     this.onExit(nextState);
+    this.listeners.forEach(HandlerList::unregisterAll);
   }
 
   /**
