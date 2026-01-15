@@ -1,5 +1,6 @@
-package fr.dreamin.dreamapi.core.world.impl;
+package fr.dreamin.dreamapi.api.world.service;
 
+import fr.dreamin.dreamapi.api.world.WorldDefinition;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,5 +18,7 @@ public interface WorldService {
   void cancelAutoDelete(@NotNull String worldLabel);
   void extendAutoDelete(@NotNull String worldLabel, @NotNull Duration newDuration);
   boolean isTemporary(@NotNull String worldLabel);
+
+  void createWorld(final @NotNull WorldDefinition definition, final @Nullable Consumer<World> callback);
 
 }

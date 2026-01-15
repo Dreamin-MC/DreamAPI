@@ -3,9 +3,12 @@ package fr.dreamin.dreamapi.core.world.impl;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
+import fr.dreamin.dreamapi.api.world.WorldDefinition;
+import fr.dreamin.dreamapi.api.world.service.WorldService;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -145,6 +148,39 @@ public final class WorldServiceImpl implements WorldService, DreamService {
     return tempWorlds.containsKey(worldLabel);
   }
 
+  @Override
+  public void createWorld(@NotNull WorldDefinition definition, @Nullable Consumer<World> callback) {
+    unloadWorld(definition.getLabel());
+
+    Bukkit.getScheduler().runTaskAsynchronously(DreamAPI.getAPI().plugin(), () -> {
+      try {
+        deleteDirectory(this.worldContainer.resolve(definition.getLabel()));
+
+        final var creator = new WorldCreator(definition.getLabel());
+        creator.environment(definition.getEnvironment());
+        creator.type(definition.getType());
+
+        if (definition.getSeed() != null) creator.seed(definition.getSeed());
+
+        final var generatorSettings = definition.getGeneratorSettingsJson();
+        if (generatorSettings != null && !generatorSettings.isBlank())
+          creator.generatorSettings(generatorSettings);
+
+        creator.generateStructures(definition.isGenerateStructures());
+
+        if (definition.getCustomGenerationName() != null && !definition.getCustomGenerationName().isBlank())
+          creator.generator(definition.getCustomGenerationName());
+
+        // TODO: implement logic for biomeProvider
+
+        loadWorldAsync(creator, callback);
+      } catch (Exception e) {
+        logError("Failed to create world '%s': %s", definition.getLabel(), e.getMessage());
+        if (callback != null) callback.accept(null);
+      }
+    });
+  }
+
   // ###############################################################
   // ----------------------- PRIVATE METHODS -----------------------
   // ###############################################################
@@ -166,6 +202,18 @@ public final class WorldServiceImpl implements WorldService, DreamService {
         final var world = WorldCreator.name(worldLabel).createWorld();
         if (world == null) logError("World '%s' failed to load.", worldLabel);
         else logInfo("World '%s' loaded successfully.", worldLabel);
+        if (callback != null) callback.accept(world);
+      }
+    }.runTask(DreamAPI.getAPI().plugin());
+  }
+
+  private void loadWorldAsync(@NotNull WorldCreator creator, @Nullable Consumer<World> callback) {
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        final var world = creator.createWorld();
+        if (world == null) logError("World '%s' failed to load.", creator.name());
+        else logInfo("World '%s' loaded successfully.", creator.name());
         if (callback != null) callback.accept(world);
       }
     }.runTask(DreamAPI.getAPI().plugin());
