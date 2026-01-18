@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -18,13 +19,15 @@ public final class CooldownHandler implements ItemHandler {
 
   private final @NotNull Duration cooldown;
   private final HashMap<UUID, Instant> lastUse = new HashMap<>();
-  private @NotNull Consumer<ItemContext> callback = new Consumer<ItemContext>() {
-    @Override public void accept(ItemContext itemContext) {}
-  };
+  private final @Nullable Consumer<ItemContext> callback;
 
   private Component noCooldownMessage;
 
-  public CooldownHandler(final @NotNull Duration cooldown, final @NotNull Component noCooldownMessage, Consumer<ItemContext> setCallback) {
+  public CooldownHandler(final @NotNull Duration cooldown, final @NotNull Component noCooldownMessage) {
+    this(cooldown, noCooldownMessage, null);
+  }
+
+  public CooldownHandler(final @NotNull Duration cooldown, final @NotNull Component noCooldownMessage, final @Nullable Consumer<ItemContext> setCallback) {
     this.cooldown = cooldown;
     this.noCooldownMessage = noCooldownMessage;
     this.callback = setCallback;
@@ -44,7 +47,8 @@ public final class CooldownHandler implements ItemHandler {
       return true;
     }
 
-    this.callback.accept(ctx);
+    if (this.callback != null)
+      this.callback.accept(ctx);
 
     this.lastUse.put(player.getUniqueId(), now);
     player.setCooldown(ctx.item(), (int) cooldown.toMillis() / 50);
