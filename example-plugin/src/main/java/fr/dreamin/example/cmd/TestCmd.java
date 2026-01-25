@@ -12,6 +12,7 @@ import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import fr.dreamin.dreamapi.core.item.handler.ItemHandlers;
 import fr.dreamin.example.ExamplePlugin;
+import fr.dreamin.example.TestGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,38 +29,8 @@ public final class TestCmd {
   @CommandPermission("test")
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
-//
-//    final var animationService = DreamAPI.getAPI().getService(AnimationService.class);
-//
-//    var anim = animationService
-//      .cinematic("intro")
-//      .camera(
-//        new Location(player.getWorld(), 100, 80, 100),
-//        new Location(player.getWorld(), 110, 85, 105),
-//        Duration.ofSeconds(2),
-//        InterpolationType.EASE_IN_OUT
-//      )
-//      .camera(
-//        new Location(player.getWorld(), 110, 85, 105),
-//        new Location(player.getWorld(), 120, 88, 150),
-//        Duration.ofSeconds(3)
-//      )
-//      .returnToStart(true)
-//      .copyInventory(true)
-//      .build();
-//
-//    anim.play(player);
 
-    final var locA = new Location(player.getWorld(), -100, -100, -100);
-    final var locB = new Location(player.getWorld(), 100, 100, 100);
-
-    Cuboid cuboid = new Cuboid(locA, locB);
-
-    cuboid.isLocationIn(player.getLocation());
-
-    cuboid.setMaterialEveryTick(Material.IRON_BLOCK, 2, true);
-
-
+    new TestGUI().open(player);
   }
 
   @CommandDescription("Test")
@@ -74,30 +45,25 @@ public final class TestCmd {
       .register(
         ItemDefinition.builder()
           .id("test")
-          .item(new ItemBuilder(Material.PAPER).build())
+          .item(new ItemBuilder(Material.WARPED_FUNGUS_ON_A_STICK).setMaxDamage(100).setName(Component.text("Custom")).build())
           .tag(ItemTag.of("example-tag"))
-          .handler(ItemAction.DROP, ctx -> {
-            ctx.player().sendMessage(Component.text("You dropped the test item!"));
+          .handler(ItemAction.RIGHT_CLICK, ctx -> {
+            ctx.player().sendMessage(Component.text("RIGHT_CLICK!"));
+            ctx.item().damage(1, ctx.player());
             return false;
           })
-          .handler(ItemAction.DROP, ctx -> {
-            ctx.player().sendMessage(Component.text("ttttttt!"));
+          .handler(ItemAction.CHAT_SEND, ctx -> {
+            ctx.player().sendMessage(Component.text("CHAT_SEND!"));
             return false;
           })
-          .handler(ItemAction.PICKUP, ctx -> {
-            ctx.player().sendMessage(Component.text("You picked up the test item!"));
+          .handler(ItemAction.UNHELD, ctx -> {
+            ctx.player().sendMessage(Component.text("UNHELD!"));
             return false;
           })
-          .handlers(ItemAction.RIGHT_CLICK_AIR,
-            List.of(
-              ItemHandlers.permission("example.use"),
-              ItemHandlers.cooldown(5),
-              ctx -> {
-                ctx.item().add(-1);
-                ctx.player().sendMessage(Component.text("You used the test item!"));
-                return false;
-              })
-          )
+          .handler(ItemAction.HELD, ctx -> {
+            ctx.player().sendMessage(Component.text("HELD!"));
+            return false;
+          })
           .build()
       );
 

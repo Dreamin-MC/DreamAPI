@@ -18,6 +18,7 @@ repositories {
 }
 
 def cloudCommandFrameworkVersion = "1.8.4"
+def glowingEntitiesVersion = "1.4.9"
 
 dependencies {
   compileOnly "io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT"
@@ -29,6 +30,8 @@ dependencies {
   // Cloud CommandFramework
   implementation("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")
   implementation("cloud.commandframework:cloud-annotations:$cloudCommandFrameworkVersion")
+
+  implementation ("fr.skytasul:glowingentities:$glowingEntitiesVersion")
 
   compileOnly "org.projectlombok:lombok:1.18.34"
   annotationProcessor "org.projectlombok:lombok:1.18.34"

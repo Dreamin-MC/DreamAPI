@@ -16,7 +16,7 @@ public interface GuiInterface {
 
   Gui guiUpper(final @NotNull Player player); // Retourne l'instance de GUI pour le joueur
 
-  default Gui guiLower(final @NotNull Player player) {
+  default Gui pagedGui(final @NotNull Player player) {
     return Gui.builder()
       .setStructure(
         ". . . . . . . . . ",

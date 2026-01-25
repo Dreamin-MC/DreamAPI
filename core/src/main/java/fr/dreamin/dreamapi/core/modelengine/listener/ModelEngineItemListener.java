@@ -32,7 +32,7 @@ public final class ModelEngineItemListener implements Listener {
     final var registered = itemRegistryService.get(item);
     if (registered == null) return;
 
-    registered.execute(ItemAction.INTERACT_MODELENGINE, new ItemContext(player, item, event));
+    registered.execute(ItemAction.INTERACT_MODEL_ENGINE, new ItemContext(player, item, event));
   }
 
 }

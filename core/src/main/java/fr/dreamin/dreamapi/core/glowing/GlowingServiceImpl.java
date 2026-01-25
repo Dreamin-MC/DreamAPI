@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,6 +72,16 @@ public final class GlowingServiceImpl implements GlowingService, DreamService, L
   // ###############################################################
   // -------------------------- METHODS ----------------------------
   // ###############################################################
+
+  @Override
+  public @NonNull GlowingEntities getGlowingEntities() {
+    return this.glowingEntities;
+  }
+
+  @Override
+  public @NonNull GlowingBlocks getGlowingBlocks() {
+    return this.glowingBlocks;
+  }
 
   // ###############################################################
   // --------------------------- ENTITY ----------------------------

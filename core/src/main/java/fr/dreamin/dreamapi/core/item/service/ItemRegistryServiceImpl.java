@@ -9,6 +9,8 @@ import fr.dreamin.dreamapi.core.dependency.DependencyLoader;
 import fr.dreamin.dreamapi.core.item.RegisteredItemImpl;
 import fr.dreamin.dreamapi.core.item.event.PlayerItemUseEvent;
 import fr.dreamin.dreamapi.core.modelengine.listener.ModelEngineItemListener;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,8 +18,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -199,7 +203,6 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
         return null;
       }
     }
-
   }
 
   // ###############################################################
@@ -221,14 +224,12 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
       itemAction,
       new ItemContext(player, item, event)
     );
-
   }
 
   @EventHandler
   private void onDrop(final @NotNull PlayerDropItemEvent event) {
     final var player = event.getPlayer();
     final var item = event.getItemDrop().getItemStack();
-
     final var registered = get(item);
     if (registered == null) return;
 
@@ -241,9 +242,7 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
   @EventHandler
   private void onPickUp(final @NotNull EntityPickupItemEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-
     final var item = event.getItem().getItemStack();
-
     final var registered = get(item);
     if (registered == null) return;
 
@@ -251,6 +250,76 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
       ItemAction.PICKUP,
       new ItemContext(player, item, event)
     );
+  }
+
+  @EventHandler
+  private void onChat(final @NotNull AsyncChatEvent event) {
+    final var player = event.getPlayer();
+    final var item = player.getInventory().getItemInMainHand();
+    if (item.isEmpty()) return;
+
+    final var registered = get(item);
+    if (registered == null) return;
+
+    registered.execute(
+      ItemAction.CHAT_SEND,
+      new ItemContext(player, item, event)
+    );
+  }
+
+  @EventHandler
+  private void onItemHeld(final @NotNull PlayerItemHeldEvent event) {
+    final var player = event.getPlayer();
+    final var inv = player.getInventory();
+    final var newItem = inv.getItem(event.getNewSlot());
+    final var oldItem = inv.getItem(event.getPreviousSlot());
+
+    if (newItem != null && !newItem.isEmpty()) {
+      final var registered = get(newItem);
+      if (registered != null)
+        registered.execute(
+          ItemAction.HELD,
+          new ItemContext(player, newItem, event)
+        );
+    }
+
+    if (oldItem != null && !oldItem.isEmpty()) {
+      final var registered = get(oldItem);
+      if (registered != null)
+        registered.execute(
+          ItemAction.UNHELD,
+          new ItemContext(player, oldItem, event)
+        );
+    }
+  }
+
+  @EventHandler
+  private void onItemHeldChange(final @NotNull PlayerInventorySlotChangeEvent event) {
+    final var player = event.getPlayer();
+    final var heldSlot = player.getInventory().getHeldItemSlot();
+    if (heldSlot != event.getSlot()) return;
+
+    final var newItem = event.getNewItemStack();
+    final var oldItem = event.getOldItemStack();
+    final var newRegistered = get(newItem);
+    final var oldRegistered = get(oldItem);
+
+    if (oldRegistered != null && newRegistered == oldRegistered)
+      return;
+
+    if (newRegistered != null) {
+      newRegistered.execute(
+        ItemAction.HELD,
+        new ItemContext(player, newItem, event)
+      );
+    }
+
+    if (oldRegistered != null) {
+      oldRegistered.execute(
+        ItemAction.UNHELD,
+        new ItemContext(player, oldItem, event)
+      );
+    }
   }
 
   @EventHandler

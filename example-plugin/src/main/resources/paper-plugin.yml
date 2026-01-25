@@ -3,3 +3,8 @@ version: '1.0.0'
 main: fr.dreamin.example.ExamplePlugin
 api-version: '1.21.10'
 authors: [ Dreamin ]
+dependencies:
+  server:
+    LuckPerms:
+      required: true
+      load: BEFORE

@@ -8,6 +8,7 @@ import fr.dreamin.dreamapi.core.team.TeamService;
 import fr.dreamin.dreamapi.core.team.TeamServiceImpl;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPerms;
@@ -32,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 
 @DreamAutoService(value = LuckPermsService.class, dependencies = {TeamServiceImpl.class})
 public final class LuckPermsServiceImpl implements LuckPermsService, DreamService, Listener {
+
+  private static final Key RANK_FONT = Key.key("dreamin", "rank");
+  private static final Key DEFAULT_FONT = Key.key("minecraft", "default");
 
   private final @NotNull Plugin plugin;
 
@@ -179,21 +183,25 @@ public final class LuckPermsServiceImpl implements LuckPermsService, DreamServic
 
     Component prefixComponent = Component.empty(), suffixComponent = Component.empty();
     if (prefix != null)
-      prefixComponent = DreamAPI.LEGACY_COMPONENT_SERIALIZER.deserialize(prefix);
+      prefixComponent = DreamAPI.LEGACY_COMPONENT_SERIALIZER
+        .deserialize(prefix)
+        .font(RANK_FONT).append(Component.space().font(DEFAULT_FONT));
+
     if (suffix != null)
-      suffixComponent = DreamAPI.LEGACY_COMPONENT_SERIALIZER.deserialize(suffix);
+      suffixComponent = DreamAPI.LEGACY_COMPONENT_SERIALIZER
+        .deserialize(suffix)
+        .font(RANK_FONT);
 
-    final var color = prefixComponent.color();
+    final var playerName = player.name()
+      .font(DEFAULT_FONT)
+      .color(prefixComponent.color());
 
-    player.displayName(
-      prefixComponent.color(NamedTextColor.WHITE).append(player.name().color(color))
-        .append(suffixComponent)
-    );
+    final var displayName = prefixComponent.color(NamedTextColor.WHITE)
+      .append(playerName)
+      .append(suffixComponent.color(NamedTextColor.WHITE));
 
-    player.playerListName(
-      prefixComponent.color(NamedTextColor.WHITE).append(player.name().color(color))
-        .append(suffixComponent)
-    );
+    player.displayName(displayName);
+    player.playerListName(displayName);
 
   }
 
@@ -234,8 +242,8 @@ public final class LuckPermsServiceImpl implements LuckPermsService, DreamServic
       @Override
       public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component message) {
         return sourceDisplayName.colorIfAbsent(NamedTextColor.WHITE)
-          .append(Component.text(" » ", NamedTextColor.DARK_GRAY))
-          .append(message.colorIfAbsent(NamedTextColor.WHITE));
+          .append(Component.text(" » ", NamedTextColor.DARK_GRAY).font(DEFAULT_FONT))
+          .append(message.colorIfAbsent(NamedTextColor.WHITE).font(DEFAULT_FONT));
       }
     }));
 

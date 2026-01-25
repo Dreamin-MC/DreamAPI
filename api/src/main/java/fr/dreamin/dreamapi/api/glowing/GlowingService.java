@@ -1,5 +1,7 @@
 package fr.dreamin.dreamapi.api.glowing;
 
+import fr.skytasul.glowingentities.GlowingBlocks;
+import fr.skytasul.glowingentities.GlowingEntities;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -13,6 +15,11 @@ import java.util.Set;
  * Uses Paper 1.21.10-compatible mechanics via GlowingEntities/GlowingBlocks.
  */
 public interface GlowingService {
+
+  @NotNull
+  GlowingEntities getGlowingEntities();
+  @NotNull
+  GlowingBlocks getGlowingBlocks();
 
   // ###############################################################
   // --------------------------- ENTITY ----------------------------
