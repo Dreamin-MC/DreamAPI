@@ -124,8 +124,8 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
   }
 
   @Override
-  public RegisteredItem get(@NotNull ItemStack item) {
-    if (!item.hasItemMeta()) return null;
+  public RegisteredItem get(@Nullable ItemStack item) {
+    if (item == null || item.isEmpty() || !item.hasItemMeta()) return null;
 
     final var id = item.getItemMeta()
       .getPersistentDataContainer()
@@ -133,7 +133,6 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
 
     return id != null ? this.byId.get(id) : null;
   }
-
 
   @Override
   public Collection<RegisteredItem> getAllRegisteredItems(@NotNull ItemTag tag) {
@@ -273,23 +272,24 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
     final var inv = player.getInventory();
     final var newItem = inv.getItem(event.getNewSlot());
     final var oldItem = inv.getItem(event.getPreviousSlot());
+    final var newRegistered = get(newItem);
+    final var oldRegistered = get(oldItem);
 
-    if (newItem != null && !newItem.isEmpty()) {
-      final var registered = get(newItem);
-      if (registered != null)
-        registered.execute(
-          ItemAction.HELD,
-          new ItemContext(player, newItem, event)
-        );
+    if (oldRegistered != null && newRegistered == oldRegistered)
+      return;
+
+    if (oldRegistered != null) {
+      oldRegistered.execute(
+        ItemAction.UNHELD,
+        new ItemContext(player, oldItem, event)
+      );
     }
 
-    if (oldItem != null && !oldItem.isEmpty()) {
-      final var registered = get(oldItem);
-      if (registered != null)
-        registered.execute(
-          ItemAction.UNHELD,
-          new ItemContext(player, oldItem, event)
-        );
+    if (newRegistered != null) {
+      newRegistered.execute(
+        ItemAction.HELD,
+        new ItemContext(player, newItem, event)
+      );
     }
   }
 
@@ -307,17 +307,17 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
     if (oldRegistered != null && newRegistered == oldRegistered)
       return;
 
-    if (newRegistered != null) {
-      newRegistered.execute(
-        ItemAction.HELD,
-        new ItemContext(player, newItem, event)
-      );
-    }
-
     if (oldRegistered != null) {
       oldRegistered.execute(
         ItemAction.UNHELD,
         new ItemContext(player, oldItem, event)
+      );
+    }
+
+    if (newRegistered != null) {
+      newRegistered.execute(
+        ItemAction.HELD,
+        new ItemContext(player, newItem, event)
       );
     }
   }
