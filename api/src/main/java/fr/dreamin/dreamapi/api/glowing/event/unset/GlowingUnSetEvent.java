@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.core.glowing.event.unset;
+package fr.dreamin.dreamapi.api.glowing.event.unset;
 
 import fr.dreamin.dreamapi.api.event.ToolsCancelEvent;
 import lombok.Getter;

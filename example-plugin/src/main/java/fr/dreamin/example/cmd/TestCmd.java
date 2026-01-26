@@ -14,6 +14,7 @@ import fr.dreamin.dreamapi.core.item.handler.ItemHandlers;
 import fr.dreamin.example.ExamplePlugin;
 import fr.dreamin.example.TestGUI;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -30,7 +31,9 @@ public final class TestCmd {
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
-    new TestGUI().open(player);
+    for (final var p : Bukkit.getOnlinePlayers()) {
+      p.setGlowing(false);
+    }
   }
 
   @CommandDescription("Test")

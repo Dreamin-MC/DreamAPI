@@ -19,7 +19,7 @@ import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.scanner.RecipeAnnotationProcessor;
 import fr.dreamin.dreamapi.core.cuboid.service.CuboidServiceImpl;
 import fr.dreamin.dreamapi.core.event.scanner.ListenerAnnotationProcessor;
-import fr.dreamin.dreamapi.core.glowing.GlowingServiceImpl;
+import fr.dreamin.dreamapi.core.glowing.service.GlowingServiceImpl;
 import fr.dreamin.dreamapi.api.item.ItemKeys;
 import fr.dreamin.dreamapi.core.item.service.ItemRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.item.scanner.ItemAnnotationProcessor;
@@ -37,7 +37,7 @@ import fr.dreamin.dreamapi.plugin.cmd.GlobalSuggestCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.broadcast.BroadcastCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.broadcast.BroadcastContext;
 import fr.dreamin.dreamapi.plugin.cmd.admin.debug.DebugCmd;
-import fr.dreamin.dreamapi.plugin.cmd.admin.debug.DebugSuggestCmd;
+import fr.dreamin.dreamapi.plugin.cmd.admin.glowing.GlowingCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.item.ItemRegistryCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.service.ServiceCmd;
 import lombok.Getter;
@@ -115,7 +115,7 @@ public abstract class DreamPlugin extends JavaPlugin {
   protected @NotNull BroadcastContext broadcastContext;
 
   @Getter @Setter
-  protected boolean broadcastCmd = false, itemRegistryCmd, debugCmd = false, serviceCmd = false;
+  protected boolean broadcastCmd = false, glowingCmd, itemRegistryCmd, debugCmd = false, serviceCmd = false;
 
   // ##############################################################
   // -------------------- JAVAPLUGIN METHODS ----------------------
@@ -311,8 +311,13 @@ public abstract class DreamPlugin extends JavaPlugin {
   }
 
   /**
+   * Registers a command handler to the plugin's command framework. The given
+   * {@code commandHandler} object is parsed by the annotation parser to identify
+   * command definitions or related metadata. This enables dynamic command
+   * registration and execution based on the annotated methods within the handler.
    *
-   * @param commandHandler
+   * @param commandHandler The object containing command annotations and logic to be registered.
+   *                       Must not be {@code null}.
    */
   public void registerCommand(final @NotNull Object commandHandler) {
     this.annotationParser.parse(commandHandler);
@@ -323,7 +328,31 @@ public abstract class DreamPlugin extends JavaPlugin {
   // ###############################################################
 
   /**
-   *
+   * <p>
+   *  Loads and registers a set of services utilized by the plugin.
+   * </p>
+   * <p>
+   *  This method initializes core gameplay and utility services by invoking the
+   *  {@code loadServiceFromClass} method on each service implementation. These services
+   *  include debug tools, recipe management, team functionality, and world-related operations.
+   * </p>
+   * <p>
+   *  The method ensures that all specified services are instantiated and properly registered
+   *  with the plugin's service manager. Additionally, an optional service related to the
+   *  LuckPerms plugin is conditionally loaded based on its availability.
+   * </p>
+   * <p>
+   *  The order of service loading respects the dependencies between certain services
+   *  and their roles in the plugin's lifecycle.
+   * </p>
+   * <p>
+   *  Note: The service list and dependencies may require updates if new features are added
+   *  or existing ones are modified.
+   * </p>
+   * <p>
+   *  FIXME: The LuckPerms service is only loaded if the TeamService is already loaded.
+   *  The conditional logic for this dependency may need refinement (see issue note).
+   * </p>
    */
   private void loadServices() {
     this.serviceManager.loadServiceFromClass(PlayerDebugServiceImpl.class);
@@ -385,8 +414,6 @@ public abstract class DreamPlugin extends JavaPlugin {
    *
    */
   private void loadCommands() {
-
-    this.annotationParser.parse(new DebugSuggestCmd());
     this.annotationParser.parse(new GlobalSuggestCmd());
 
     if (this.broadcastCmd)
@@ -394,6 +421,9 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     if (this.itemRegistryCmd)
       this.annotationParser.parse(new ItemRegistryCmd());
+
+    if (this.glowingCmd)
+      this.annotationParser.parse(new GlowingCmd());
 
     if (this.debugCmd)
       this.annotationParser.parse(new DebugCmd());

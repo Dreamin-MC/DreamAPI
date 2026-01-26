@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.core.glowing.event.set;
+package fr.dreamin.dreamapi.api.glowing.event.set;
 
 import lombok.Getter;
 import org.bukkit.ChatColor;

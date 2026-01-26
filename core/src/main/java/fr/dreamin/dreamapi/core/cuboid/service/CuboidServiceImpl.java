@@ -10,7 +10,7 @@ import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import fr.dreamin.dreamapi.core.cuboid.event.CuboidEnterEvent;
 import fr.dreamin.dreamapi.core.cuboid.event.CuboidLeaveEvent;
 import fr.dreamin.dreamapi.api.logger.DreamLogger;
-import fr.dreamin.dreamapi.core.glowing.GlowingServiceImpl;
+import fr.dreamin.dreamapi.core.glowing.service.GlowingServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +28,7 @@ import java.util.*;
  */
 @Inject
 @RequiredArgsConstructor
-@DreamAutoService(value = CuboidService.class, dependencies = {GlowingServiceImpl.class})
+@DreamAutoService(value = CuboidService.class)
 public final class CuboidServiceImpl implements CuboidService, DreamService, Listener {
 
   private final @NotNull Set<Cuboid> cuboids = new HashSet<>();

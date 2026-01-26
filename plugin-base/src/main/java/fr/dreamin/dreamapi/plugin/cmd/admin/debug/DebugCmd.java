@@ -24,6 +24,20 @@ public final class DebugCmd {
   private final DebugService debug = DreamAPI.getAPI().getService(DebugService.class);
   private final PlayerDebugService playerDebug = DreamAPI.getAPI().getService(PlayerDebugService.class);
 
+
+  @Suggestions("debug-writers")
+  public List<String> suggestWriters(CommandContext<CommandSender> sender, String input) {
+    return debug.getWriters().stream()
+      .map(w -> w.getClass().getSimpleName())
+      .toList();
+  }
+
+  @Suggestions("debug-categories")
+  public List<String> suggestCategories(CommandContext<CommandSender> sender, String input) {
+    if (this.debug.getCategories().isEmpty()) return List.of();
+    return this.debug.getCategories().keySet().stream().toList();
+  }
+
   // ###############################################################
   // ------------------------- DEBUG INFO --------------------------
   // ###############################################################
