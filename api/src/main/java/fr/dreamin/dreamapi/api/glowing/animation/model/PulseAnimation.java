@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public final class PulseAnimation implements GlowAnimation {
 
   private final @NotNull ChatColor primaryColor;
-  private static final long PULSE_INTERVAL = 20L; // 1 second
+  private static final long PULSE_INTERVAL = 5L; // 1 second
 
   public PulseAnimation(final @NotNull ChatColor primaryColor) {
     this.primaryColor = primaryColor;
@@ -20,11 +20,11 @@ public final class PulseAnimation implements GlowAnimation {
 
   @Override
   public boolean isComplete(long tick) {
-    return false; // Infinite
+    return false;
   }
 
   @Override
   public long getDuration() {
-    return 0; // Infinite
+    return 0;
   }
 }

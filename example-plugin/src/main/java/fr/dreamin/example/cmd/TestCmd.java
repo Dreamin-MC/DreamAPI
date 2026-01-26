@@ -8,19 +8,15 @@ import fr.dreamin.dreamapi.api.item.ItemAction;
 import fr.dreamin.dreamapi.api.item.ItemDefinition;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemTag;
-import fr.dreamin.dreamapi.api.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.nms.visual.service.VisualService;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
-import fr.dreamin.dreamapi.core.item.handler.ItemHandlers;
 import fr.dreamin.example.ExamplePlugin;
-import fr.dreamin.example.TestGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 @DreamCmd
 public final class TestCmd {
@@ -31,9 +27,12 @@ public final class TestCmd {
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
-    for (final var p : Bukkit.getOnlinePlayers()) {
-      p.setGlowing(false);
+    try {
+      ExamplePlugin.getService(VisualService.class).spawnFakeEntity(EntityType.ARMOR_STAND, player.getLocation(), player);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
     }
+
   }
 
   @CommandDescription("Test")

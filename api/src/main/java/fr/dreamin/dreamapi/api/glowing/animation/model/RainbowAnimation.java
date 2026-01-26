@@ -16,7 +16,7 @@ public final class RainbowAnimation implements GlowAnimation {
     ChatColor.LIGHT_PURPLE
   };
 
-  private static final long CYCLE_DURATION = 10L; // 10 ticks per color
+  private static final long CYCLE_DURATION = 5L; // 10 ticks per color
 
   @Override
   public @NotNull ChatColor getColorAtTick(long tick) {
@@ -26,11 +26,11 @@ public final class RainbowAnimation implements GlowAnimation {
 
   @Override
   public boolean isComplete(long tick) {
-    return false; // Infinite
+    return false;
   }
 
   @Override
   public long getDuration() {
-    return 0; // Infinite
+    return 0;
   }
 }

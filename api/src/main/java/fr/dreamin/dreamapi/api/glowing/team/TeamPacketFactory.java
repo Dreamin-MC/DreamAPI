@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.api.glowing.team;
 
-import fr.dreamin.dreamapi.api.glowing.packet.PacketReflection;
+import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;

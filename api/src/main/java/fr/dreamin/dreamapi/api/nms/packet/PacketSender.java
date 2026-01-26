@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.api.glowing.packet;
+package fr.dreamin.dreamapi.api.nms.packet;
 
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;

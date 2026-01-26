@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.api.glowing.packet;
+package fr.dreamin.dreamapi.api.nms.packet;
 
 public final class PacketConstants {
 
@@ -33,6 +33,7 @@ public final class PacketConstants {
   public static final String NMS_PACKET_TEAM_PARAMS = "net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket$Parameters";
   public static final String NMS_PACKET_ADD_ENTITY = "net.minecraft.network.protocol.game.ClientboundAddEntityPacket";
   public static final String NMS_PACKET_REMOVE_ENTITIES = "net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket";
+  public static final String NMS_PACKET_BLOCK_UPDATE = "net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket";
 
   // Networking
   public static final String NMS_SERVER_PLAYER = "net.minecraft.server.level.ServerPlayer";
@@ -50,5 +51,10 @@ public final class PacketConstants {
   public static final String NMS_ENTITY_TYPE = "net.minecraft.world.entity.EntityType";
   public static final String NMS_VEC3 = "net.minecraft.world.phys.Vec3";
   public static final String NMS_LEVEL = "net.minecraft.world.level.Level";
+
+  // Blocks
+  public static final String NMS_BLOCK = "net.minecraft.world.level.block.Block";
+  public static final String NMS_BLOCK_POS = "net.minecraft.core.BlockPos";
+  public static final String NMS_BLOCK_STATE = "net.minecraft.world.level.block.state.BlockState";
 
 }

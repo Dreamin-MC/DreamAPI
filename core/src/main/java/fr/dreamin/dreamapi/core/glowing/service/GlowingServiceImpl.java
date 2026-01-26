@@ -6,7 +6,7 @@ import fr.dreamin.dreamapi.api.glowing.animation.GlowAnimation;
 import fr.dreamin.dreamapi.api.glowing.service.GlowingService;
 import fr.dreamin.dreamapi.api.glowing.block.GlowingBlockManager;
 import fr.dreamin.dreamapi.api.glowing.entity.GlowingEntityManager;
-import fr.dreamin.dreamapi.api.glowing.packet.PacketReflection;
+import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
 import fr.dreamin.dreamapi.api.glowing.team.TeamOptions;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
@@ -33,7 +33,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

@@ -12,6 +12,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.node.Node;
 import org.bukkit.Bukkit;
@@ -52,6 +53,7 @@ public final class LuckPermsServiceImpl implements LuckPermsService, DreamServic
   private final Map<UUID, CachedMetaData> metaData = new ConcurrentHashMap<>();
 
   public LuckPermsServiceImpl(final @NotNull Plugin plugin) {
+
     this.luckPerms = DreamAPI.getAPI().getService(LuckPerms.class);
     this.plugin = plugin;
   }

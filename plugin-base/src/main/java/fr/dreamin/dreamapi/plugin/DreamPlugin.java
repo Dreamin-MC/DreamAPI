@@ -14,6 +14,7 @@ import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.core.ApiProviderImpl;
+import fr.dreamin.dreamapi.core.nms.visual.service.VisualServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeCategoryRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.scanner.RecipeAnnotationProcessor;
@@ -39,6 +40,7 @@ import fr.dreamin.dreamapi.plugin.cmd.admin.broadcast.BroadcastContext;
 import fr.dreamin.dreamapi.plugin.cmd.admin.debug.DebugCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.glowing.GlowingCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.item.ItemRegistryCmd;
+import fr.dreamin.dreamapi.plugin.cmd.admin.nms.visual.VisualCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.service.ServiceCmd;
 import lombok.Getter;
 import lombok.Setter;
@@ -115,7 +117,7 @@ public abstract class DreamPlugin extends JavaPlugin {
   protected @NotNull BroadcastContext broadcastContext;
 
   @Getter @Setter
-  protected boolean broadcastCmd = false, glowingCmd, itemRegistryCmd, debugCmd = false, serviceCmd = false;
+  protected boolean broadcastCmd = false, glowingCmd = false, nmsVisualCmd = false, itemRegistryCmd, debugCmd = false, serviceCmd = false;
 
   // ##############################################################
   // -------------------- JAVAPLUGIN METHODS ----------------------
@@ -367,6 +369,7 @@ public abstract class DreamPlugin extends JavaPlugin {
     this.serviceManager.loadServiceFromClass(DayCycleServiceImpl.class);
     this.serviceManager.loadServiceFromClass(TeamServiceImpl.class);
 
+    this.serviceManager.loadServiceFromClass(VisualServiceImpl.class);
     this.serviceManager.loadServiceFromClass(GlowingServiceImpl.class);
     this.serviceManager.loadServiceFromClass(CuboidServiceImpl.class);
 
@@ -424,6 +427,9 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     if (this.glowingCmd)
       this.annotationParser.parse(new GlowingCmd());
+
+    if (this.nmsVisualCmd)
+      this.annotationParser.parse(new VisualCmd());
 
     if (this.debugCmd)
       this.annotationParser.parse(new DebugCmd());

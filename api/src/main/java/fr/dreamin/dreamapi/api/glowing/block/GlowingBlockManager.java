@@ -1,9 +1,9 @@
 package fr.dreamin.dreamapi.api.glowing.block;
 
 import fr.dreamin.dreamapi.api.glowing.entity.GlowingEntityManager;
-import fr.dreamin.dreamapi.api.glowing.packet.PacketConstants;
-import fr.dreamin.dreamapi.api.glowing.packet.PacketReflection;
-import fr.dreamin.dreamapi.api.glowing.packet.PacketSender;
+import fr.dreamin.dreamapi.api.nms.packet.PacketConstants;
+import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
+import fr.dreamin.dreamapi.api.nms.packet.PacketSender;
 import fr.dreamin.dreamapi.api.glowing.team.TeamOptions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -175,15 +175,15 @@ public final class GlowingBlockManager {
     blockData.setEntityId(entityId);
     blockData.setEntityUuid(entityUuid);
 
-    final var loc = blockData.getLocation();
-    final var addEntityPacket = PacketReflection.createAddEntityPacket(
+    final var loc = blockData.getLocation().clone()
+      .add(0.5, 0, 0.5);
+
+    loc.setRotation(0f, 0f);
+
+    final var addEntityPacket = PacketReflection.createAddShulkerEntityPacket(
       entityId,
       entityUuid,
-      loc.getX() + 0.5,
-      loc.getY(),
-      loc.getZ() + 0.5,
-      0f,
-      0f
+      loc
     );
 
     PacketSender.send(viewer, addEntityPacket);

@@ -1,9 +1,12 @@
-package fr.dreamin.dreamapi.api.glowing.packet;
+package fr.dreamin.dreamapi.api.nms.packet;
 
 import io.netty.channel.Channel;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,6 +64,7 @@ public class PacketReflection {
   private static Class<?> packetTeamParamsClass;
   private static Class<?> packetAddEntityClass;
   private static Class<?> packetRemoveEntitiesClass;
+  private static Class<?> packetBlockUpdateClass;
 
   private static Constructor<?> packetMetadataConstructor;
   private static Field packetMetadataEntityIdField;
@@ -70,6 +74,7 @@ public class PacketReflection {
   private static Constructor<?> packetTeamParamsConstructor;
   private static Constructor<?> packetAddEntityConstructor;
   private static Constructor<?> packetRemoveEntitiesConstructor;
+  private static Constructor<?> packetBlockUpdateConstructor;
 
   // ###############################################################
   // ------------------------ NETWORKING ---------------------------
@@ -116,8 +121,25 @@ public class PacketReflection {
 
   private static Class<?> entityTypeClass;
   private static Class<?> vec3Class;
+
   private static Object shulkerEntityType;
+  private static Object armorStandEntityType;
+  private static Object zombieEntityType;
+  private static Object villagerEntityType;
+  private static Object playerEntityType;
+  private static Object itemEntityType;
+
   private static Object vec3Zero;
+
+  // ###############################################################
+  // -------------------------- BLOCKS -----------------------------
+  // ###############################################################
+
+  private static Class<?> blockPosClass;
+  private static Class<?> blockClass;
+  private static Class<?> blockStateClass;
+
+  private static Constructor<?> blockPosConstructor;
 
   // ###############################################################
   // ----------------------- INITIALIZATION ------------------------
@@ -158,6 +180,7 @@ public class PacketReflection {
     packetTeamParamsClass = Class.forName(PacketConstants.NMS_PACKET_TEAM_PARAMS);
     packetAddEntityClass = Class.forName(PacketConstants.NMS_PACKET_ADD_ENTITY);
     packetRemoveEntitiesClass = Class.forName(PacketConstants.NMS_PACKET_REMOVE_ENTITIES);
+    packetBlockUpdateClass = Class.forName(PacketConstants.NMS_PACKET_BLOCK_UPDATE);
 
     // Networking
     serverPlayerClass = Class.forName(PacketConstants.NMS_SERVER_PLAYER);
@@ -175,6 +198,11 @@ public class PacketReflection {
     // Entity spawning
     entityTypeClass = Class.forName(PacketConstants.NMS_ENTITY_TYPE);
     vec3Class = Class.forName(PacketConstants.NMS_VEC3);
+
+    // Blocks
+    blockClass = Class.forName(PacketConstants.NMS_BLOCK);
+    blockPosClass = Class.forName(PacketConstants.NMS_BLOCK_POS);
+    blockStateClass = Class.forName(PacketConstants.NMS_BLOCK_STATE);
   }
 
   private static void loadMethods() throws NoSuchMethodException {
@@ -238,14 +266,23 @@ public class PacketReflection {
       int.class, UUID.class, double.class, double.class, double.class,
       float.class, float.class, entityTypeClass, int.class, vec3Class, double.class);
     packetRemoveEntitiesConstructor = getAccessibleConstructor(packetRemoveEntitiesClass, int[].class);
+
+    // Block packets
+    blockPosConstructor = getAccessibleConstructor(blockPosClass, int.class, int.class, int.class);
+    packetBlockUpdateConstructor = getAccessibleConstructor(packetBlockUpdateClass, blockPosClass, blockStateClass);
   }
 
   private static void loadConstants() throws Exception {
     // Scoreboard dummy
     scoreboardDummy = getAccessibleConstructor(scoreboardClass).newInstance();
 
-    // Shulker entity type
+    // Entity type
     shulkerEntityType = getAccessibleField(entityTypeClass, "SHULKER").get(null);
+    armorStandEntityType = getAccessibleField(entityTypeClass, "ARMOR_STAND").get(null);
+    zombieEntityType = getAccessibleField(entityTypeClass, "ZOMBIE").get(null);
+    villagerEntityType = getAccessibleField(entityTypeClass, "VILLAGER").get(null);
+    playerEntityType = getAccessibleField(entityTypeClass, "PLAYER").get(null);
+    itemEntityType = getAccessibleField(entityTypeClass, "ITEM").get(null);
 
     // Vec3 zero
     vec3Zero = getAccessibleConstructor(vec3Class, double.class, double.class, double.class)
@@ -299,8 +336,8 @@ public class PacketReflection {
     ensureInitialized();
 
     final var colorConstant = getColorConstantMethod.invoke(null, colorCode);
-    final var collisionConstant = getEnumConstant(collisionRuleClass, convertToEnumName(collisionRule));
-    final var visibilityConstant = getEnumConstant(visibilityClass, convertToEnumName(visibility));
+    final var collisionConstant = getEnumConstant(collisionRuleClass, convertTeamOptionsToEnumName(collisionRule));
+    final var visibilityConstant = getEnumConstant(visibilityClass, convertTeamOptionsToEnumName(visibility));
 
     setTeamColorMethod.invoke(team, colorConstant);
     setCollisionRuleMethod.invoke(team, collisionConstant);
@@ -328,16 +365,52 @@ public class PacketReflection {
     setTeamSuffixMethod.invoke(team, suffixComponent);
   }
 
-  public static @NotNull Object createAddEntityPacket(final int entityId, final @NotNull UUID uuid, final double x, final double y, final double z, final float pitch, final float yaw) throws ReflectiveOperationException {
+  public static @NotNull Object createAddShulkerEntityPacket(final int entityId, final @NotNull UUID uuid, final @NotNull Location location) throws ReflectiveOperationException {
     ensureInitialized();
     return packetAddEntityConstructor.newInstance(
-      entityId, uuid, x, y, z, pitch, yaw, shulkerEntityType, 0, vec3Zero, 0d
+      entityId, uuid, location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw(), shulkerEntityType, 0, vec3Zero, 0d
+    );
+  }
+
+  public static @NotNull Object createSpawnEntityPacket(final int entityId, final @NotNull UUID uuid, final @NotNull EntityType type, final @NotNull Location location) throws ReflectiveOperationException {
+    ensureInitialized();
+
+    final var nmsEntityType = getNmsEntityType(type);
+
+    return packetAddEntityConstructor.newInstance(
+      entityId,
+      uuid,
+      location.getX(), location.getY(), location.getZ(),
+      location.getPitch(), location.getYaw(),
+      nmsEntityType,
+      0,
+      vec3Zero,
+      0d
     );
   }
 
   public static @NotNull Object createRemoveEntitiesPacket(final int... entityIds) throws ReflectiveOperationException {
     ensureInitialized();
-    return packetRemoveEntitiesConstructor.newInstance(entityIds);
+    return packetRemoveEntitiesConstructor.newInstance((Object) entityIds);
+  }
+
+  public static @NotNull Object createBlockChangePacket(final @NotNull Location location, final @NotNull Material type) throws ReflectiveOperationException {
+    ensureInitialized();
+
+    final var blockPos = blockPosConstructor.newInstance(
+      location.getBlockX(),
+      location.getBlockY(),
+      location.getBlockZ()
+    );
+
+    final var craftMagicNumbers = Class.forName(craftPackage + ".util.CraftMagicNumbers");
+    final var getBlockMethod = getAccessibleMethod(craftMagicNumbers, "getBlock", Material.class);
+    final var nmsBlock = getBlockMethod.invoke(null, type);
+
+    final var defaultBlockStateMethod = getAccessibleMethod(blockClass, "defaultBlockState");
+    final var blockState = defaultBlockStateMethod.invoke(nmsBlock);
+
+    return packetBlockUpdateConstructor.newInstance(blockPos, blockState);
   }
 
   public static void sendPacket(final @NotNull Player player, final @NotNull Object packet) throws ReflectiveOperationException {
@@ -417,16 +490,14 @@ public class PacketReflection {
     return field;
   }
 
-  private static @NotNull Method getAccessibleMethod(final @NotNull Class<?> clazz, final @NotNull String name,
-                                                     final @NotNull Class<?>... parameterTypes)
+  private static @NotNull Method getAccessibleMethod(final @NotNull Class<?> clazz, final @NotNull String name, final @NotNull Class<?>... parameterTypes)
     throws NoSuchMethodException {
     final var method = clazz.getDeclaredMethod(name, parameterTypes);
     method.setAccessible(true);
     return method;
   }
 
-  private static @NotNull Constructor<?> getAccessibleConstructor(final @NotNull Class<?> clazz,
-                                                                  final @NotNull Class<?>... parameterTypes)
+  private static @NotNull Constructor<?> getAccessibleConstructor(final @NotNull Class<?> clazz, final @NotNull Class<?>... parameterTypes)
     throws NoSuchMethodException {
     final var constructor = clazz.getDeclaredConstructor(parameterTypes);
     constructor.setAccessible(true);
@@ -444,7 +515,7 @@ public class PacketReflection {
     throw new IllegalArgumentException("No enum constant " + enumClass.getName() + "." + name);
   }
 
-  private static @NotNull String convertToEnumName(final @NotNull String nmsName) {
+  private static @NotNull String convertTeamOptionsToEnumName(final @NotNull String nmsName) {
     return switch (nmsName) {
       case "always" -> "ALWAYS";
       case "never" -> "NEVER";
@@ -453,6 +524,18 @@ public class PacketReflection {
       case "hideForOtherTeams" -> "HIDE_FOR_OTHER_TEAMS";
       case "hideForOwnTeam" -> "HIDE_FOR_OWN_TEAM";
       default -> throw new IllegalArgumentException("Unknown NMS name: " + nmsName);
+    };
+  }
+
+  private static @NotNull Object getNmsEntityType(final @NotNull EntityType type) throws ReflectiveOperationException {
+    return switch(type) {
+      case SHULKER -> shulkerEntityType;
+      case ARMOR_STAND -> armorStandEntityType;
+      case ZOMBIE -> zombieEntityType;
+      case VILLAGER -> villagerEntityType;
+      case PLAYER -> playerEntityType;
+      case ITEM -> itemEntityType;
+      default -> throw new IllegalArgumentException("Unknown NMS entity type: " + type);
     };
   }
 

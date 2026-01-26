@@ -1,9 +1,9 @@
 package fr.dreamin.dreamapi.api.glowing.entity;
 
-import fr.dreamin.dreamapi.api.glowing.packet.MetadataInterceptor;
-import fr.dreamin.dreamapi.api.glowing.packet.PacketConstants;
-import fr.dreamin.dreamapi.api.glowing.packet.PacketReflection;
-import fr.dreamin.dreamapi.api.glowing.packet.PacketSender;
+import fr.dreamin.dreamapi.api.nms.packet.MetadataInterceptor;
+import fr.dreamin.dreamapi.api.nms.packet.PacketConstants;
+import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
+import fr.dreamin.dreamapi.api.nms.packet.PacketSender;
 import fr.dreamin.dreamapi.api.glowing.team.TeamDataCache;
 import fr.dreamin.dreamapi.api.glowing.team.TeamOptions;
 import lombok.Getter;
