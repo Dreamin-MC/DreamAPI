@@ -28,7 +28,7 @@ public final class DependencyLoader {
 
     if (hard && type != DependencyType.HARD) {
       final var msg = String.format(
-        "Plugin %s '%s' is marked as hard dependency but not declared as such in plugin.yml or paper-plugin.yml!",
+        "Plugin %s is marked as hard dependency but not declared as such in plugin.yml or paper-plugin.yml!",
         name
       );
       if (strict) throw new IllegalStateException(msg);
