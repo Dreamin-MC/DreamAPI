@@ -37,10 +37,10 @@ public final class HologramServiceImpl implements HologramService, DreamService 
   // ---------------------- SERVICE METHODS -----------------------
   // ##############################################################
 
-  @Override
-  public HologramBuilder.@NonNull HologramBuilderBuilder builder(@NotNull String id) {
-    return HologramBuilder.builder();
-  }
+//  @Override
+//  public HologramBuilder.@NonNull HologramBuilderBuilder builder(@NotNull String id) {
+//    return HologramBuilder.builder();
+//  }
 
   @Override
   public @Nullable HologramBuilder getHologram(@NotNull String id) {
@@ -52,7 +52,7 @@ public final class HologramServiceImpl implements HologramService, DreamService 
     final var hologram = this.holograms.remove(id);
     if (hologram != null) {
       new HologramDeleteEvent(id, hologram).callEvent();
-      hologram.destroy();
+//      hologram.destroy();
     }
   }
 
@@ -61,12 +61,12 @@ public final class HologramServiceImpl implements HologramService, DreamService 
     if (!this.holograms.containsValue(hologramBuilder)) return;
 
     new HologramDeleteEvent(hologramBuilder.getId(), hologramBuilder).callEvent();
-    hologramBuilder.destroy();
+//    hologramBuilder.destroy();
   }
 
   @Override
   public void deleteAllHolograms() {
-    this.holograms.values().forEach(HologramBuilder::destroy);
+//    this.holograms.values().forEach(HologramBuilder::destroy);
     this.holograms.clear();
   }
 

@@ -8,7 +8,7 @@ import java.util.Collection;
 
 public interface HologramService {
 
-  @NotNull HologramBuilder.HologramBuilderBuilder builder(final @NotNull String id);
+//  @NotNull HologramBuilder.HologramBuilderBuilder builder(final @NotNull String id);
   @Nullable HologramBuilder getHologram(final @NotNull String id);
   void deleteHologram(final @NotNull String id);
   void deleteHologram(final @NotNull HologramBuilder hologramBuilder);

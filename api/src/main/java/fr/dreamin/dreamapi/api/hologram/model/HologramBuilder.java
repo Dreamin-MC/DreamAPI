@@ -20,12 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
 public final class HologramBuilder {
 
   private final @NotNull String id;
   private Location location;
-  @With
+//  @With
   private HologramConfig config;
   private final List<Display> entities = new ArrayList<>();
   private int ticks = 0;
@@ -53,23 +52,23 @@ public final class HologramBuilder {
     this.location = loc;
     if (!new HologramCreateEvent(this.id, this).callEvent())
       return;
-    spawnEntities();
+//    spawnEntities();
   }
 
   public void update() {
-    this.ticks++;
-
-    if (!shouldUpdate())
-      return;
-
-    final var newConfig = computeNewConfig();
-    if (!newConfig.equals(this.config)) {
-      if (!new HologramUpdateEvent(this.id, this.config, newConfig).callEvent())
-        return;
-
-      this.config = newConfig;
-      applyConfig();
-    }
+//    this.ticks++;
+//
+//    if (!shouldUpdate())
+//      return;
+//
+//    final var newConfig = computeNewConfig();
+//    if (!newConfig.equals(this.config)) {
+//      if (!new HologramUpdateEvent(this.id, this.config, newConfig).callEvent())
+//        return;
+//
+//      this.config = newConfig;
+//      applyConfig();
+//    }
 
   }
 
@@ -97,8 +96,8 @@ public final class HologramBuilder {
   // ###############################################################
 
   private void spawn() {
-    if (!new HologramCreateEvent(this.id, this.location, this.config).callEvent())
-      return;
+//    if (!new HologramCreateEvent(this.id, this.location, this.config).callEvent())
+//      return;
 
     double yOffset = 0;
     for (final var line : this.config.lines()) {
@@ -126,7 +125,7 @@ public final class HologramBuilder {
     display.setViewRange(this.config.viewRange());
     display.setShadowRadius(0.0f);
     display.setShadowStrength(1.0f);
-    display.setGlowing(this.config.glowing());
+//    display.setGlowing(this.config.glowing());
 
     applyDisplayTransform(display);
 
@@ -156,12 +155,12 @@ public final class HologramBuilder {
 
     transform.getScale().set(this.config.scale());
 
-    if (this.config.animation() != null && this.config.animation().type() == ROTATE) {
-      final var angleRad = (float) (this.ticks * this.config.animation().speed());
-
-      transform.getLeftRotation().setAngleAxis(angleRad, 0f, 1f, 0f);
-
-    }
+//    if (this.config.animation() != null && this.config.animation().type() == ROTATE) {
+//      final var angleRad = (float) (this.ticks * this.config.animation().speed());
+//
+//      transform.getLeftRotation().setAngleAxis(angleRad, 0f, 1f, 0f);
+//
+//    }
 
     display.setTransformation(transform);
   }
