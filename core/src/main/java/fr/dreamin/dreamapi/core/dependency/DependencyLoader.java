@@ -31,19 +31,19 @@ public final class DependencyLoader {
         "Plugin %s is marked as hard dependency but not declared as such in plugin.yml or paper-plugin.yml!",
         name
       );
-      if (strict) throw new IllegalStateException(msg);
+
       plugin.getLogger().warning(msg);
+      return false;
     }
 
     if (!hard && loadAfter && !DependencyReader.isSoft(name)) {
       final var msg = String.format(
-        "Plugin '%s' is soft dependency but not declared load AFTER (paper-plugin.yml)!",
+        "Plugin '%s' is soft dependency but not declared load AFTER in plugin.yml or paper-plugin.yml!",
         name
       );
 
-      if (strict) throw new IllegalStateException(msg);
       plugin.getLogger().warning(msg);
-
+      return false;
     }
 
     return true;
