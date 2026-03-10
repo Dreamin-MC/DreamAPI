@@ -6,6 +6,8 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.meta.SimpleCommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.LoadMode;
+import fr.dreamin.dreamapi.api.annotations.EnableServices;
 import fr.dreamin.dreamapi.api.item.RegisteredItem;
 import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
 import fr.dreamin.dreamapi.core.animation.AnimationServiceImpl;
@@ -27,7 +29,6 @@ import fr.dreamin.dreamapi.core.item.scanner.ItemAnnotationProcessor;
 import fr.dreamin.dreamapi.core.logger.DebugServiceImpl;
 import fr.dreamin.dreamapi.core.logger.PlayerDebugServiceImpl;
 import fr.dreamin.dreamapi.core.luckperms.LuckPermsServiceImpl;
-
 import fr.dreamin.dreamapi.core.scanner.ClassScanner;
 import fr.dreamin.dreamapi.core.service.ServiceAnnotationProcessor;
 import fr.dreamin.dreamapi.core.service.ui.DreamServiceInspector;
@@ -53,6 +54,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -157,11 +160,13 @@ public abstract class DreamPlugin extends JavaPlugin {
     this.serviceManager.process();
     this.serviceInspector = new DreamServiceInspector(this, this.serviceManager);
 
-    new ItemAnnotationProcessor(this, getService(ItemRegistryService.class), this.serviceManager, this.preScannedClasses)
-      .process();
+    if (this.serviceManager.isLoaded(ItemRegistryServiceImpl.class))
+      new ItemAnnotationProcessor(this, getService(ItemRegistryService.class), this.serviceManager, this.preScannedClasses)
+        .process();
 
-    new RecipeAnnotationProcessor(this, getService(RecipeRegistryService.class), this.serviceManager, this.preScannedClasses)
-      .process();
+    if (this.serviceManager.isLoaded(RecipeCategoryRegistryServiceImpl.class))
+      new RecipeAnnotationProcessor(this, getService(RecipeRegistryService.class), this.serviceManager, this.preScannedClasses)
+        .process();
 
     initCmds();
     new CmdAnnotationProcessor(this, this.annotationParser, this.serviceManager, this.preScannedClasses)
@@ -290,7 +295,7 @@ public abstract class DreamPlugin extends JavaPlugin {
    * @return
    * @param <T>
    */
-  public @NotNull <T extends DreamService> Optional<T> findDreamService(@NotNull Class<T> clazz) {
+  public @NotNull <T extends DreamService> Optional<T> findDreamService(final @NotNull Class<T> clazz) {
     return Optional.ofNullable(this.serviceManager.getDreamService(clazz));
   }
 
@@ -357,26 +362,31 @@ public abstract class DreamPlugin extends JavaPlugin {
    * </p>
    */
   private void loadServices() {
-    this.serviceManager.loadServiceFromClass(PlayerDebugServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(DebugServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(RecipeRegistryServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(RecipeCategoryRegistryServiceImpl.class);
+    final var annotation = getClass().getAnnotation(EnableServices.class);
+    final var services = new HashSet<Class<? extends DreamService>>();
 
-    this.serviceManager.loadServiceFromClass(ItemRegistryServiceImpl.class);
+    if (annotation != null) {
 
-    this.serviceManager.loadServiceFromClass(AnimationServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(WorldServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(DayCycleServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(TeamServiceImpl.class);
+      for (final var m : annotation.mode()) {
+        services.addAll(LOAD_MODE_SERVICES.getOrDefault(m, Set.of()));
+      }
 
-    this.serviceManager.loadServiceFromClass(VisualServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(GlowingServiceImpl.class);
-    this.serviceManager.loadServiceFromClass(CuboidServiceImpl.class);
+      services.addAll(Set.of(annotation.include()));
+      services.removeAll(Set.of(annotation.exclude()));
+    }
+    else
+      services.addAll(LOAD_MODE_SERVICES.get(LoadMode.ALL));
+
+    for (Class<? extends DreamService> service : services) {
+      this.serviceManager.loadServiceFromClass(service);
+    }
 
     // FIXME (Scraven, 29/12/2025): load if TeamService is loaded
     if (isLuckPermsAvailable())
       this.serviceManager.loadServiceFromClass(LuckPermsServiceImpl.class);
 
+
+    System.out.println("Size : " + this.serviceManager.getAllLoadedServices().size());
   }
 
   /**
@@ -422,20 +432,93 @@ public abstract class DreamPlugin extends JavaPlugin {
     if (this.broadcastCmd)
       this.annotationParser.parse(new BroadcastCmd(this));
 
-    if (this.itemRegistryCmd)
+    if (this.itemRegistryCmd) {
+      if (!this.serviceManager.isLoaded(ItemRegistryServiceImpl.class))
+        this.serviceManager.loadServiceFromClass(ItemRegistryServiceImpl.class);
       this.annotationParser.parse(new ItemRegistryCmd());
+    }
 
-    if (this.glowingCmd)
+    if (this.glowingCmd) {
+      if (!this.serviceManager.isLoaded(GlowingServiceImpl.class))
+        this.serviceManager.loadServiceFromClass(GlowingServiceImpl.class);
       this.annotationParser.parse(new GlowingCmd());
+    }
 
-    if (this.nmsVisualCmd)
+    if (this.nmsVisualCmd) {
+      if (!this.serviceManager.isLoaded(VisualServiceImpl.class))
+        this.serviceManager.loadServiceFromClass(VisualServiceImpl.class);
       this.annotationParser.parse(new VisualCmd());
+    }
 
-    if (this.debugCmd)
+    if (this.debugCmd) {
+      if (!this.serviceManager.isLoaded(PlayerDebugServiceImpl.class))
+        this.serviceManager.loadServiceFromClass(PlayerDebugServiceImpl.class);
+
+      if (!this.serviceManager.isLoaded(DebugServiceImpl.class))
+        this.serviceManager.loadServiceFromClass(DebugServiceImpl.class);
+
       this.annotationParser.parse(new DebugCmd());
+    }
+
     if (this.serviceCmd)
       this.annotationParser.parse(new ServiceCmd(this, this.serviceManager, this.serviceInspector));
 
   }
+
+  // ###############################################################
+  // ----------------------- STATIC METHODS ------------------------
+  // ###############################################################
+
+  private static final Map<LoadMode, Set<Class<? extends DreamService>>> LOAD_MODE_SERVICES = Map.of(
+    LoadMode.ALL, Set.of(
+      PlayerDebugServiceImpl.class,
+      DebugServiceImpl.class,
+      RecipeRegistryServiceImpl.class,
+      RecipeCategoryRegistryServiceImpl.class,
+
+      ItemRegistryServiceImpl.class,
+
+      AnimationServiceImpl.class,
+      WorldServiceImpl.class,
+      DayCycleServiceImpl.class,
+      TeamServiceImpl.class,
+
+      VisualServiceImpl.class,
+      GlowingServiceImpl.class,
+      CuboidServiceImpl.class
+    ),
+
+    LoadMode.MINIMAL, Set.of(
+      PlayerDebugServiceImpl.class,
+      DebugServiceImpl.class
+    ),
+
+    LoadMode.DATA, Set.of(
+      ItemRegistryServiceImpl.class,
+      RecipeRegistryServiceImpl.class,
+      RecipeCategoryRegistryServiceImpl.class
+    ),
+
+    LoadMode.GAMEPLAY, Set.of(
+      WorldServiceImpl.class,
+      DayCycleServiceImpl.class,
+      TeamServiceImpl.class,
+      AnimationServiceImpl.class
+    ),
+
+    LoadMode.VISUAL, Set.of(
+      VisualServiceImpl.class,
+      GlowingServiceImpl.class,
+      CuboidServiceImpl.class
+    ),
+
+    LoadMode.DEBUG, Set.of(
+      PlayerDebugServiceImpl.class,
+      DebugServiceImpl.class
+    ),
+
+    LoadMode.NONE, Set.of()
+
+  );
 
 }

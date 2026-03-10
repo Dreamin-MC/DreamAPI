@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,8 @@ public final class ServiceAnnotationProcessor implements Listener {
 
   /** Stores loaded DreamService instances by implementation class */
   private final Map<Class<?>, DreamService> loadedServices = new HashMap<>();
+  private final Map<Class<?>, DreamService> serviceIndex = new HashMap<>();
+  private final Map<Class<?>, Field> loggerFieldCache = new HashMap<>();
 
   private final @NotNull Set<Class<?>> annotatedClasses;
 
@@ -66,8 +69,8 @@ public final class ServiceAnnotationProcessor implements Listener {
     .collect(Collectors.toSet());
 
     // Step 2: Build dependency graph
-    Map<Class<?>, List<Class<?>>> graph = new HashMap<>();
-    for (Class<?> clazz : annotated) {
+    final var graph = new HashMap<Class<?>, List<Class<?>>>();
+    for (final var clazz : annotated) {
       DreamAutoService annotation = clazz.getAnnotation(DreamAutoService.class);
       graph.put(clazz, Arrays.asList(annotation.dependencies()));
     }
@@ -292,11 +295,18 @@ public final class ServiceAnnotationProcessor implements Listener {
     }
   }
 
+  public boolean isLoaded(final @NotNull Class<? extends DreamService> clazz) {
+    return this.loadedServices.get(clazz) != null;
+  }
+
   // ###############################################################
   // ----------------------- INTERNAL LOADER -----------------------
   // ###############################################################
 
   private DreamService instantiateAndRegisterService(final @NotNull Class<?> implClass) throws Exception {
+    if (this.loadedServices.containsKey(implClass))
+      return this.loadedServices.get(implClass);
+
     final var annotation = implClass.getAnnotation(DreamAutoService.class);
     if (annotation == null)
       throw new IllegalStateException(String.format("[DreamService] Class %s is not annotated with @DreamAutoService", implClass.getSimpleName()));
@@ -324,6 +334,8 @@ public final class ServiceAnnotationProcessor implements Listener {
     Bukkit.getServicesManager().register(iface, ds, this.plugin, priority);
 
     this.loadedServices.put(implClass, ds);
+    this.serviceIndex.put(iface, ds);
+    this.serviceIndex.put(ds.getClass(), ds);
 
     return ds;
   }
@@ -437,23 +449,44 @@ public final class ServiceAnnotationProcessor implements Listener {
       }
 
       // Inject DreamService
-      var resolved = false;
-      for (final var service : loadedServices.values()) {
-        if (param.isAssignableFrom(service.getClass())) {
-          args[i] = service;
-          resolved = true;
-          break;
-        }
+      final var service = this.serviceIndex.get(param);
+      if (service != null) {
+        args[i] = service;
+        continue;
       }
 
-      if (!resolved) {
-        throw new RuntimeException(
-          String.format("[DreamService] Unable to resolve dependency: %s for constructor %s", param.getName(), constructor)
-        );
+      final var impl = findServiceImplementation(param);
+      if (impl != null) {
+        if (!this.loadedServices.containsKey(impl)) {
+          try {
+            instantiateAndRegisterService(impl);
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        }
+
+        args[i] = this.loadedServices.get(impl);
+        continue;
       }
+
+      throw new RuntimeException(
+        String.format("[DreamService] Unable to resolve dependency: %s for constructor %s", param.getName(), constructor)
+      );
     }
 
     return args;
+  }
+
+  private Class<?> findServiceImplementation(final @NotNull Class<?> serviceType) {
+    for (final var clazz : this.annotatedClasses) {
+      final var auto = clazz.getAnnotation(DreamAutoService.class);
+      if  (auto == null)
+        continue;
+
+      if (serviceType.isAssignableFrom(clazz))
+        return clazz;
+    }
+    return null;
   }
 
   // ###############################################################
@@ -467,22 +500,30 @@ public final class ServiceAnnotationProcessor implements Listener {
    * @return List of classes sorted in load order
    */
   private List<Class<?>> topologicalSort(Map<Class<?>, List<Class<?>>> graph) {
-    List<Class<?>> order = new ArrayList<>();
-    Set<Class<?>> visited = new HashSet<>();
-    Set<Class<?>> visiting = new HashSet<>();
+    final var order = new ArrayList<Class<?>>();
+    final var visited = new HashSet<Class<?>>();
+    final var visiting = new HashSet<Class<?>>();
 
-    for (Class<?> node : graph.keySet()) {
+    for (final var node : graph.keySet()) {
       visit(node, graph, visited, visiting, order);
     }
     return order;
   }
 
-  private void visit(Class<?> node, Map<Class<?>, List<Class<?>>> graph, Set<Class<?>> visited, Set<Class<?>> visiting, List<Class<?>> order) {
+  private void visit(
+    final @NotNull Class<?> node,
+    final @NotNull Map<Class<?>, List<Class<?>>> graph,
+    final @NotNull Set<Class<?>> visited,
+    final @NotNull Set<Class<?>> visiting,
+    final @NotNull List<Class<?>> order
+  ) {
     if (visited.contains(node)) return;
     if (visiting.contains(node)) throw new IllegalStateException(node.getSimpleName());
 
     visiting.add(node);
-    for (Class<?> dep : graph.getOrDefault(node, Collections.emptyList())) {
+    for (final var dep : graph.getOrDefault(node, Collections.emptyList())) {
+      if  (!graph.containsKey(dep)) continue;
+
       visit(dep, graph, visited, visiting, order);
     }
     visiting.remove(node);

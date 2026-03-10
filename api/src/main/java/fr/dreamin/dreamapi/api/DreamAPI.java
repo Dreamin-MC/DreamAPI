@@ -1,6 +1,5 @@
 package fr.dreamin.dreamapi.api;
 
-import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -39,7 +38,6 @@ public final class DreamAPI {
 
   private static IApiProvider provider;
 
-
   /**
    * Returns the currently active API provider.
    *
@@ -64,7 +62,6 @@ public final class DreamAPI {
     provider = apiProvider;
   }
 
-
   /**
    * Checks if the DreamAPI provider has already been initialized.
    *
@@ -73,7 +70,6 @@ public final class DreamAPI {
   public static boolean isInitialized() {
     return provider != null;
   }
-
 
   /**
    * Represents the root interface of the DreamAPI provider.

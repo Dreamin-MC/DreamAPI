@@ -380,8 +380,7 @@ public final class GlowingServiceImpl implements GlowingService, DreamService, L
   // ###############################################################
 
   @Override
-  public void glowEntitiesMatching(final @NotNull Predicate<Entity> condition, final @NotNull ChatColor color,
-                                   final long checkInterval, final @NotNull Player viewer) {
+  public void glowEntitiesMatching(final @NotNull Predicate<Entity> condition, final @NotNull ChatColor color, final long checkInterval, final @NotNull Player viewer) {
     if (!isViewerValid(viewer)) return;
 
     // Stop existing conditional glow
@@ -608,28 +607,6 @@ public final class GlowingServiceImpl implements GlowingService, DreamService, L
     return new GlowingStatsImpl();
   }
 
-
-  // ###############################################################
-  // ---------------------- LISTENER METHODS -----------------------
-  // ###############################################################
-
-  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  private void onViewerJoin(final @NotNull PlayerJoinEvent event) {
-    final var player = event.getPlayer();
-    reapplyTargetPlayerForAllViewers(player);
-    reapplyForViewer(player);
-  }
-
-  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  private void onTargetEntityDeath(final @NotNull EntityDeathEvent event) {
-    stopEntity(event.getEntity());
-  }
-
-  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  private void onBlockBreak(final @NotNull BlockBreakEvent event) {
-    stopBlock(event.getBlock());
-  }
-
   // ###############################################################
   // ------------------------ ANIMATION TASKS ----------------------
   // ###############################################################
@@ -806,6 +783,27 @@ public final class GlowingServiceImpl implements GlowingService, DreamService, L
   }
 
   private record ConditionalGlow(Predicate<Entity> condition, ChatColor color, long checkInterval, TickTask<?> task) {}
+
+  // ###############################################################
+  // ---------------------- LISTENER METHODS -----------------------
+  // ###############################################################
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  private void onViewerJoin(final @NotNull PlayerJoinEvent event) {
+    final var player = event.getPlayer();
+    reapplyTargetPlayerForAllViewers(player);
+    reapplyForViewer(player);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  private void onTargetEntityDeath(final @NotNull EntityDeathEvent event) {
+    stopEntity(event.getEntity());
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  private void onBlockBreak(final @NotNull BlockBreakEvent event) {
+    stopBlock(event.getBlock());
+  }
 
   // ###############################################################
   // ------------------------- STATS IMPL --------------------------
