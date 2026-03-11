@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Getter
 @RequiredArgsConstructor
-public final class HologramCreateEvent extends ToolsCancelEvent {
+public final class HologramLineUpdateEvent extends ToolsCancelEvent {
 
   private final @NotNull String hologramId;
   private final @NotNull Hologram hologram;

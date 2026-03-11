@@ -1,20 +1,41 @@
 package fr.dreamin.dreamapi.api.hologram.service;
 
-import fr.dreamin.dreamapi.api.hologram.model.HologramBuilder;
+import fr.dreamin.dreamapi.api.hologram.model.Hologram;
+import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface HologramService {
 
-//  @NotNull HologramBuilder.HologramBuilderBuilder builder(final @NotNull String id);
-  @Nullable HologramBuilder getHologram(final @NotNull String id);
-  void deleteHologram(final @NotNull String id);
-  void deleteHologram(final @NotNull HologramBuilder hologramBuilder);
-  void deleteAllHolograms();
-  @NotNull Collection<HologramBuilder> getAllHolograms();
+  @NotNull Hologram create(final @NotNull String id);
 
-  void register(final @NotNull HologramBuilder hologram);
+  void spawn(final @NotNull String id, final @NotNull Location location);
+  void spawn(final @NotNull Hologram hologram, final @NotNull Location location);
+
+  @NotNull Optional<Hologram> getHologram(final @NotNull String id);
+
+  boolean delete(final @NotNull String id);
+  boolean delete(final @NotNull Hologram hologram);
+
+  void deleteAll();
+
+  @NotNull Collection<Hologram> getAll();
+
+  void register(final @NotNull Hologram hologram);
+
+  void save(final @NotNull String id, final @NotNull File file) throws IOException;
+  void save(final @NotNull Hologram hologram, final @NotNull File file) throws IOException;
+  void save(final @NotNull String id) throws IOException;
+  void save(final @NotNull Hologram hologram) throws IOException;
+
+  @NotNull Hologram load(final @NotNull File file) throws IOException;
+
+  void loadAll();
+
+  void shutdown();
 
 }

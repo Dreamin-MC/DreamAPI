@@ -2,14 +2,12 @@ package fr.dreamin.dreamapi.core;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.config.Configurations;
+import fr.dreamin.dreamapi.core.hologram.jackson.HologramJacksonModule;
+import fr.dreamin.dreamapi.core.bukkit.module.*;
 import fr.dreamin.dreamapi.core.recipe.module.CustomRecipeModule;
 import fr.dreamin.dreamapi.core.cuboid.module.CuboidModule;
 import fr.dreamin.dreamapi.core.cuboid.module.MemoryCuboidModule;
 import fr.dreamin.dreamapi.core.cuboid.module.MovableCuboidModule;
-import fr.dreamin.dreamapi.core.bukkit.module.BukkitItemStackModule;
-import fr.dreamin.dreamapi.core.bukkit.module.BukkitLocationModule;
-import fr.dreamin.dreamapi.core.bukkit.module.BukkitPotionEffectModule;
-import fr.dreamin.dreamapi.core.bukkit.module.BukkitVectorModule;
 import fr.dreamin.dreamapi.core.item.listener.PlayerItemListener;
 import fr.dreamin.dreamapi.core.particle.module.*;
 import fr.dreamin.dreamapi.core.time.module.TickTaskModule;
@@ -95,6 +93,8 @@ public record ApiProviderImpl(Plugin plugin) implements DreamAPI.IApiProvider {
     Configurations.addModule(new BukkitLocationModule());
     Configurations.addModule(new BukkitVectorModule());
     Configurations.addModule(new BukkitPotionEffectModule());
+    Configurations.addModule(new BukkitComponentModule());
+    Configurations.addModule(new BukkitBlockDataModule());
 
     Configurations.addModule(new CuboidModule());
     Configurations.addModule(new MemoryCuboidModule());
@@ -112,6 +112,8 @@ public record ApiProviderImpl(Plugin plugin) implements DreamAPI.IApiProvider {
     Configurations.addModule(new TickTaskModule());
 
     Configurations.addModule(new CustomRecipeModule());
+
+    Configurations.addModule(new HologramJacksonModule());
 
   }
 

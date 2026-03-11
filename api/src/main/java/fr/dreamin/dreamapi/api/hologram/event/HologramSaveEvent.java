@@ -6,11 +6,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 @Getter
 @RequiredArgsConstructor
-public final class HologramCreateEvent extends ToolsCancelEvent {
+public final class HologramSaveEvent extends ToolsCancelEvent {
 
   private final @NotNull String hologramId;
   private final @NotNull Hologram hologram;
+  private final @NotNull File file;
 
 }

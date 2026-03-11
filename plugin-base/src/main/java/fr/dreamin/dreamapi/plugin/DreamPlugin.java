@@ -16,6 +16,7 @@ import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.core.ApiProviderImpl;
+import fr.dreamin.dreamapi.core.hologram.service.HologramServiceImpl;
 import fr.dreamin.dreamapi.core.nms.visual.service.VisualServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeCategoryRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
@@ -485,7 +486,9 @@ public abstract class DreamPlugin extends JavaPlugin {
 
       VisualServiceImpl.class,
       GlowingServiceImpl.class,
-      CuboidServiceImpl.class
+      CuboidServiceImpl.class,
+      
+      HologramServiceImpl.class
     ),
 
     LoadMode.MINIMAL, Set.of(
@@ -496,7 +499,8 @@ public abstract class DreamPlugin extends JavaPlugin {
     LoadMode.DATA, Set.of(
       ItemRegistryServiceImpl.class,
       RecipeRegistryServiceImpl.class,
-      RecipeCategoryRegistryServiceImpl.class
+      RecipeCategoryRegistryServiceImpl.class,
+      HologramServiceImpl.class
     ),
 
     LoadMode.GAMEPLAY, Set.of(
