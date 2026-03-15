@@ -15,7 +15,7 @@ import org.bukkit.World;
 import java.io.IOException;
 
 /**
- * Module for serializing and deserializing Bukkit Location and World objects using Jackson.
+ * Module for serializing and deserializing Bukkit Location objects using Jackson.
  *
  * @author Dreamin
  * @since 1.0.0
@@ -24,20 +24,6 @@ public class BukkitLocationModule extends SimpleModule {
 
   public BukkitLocationModule() {
     super("BukkitLocationModule");
-
-    addSerializer(World.class, new JsonSerializer<>() {
-      @Override
-      public void serialize(World world, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeString(world.getName());
-      }
-    });
-
-    addDeserializer(World.class, new JsonDeserializer<>() {
-      @Override
-      public World deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        return Bukkit.getWorld(p.getValueAsString());
-      }
-    });
 
     addSerializer(Location.class, new JsonSerializer<>() {
       @Override

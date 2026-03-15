@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.dreamin.dreamapi.api.hologram.event.HologramCreateEvent;
 import fr.dreamin.dreamapi.api.hologram.event.HologramDeleteEvent;
+import fr.dreamin.dreamapi.api.hologram.model.config.HologramConfig;
 import fr.dreamin.dreamapi.api.hologram.model.line.HologramLine;
 import lombok.Getter;
 import org.bukkit.Location;

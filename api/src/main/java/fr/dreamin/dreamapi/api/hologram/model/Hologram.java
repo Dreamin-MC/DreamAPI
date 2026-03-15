@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.api.hologram.model;
 
-import fr.dreamin.dreamapi.api.hologram.model.animation.HologramAnimation;
+import fr.dreamin.dreamapi.api.hologram.model.config.HologramConfig;
 import fr.dreamin.dreamapi.api.hologram.model.line.HologramLine;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;

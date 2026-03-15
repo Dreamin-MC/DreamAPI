@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.api.hologram.model;
+package fr.dreamin.dreamapi.api.hologram.model.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.dreamin.dreamapi.api.hologram.model.animation.HologramAnimation;

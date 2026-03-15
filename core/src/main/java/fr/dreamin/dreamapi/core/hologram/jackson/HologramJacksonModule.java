@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.hologram.model.DreamHologram;
 import fr.dreamin.dreamapi.api.hologram.model.Hologram;
-import fr.dreamin.dreamapi.api.hologram.model.HologramConfig;
+import fr.dreamin.dreamapi.api.hologram.model.config.HologramConfig;
 import fr.dreamin.dreamapi.api.hologram.model.line.HologramLine;
 import org.bukkit.Location;
 
