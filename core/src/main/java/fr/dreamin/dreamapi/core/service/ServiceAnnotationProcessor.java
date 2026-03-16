@@ -1,12 +1,8 @@
 package fr.dreamin.dreamapi.core.service;
 
-import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;
-import fr.dreamin.dreamapi.core.logger.DreamLoggerImpl;
-import fr.dreamin.dreamapi.api.logger.DebugService;
-import fr.dreamin.dreamapi.api.logger.DreamLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -220,7 +216,6 @@ public final class ServiceAnnotationProcessor implements Listener {
 
       @SuppressWarnings("unchecked")
       final var instance = (T) ctor.newInstance(args);
-      injectLoggerIntoService(instance);
 
       if (instance instanceof Listener ls)
         Bukkit.getPluginManager().registerEvents(ls, this.plugin);
@@ -325,8 +320,6 @@ public final class ServiceAnnotationProcessor implements Listener {
     if (instance instanceof Listener ls)
       Bukkit.getPluginManager().registerEvents(ls, this.plugin);
 
-    injectLoggerIntoService(instance);
-
     setStatus(ds, DreamService.ServiceStatus.LOADING);
     ds.onLoad(this.plugin);
     setStatus(ds, DreamService.ServiceStatus.LOADED);
@@ -338,40 +331,6 @@ public final class ServiceAnnotationProcessor implements Listener {
     this.serviceIndex.put(ds.getClass(), ds);
 
     return ds;
-  }
-
-  // ###############################################################
-  // ---------------------- LOGGER INJECTION -----------------------
-  // ###############################################################
-
-  private void injectLoggerIntoService(final @NotNull Object instance) {
-    for (final var field : instance.getClass().getDeclaredFields()) {
-      if (field.getType() == DreamLogger.class) {
-        final DebugService debugService;
-
-        try {
-          debugService = DreamAPI.getAPI().getService(DebugService.class);
-        } catch (IllegalStateException ex) {
-          return;
-        }
-
-        final var logger = new DreamLoggerImpl(
-          this.plugin,
-          debugService,
-          instance.getClass().getSimpleName(),
-          instance
-        );
-
-        field.setAccessible(true);
-        try {
-          field.set(instance, logger);
-        } catch (IllegalAccessException e) {
-          throw new RuntimeException(String.format("[DreamService] Failed to inject logger for ", instance.getClass()));
-        }
-        break;
-      }
-    }
-
   }
 
   // ###############################################################
@@ -407,7 +366,6 @@ public final class ServiceAnnotationProcessor implements Listener {
 
       for (final var param : c.getParameterTypes()) {
         if (!Plugin.class.isAssignableFrom(param)
-          && param != DreamLogger.class
           && !DreamService.class.isAssignableFrom(param)) {
           compatible = false;
           break;
@@ -440,11 +398,6 @@ public final class ServiceAnnotationProcessor implements Listener {
       // Inject Plugin
       if (Plugin.class.isAssignableFrom(param)) {
         args[i] = this.plugin;
-        continue;
-      }
-
-      if (param == DreamLogger.class) {
-        args[i] = null;
         continue;
       }
 

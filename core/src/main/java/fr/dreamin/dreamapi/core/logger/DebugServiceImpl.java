@@ -10,7 +10,6 @@ import fr.dreamin.dreamapi.core.logger.writer.DailyFileDebugWriter;
 import fr.dreamin.dreamapi.core.logger.writer.PlayerDebugWriter;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -34,7 +33,6 @@ public final class DebugServiceImpl implements DreamService, DebugService {
   private final @NotNull Plugin plugin;
 
   private final Map<String, Boolean> categories = new ConcurrentHashMap<>();
-  private final Map<String, DreamLogger> loggers = new ConcurrentHashMap<>();
   private final CopyOnWriteArrayList<DebugWriter> writers = new CopyOnWriteArrayList<>();
 
   private final Map<Class<? extends DebugWriter>, Boolean> writerStates = new ConcurrentHashMap<>();
@@ -127,11 +125,6 @@ public final class DebugServiceImpl implements DreamService, DebugService {
           file.delete();
       } catch (Exception ignored) {}
     }
-  }
-
-  @Override
-  public @Nullable DreamLogger getLogger(@NotNull String category) {
-    return this.loggers.get(category);
   }
 
   @Override

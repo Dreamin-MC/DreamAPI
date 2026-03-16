@@ -11,9 +11,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
@@ -59,12 +57,20 @@ public final class Configurations {
 
       final var file = new File(dataFolder, fileName);
 
+      if (!file.exists()) {
+        try (InputStream resource = plugin.getResource(fileName)) {
+          if (resource == null)
+            throw new IllegalStateException(
+              String.format("Resource '%s' not found in plugin", fileName)
+            );
 
-      try (InputStream resource = plugin.getResource(fileName)) {
-        if (resource == null && !file.exists())
-          throw new IllegalStateException(
-            String.format("Resource '%s' not found in plugin", fileName)
-          );
+          try (OutputStream out = new FileOutputStream(file)) {
+            resource.transferTo(out);
+          }
+          plugin.getLogger().info(String.format("Configuration '%s' copied from resources", fileName));
+
+        }
+
       }
 
       return loadJson(file, type);

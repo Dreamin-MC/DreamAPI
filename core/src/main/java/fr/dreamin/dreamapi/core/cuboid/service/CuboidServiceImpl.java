@@ -2,20 +2,18 @@ package fr.dreamin.dreamapi.core.cuboid.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.cuboid.service.CuboidService;
-import fr.dreamin.dreamapi.api.logger.DebugMeta;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;
 import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import fr.dreamin.dreamapi.core.cuboid.event.CuboidEnterEvent;
 import fr.dreamin.dreamapi.core.cuboid.event.CuboidLeaveEvent;
-import fr.dreamin.dreamapi.api.logger.DreamLogger;
-import fr.dreamin.dreamapi.core.glowing.service.GlowingServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -31,13 +29,12 @@ import java.util.*;
 @DreamAutoService(value = CuboidService.class)
 public final class CuboidServiceImpl implements CuboidService, DreamService, Listener {
 
+  private final @NotNull Plugin plugin;
+
   private final @NotNull Set<Cuboid> cuboids = new HashSet<>();
   private final @NotNull Map<UUID, Set<Cuboid>> playerCuboids = new HashMap<>();
 
   private boolean autoRegister = true;
-
-  @SuppressWarnings("NullableProblems")
-  private DreamLogger dreamLogger;
 
   // ###############################################################
   // -------------------------- METHODS ----------------------------
@@ -56,10 +53,10 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
   public void register(@NotNull Cuboid cuboid) {
     this.cuboids.add(cuboid);
 
-    this.dreamLogger.info("New cuboid registered at locA %s and locB %s",
+    this.plugin.getLogger().info(String.format("New cuboid registered at locA %s and locB %s",
       cuboid.getLocA().toString(),
       cuboid.getLocB().toString()
-    );
+    ));
   }
 
   @Override
@@ -145,7 +142,7 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     if (DreamAPI.getAPI().callEvent(enterEvent).isCancelled())
       event.setCancelled(true);
     else {
-      this.dreamLogger.info(DebugMeta.of(player), String.format("%s enter at cuboid", player.getName()));
+      this.plugin.getLogger().info(String.format("%s enter at cuboid", player.getName()));
       currentCuboids.add(cuboid);
     }
   }
@@ -171,7 +168,7 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     if (DreamAPI.getAPI().callEvent(leaveEvent).isCancelled())
       event.setCancelled(true);
     else {
-      this.dreamLogger.info(DebugMeta.of(player), String.format("%s leave a cuboid", player.getName()));
+      this.plugin.getLogger().info(String.format("%s leave at cuboid", player.getName()));
       currentCuboids.remove(cuboid);
     }
   }

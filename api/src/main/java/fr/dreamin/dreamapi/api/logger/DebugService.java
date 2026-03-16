@@ -71,24 +71,6 @@ public interface DebugService {
   void cleanupOldLogs();
 
   /**
-   * Get a logger for a specific category.
-   * @param category The category name.
-   * @return A DreamLogger instance for the specified category.
-   */
-  default @NotNull DreamLogger getLogger(final @NotNull String category) {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-  /**
-   * Get a logger for a specific class.
-   * @param ownerClass The owner class.
-   * @return A DreamLogger instance for the specified class.
-   */
-  default @Nullable DreamLogger getLogger(final @NotNull Class<?> ownerClass) {
-    return getLogger(ownerClass.getSimpleName());
-  }
-
-  /**
    * Add a debug writer to the service.
    * @param writer The debug writer to add.
    */
