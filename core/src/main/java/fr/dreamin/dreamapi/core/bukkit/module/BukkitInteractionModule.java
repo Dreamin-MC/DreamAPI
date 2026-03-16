@@ -23,8 +23,7 @@ import java.io.IOException;
 public class BukkitInteractionModule extends SimpleModule {
 
   public BukkitInteractionModule() {
-    super("BukkitLocationModule");
-
+    super("BukkitInteractionModule");
 
     addSerializer(Interaction.class, new JsonSerializer<>() {
       @Override

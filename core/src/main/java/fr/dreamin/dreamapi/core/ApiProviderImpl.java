@@ -89,11 +89,11 @@ public record ApiProviderImpl(Plugin plugin) implements DreamAPI.IApiProvider {
   // ###############################################################
 
   private void loadJacksonModules() {
-    Configurations.addModule(new BukkitWorldModule());
-    Configurations.addModule(new BukkitItemStackModule());
     Configurations.addModule(new BukkitLocationModule());
     Configurations.addModule(new BukkitInteractionModule());
     Configurations.addModule(new BukkitTransformationModule());
+    Configurations.addModule(new BukkitWorldModule());
+    Configurations.addModule(new BukkitItemStackModule());
     Configurations.addModule(new BukkitVectorModule());
     Configurations.addModule(new BukkitPotionEffectModule());
     Configurations.addModule(new BukkitComponentModule());

@@ -52,11 +52,6 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
   @Override
   public void register(@NotNull Cuboid cuboid) {
     this.cuboids.add(cuboid);
-
-    this.plugin.getLogger().info(String.format("New cuboid registered at locA %s and locB %s",
-      cuboid.getLocA().toString(),
-      cuboid.getLocB().toString()
-    ));
   }
 
   @Override

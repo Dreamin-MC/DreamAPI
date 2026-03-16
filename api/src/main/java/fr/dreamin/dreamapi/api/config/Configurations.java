@@ -2,6 +2,7 @@ package fr.dreamin.dreamapi.api.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +29,7 @@ public final class Configurations {
     mapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
     mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-    mapper.configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
+    mapper.configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
 
     for (Module module : REGISTERED_MODULES) {
       mapper.registerModule(module);
@@ -113,7 +114,7 @@ public final class Configurations {
   }
 
   public static void addModule(Module module) {
-    REGISTERED_MODULES.add(module);
+    if (!REGISTERED_MODULES.add(module)) return;
     MAPPER.registerModule(module);
   }
 

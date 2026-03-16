@@ -386,8 +386,6 @@ public abstract class DreamPlugin extends JavaPlugin {
     if (isLuckPermsAvailable())
       this.serviceManager.loadServiceFromClass(LuckPermsServiceImpl.class);
 
-
-    System.out.println("Size : " + this.serviceManager.getAllLoadedServices().size());
   }
 
   /**

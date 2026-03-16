@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.dreamin.dreamapi.api.config.Configurations;
 import fr.dreamin.dreamapi.api.cuboid.MemoryCuboid;
 import fr.dreamin.dreamapi.core.bukkit.module.BukkitLocationModule;
@@ -30,28 +31,20 @@ public final class MemoryCuboidModule extends SimpleModule {
     addSerializer(MemoryCuboid.class, new JsonSerializer<>() {
       @Override
       public void serialize(final MemoryCuboid value, final JsonGenerator gen, final SerializerProvider serializerProvider) throws IOException {
-        final Map<String, Object> result = new HashMap<>();
-
-        if (!Configurations.containModule(BukkitLocationModule.class))
-          Configurations.addModule(new BukkitLocationModule());
-
-        result.put("locA", value.getLocA());
-        result.put("locB", value.getLocB());
-
-        gen.writeObject(result);
+        gen.writeStartObject();
+        gen.writeObjectField("locA", value.getLocA());
+        gen.writeObjectField("locB", value.getLocB());
+        gen.writeEndObject();
       }
     });
 
     addDeserializer(MemoryCuboid.class, new JsonDeserializer<>() {
       @Override
-      public MemoryCuboid deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws IOException {
-        final var node = jsonParser.getCodec().readTree(jsonParser);
+      public MemoryCuboid deserialize(final JsonParser p, final DeserializationContext ctx) throws IOException {
+        ObjectNode node = p.getCodec().readTree(p);
 
-        if (!Configurations.containModule(BukkitLocationModule.class))
-          Configurations.addModule(new BukkitLocationModule());
-
-        final var locA = jsonParser.getCodec().treeToValue(node.get("locA"), Location.class);
-        final var locB = jsonParser.getCodec().treeToValue(node.get("locB"), Location.class);
+        final var locA = ctx.readTreeAsValue(node.get("locA"), Location.class);
+        final var locB = ctx.readTreeAsValue(node.get("locB"), Location.class);
 
         return new MemoryCuboid(locA, locB);
       }

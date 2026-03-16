@@ -53,7 +53,7 @@ public final class DebugServiceImpl implements DreamService, DebugService {
     addWriter(new BroadcastDebugWriter(this.plugin), false);
     addWriter(new ConsoleDebugWriter(this.plugin), false);
     addWriter(new DailyFileDebugWriter(this.debugFolder), false);
-    addWriter(new PlayerDebugWriter(DreamAPI.getAPI().getService(PlayerDebugService.class)), false);
+//    addWriter(new PlayerDebugWriter(DreamAPI.getAPI().getService(PlayerDebugService.class)), false);
 
     this.workerThread = new Thread(this::processQueue, "DreamAPI-Debug-Logger");
     this.workerThread.setDaemon(true);

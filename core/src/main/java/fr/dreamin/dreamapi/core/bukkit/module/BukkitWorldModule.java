@@ -28,7 +28,9 @@ public class BukkitWorldModule extends SimpleModule {
     addSerializer(World.class, new JsonSerializer<>() {
       @Override
       public void serialize(World world, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        gen.writeStartObject();
         gen.writeString(world.getName());
+        gen.writeEndObject();
       }
     });
 
