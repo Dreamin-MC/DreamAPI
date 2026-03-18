@@ -99,8 +99,6 @@ public final class ListenerAnnotationProcessor {
           clazz.getName()
         )
       );
-
-    Bukkit.getPluginManager().registerEvents(listener, this.plugin);
   }
 
   private boolean implementsOnlyListener(final @NotNull Class<?> clazz) {
