@@ -136,10 +136,8 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     var enterEvent = new CuboidEnterEvent(player, cuboid);
     if (DreamAPI.getAPI().callEvent(enterEvent).isCancelled())
       event.setCancelled(true);
-    else {
-      this.plugin.getLogger().info(String.format("%s enter at cuboid", player.getName()));
+    else
       currentCuboids.add(cuboid);
-    }
   }
 
   /**
@@ -162,10 +160,8 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     var leaveEvent = new CuboidLeaveEvent(player, cuboid);
     if (DreamAPI.getAPI().callEvent(leaveEvent).isCancelled())
       event.setCancelled(true);
-    else {
-      this.plugin.getLogger().info(String.format("%s leave at cuboid", player.getName()));
+    else
       currentCuboids.remove(cuboid);
-    }
   }
 
 }
