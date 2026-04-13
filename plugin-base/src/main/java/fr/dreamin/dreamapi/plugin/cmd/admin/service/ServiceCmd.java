@@ -86,6 +86,7 @@ public final class ServiceCmd {
       .append(Component.text(String.format("CanReload: %s", service.canReload()), NamedTextColor.GOLD))
       .appendNewline()
       .append(Component.text(String.format("Depends: %s", getDepsText(service)), NamedTextColor.GOLD))
+      .appendNewline()
       .append(Component.text("--------------------------------", NamedTextColor.GOLD));
 
     sender.sendMessage(msg);

@@ -17,6 +17,7 @@ import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.core.ApiProviderImpl;
 import fr.dreamin.dreamapi.core.hologram.service.HologramServiceImpl;
+import fr.dreamin.dreamapi.core.lang.service.LangServiceImpl;
 import fr.dreamin.dreamapi.core.nms.visual.service.VisualServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeCategoryRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
@@ -42,6 +43,7 @@ import fr.dreamin.dreamapi.plugin.cmd.admin.broadcast.BroadcastContext;
 import fr.dreamin.dreamapi.plugin.cmd.admin.debug.DebugCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.glowing.GlowingCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.item.ItemRegistryCmd;
+import fr.dreamin.dreamapi.plugin.cmd.admin.lang.LangCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.nms.visual.VisualCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.service.ServiceCmd;
 import lombok.Getter;
@@ -121,7 +123,7 @@ public abstract class DreamPlugin extends JavaPlugin {
   protected @NotNull BroadcastContext broadcastContext;
 
   @Getter @Setter
-  protected boolean broadcastCmd = false, glowingCmd = false, nmsVisualCmd = false, itemRegistryCmd, debugCmd = false, serviceCmd = false;
+  protected boolean broadcastCmd = false, glowingCmd = false, nmsVisualCmd = false, itemRegistryCmd, debugCmd = false, serviceCmd = false, langCmd = false;
 
   // ##############################################################
   // -------------------- JAVAPLUGIN METHODS ----------------------
@@ -459,6 +461,13 @@ public abstract class DreamPlugin extends JavaPlugin {
       this.annotationParser.parse(new DebugCmd());
     }
 
+    if (this.langCmd) {
+      if (!this.serviceManager.isLoaded(LangServiceImpl.class))
+        this.serviceManager.loadServiceFromClass(LangServiceImpl.class);
+
+      this.annotationParser.parse(new LangCmd());
+    }
+
     if (this.serviceCmd)
       this.annotationParser.parse(new ServiceCmd(this, this.serviceManager, this.serviceInspector));
 
@@ -486,7 +495,8 @@ public abstract class DreamPlugin extends JavaPlugin {
       GlowingServiceImpl.class,
       CuboidServiceImpl.class,
       
-      HologramServiceImpl.class
+      HologramServiceImpl.class,
+      LangServiceImpl.class
     ),
 
     LoadMode.MINIMAL, Set.of(
