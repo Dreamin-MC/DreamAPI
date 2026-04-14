@@ -558,6 +558,11 @@ public class ItemBuilder {
   // ------------------------- ATTRIBUTES --------------------------
   // ###############################################################
 
+  public ItemBuilder removeAttribute(final @NotNull Attribute attribute) {
+    withMeta(meta -> meta.removeAttributeModifier(attribute));
+    return this;
+  }
+
   public ItemBuilder addAttribute(final @NotNull Attribute attribute, final double value, final @NotNull AttributeModifier.Operation operation, final @NotNull EquipmentSlotGroup slot) {
     withMeta(meta -> {
       AttributeModifier modifier = new AttributeModifier(
@@ -580,8 +585,44 @@ public class ItemBuilder {
     return addAttribute(Attribute.ATTACK_SPEED, value);
   }
 
+  public ItemBuilder setAttackSpeed(final double value) {
+    removeAttribute(Attribute.ATTACK_SPEED);
+    return addAttribute(Attribute.ATTACK_SPEED, value);
+  }
+
   public ItemBuilder addAttackDmg(final double value) {
     return addAttribute(Attribute.ATTACK_DAMAGE, value);
+  }
+
+  public ItemBuilder setAttackDmg(final double value) {
+    removeAttribute(Attribute.ATTACK_DAMAGE);
+    return addAttribute(Attribute.ATTACK_DAMAGE, value);
+  }
+
+  public ItemBuilder addAttackKnockback(final double value) {
+    return addAttribute(Attribute.ATTACK_KNOCKBACK, value);
+  }
+
+  public ItemBuilder setAttackKnockback(final double value) {
+    removeAttribute(Attribute.ATTACK_KNOCKBACK);
+    return addAttribute(Attribute.ATTACK_KNOCKBACK, value);
+  }
+
+  public ItemBuilder addArmor(final double value) {
+    return addAttribute(Attribute.ARMOR, value);
+  }
+
+  public ItemBuilder setArmor(final double value) {
+    removeAttribute(Attribute.ARMOR);
+    return addAttribute(Attribute.ARMOR, value);
+  }
+
+  public ItemBuilder addArmorToughness(final double value) {
+    return addAttribute(Attribute.ARMOR_TOUGHNESS, value);
+  }
+  public ItemBuilder setArmorToughness(final double value) {
+    removeAttribute(Attribute.ARMOR_TOUGHNESS);
+    return addAttribute(Attribute.ARMOR_TOUGHNESS, value);
   }
 
   // ###############################################################
