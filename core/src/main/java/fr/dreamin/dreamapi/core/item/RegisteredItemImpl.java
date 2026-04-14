@@ -36,6 +36,11 @@ public final class RegisteredItemImpl implements RegisteredItem {
   }
 
   @Override
+  public boolean hasTag(@NotNull ItemTag tag) {
+    return this.tags.contains(tag);
+  }
+
+  @Override
   public void addHandler(@NotNull ItemAction action, @NotNull ItemHandler handler) {
     final var list = this.handlers.get(action);
 

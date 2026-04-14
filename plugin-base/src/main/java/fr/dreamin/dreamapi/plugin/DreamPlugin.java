@@ -8,6 +8,7 @@ import cloud.commandframework.paper.PaperCommandManager;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.LoadMode;
 import fr.dreamin.dreamapi.api.annotations.EnableServices;
+import fr.dreamin.dreamapi.api.item.ItemTag;
 import fr.dreamin.dreamapi.api.item.RegisteredItem;
 import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
 import fr.dreamin.dreamapi.core.animation.AnimationServiceImpl;
@@ -53,14 +54,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
 
@@ -268,6 +267,35 @@ public abstract class DreamPlugin extends JavaPlugin {
       )
     );
   }
+
+  public static boolean hasItemTag(final @NotNull String id, final @NotNull ItemTag... tags) {
+    final var registered = getService(ItemRegistryService.class).get(id);
+    if (registered == null) return false;
+
+    return Arrays.stream(tags).anyMatch(registered::hasTag);
+  }
+
+  public static RegisteredItem getItemRegistry(final @NotNull ItemStack itemStack) {
+    return Optional.ofNullable(
+      getService(ItemRegistryService.class).get(itemStack)
+    ).orElseThrow(() ->
+      new IllegalStateException(
+        String.format(
+          "ItemRegistryService#getItem returned null for item stack '%s'. " +
+            "Make sure the item is properly registered during startup.",
+          itemStack
+        )
+      )
+    );
+  }
+
+  public static boolean hasItemTag(final @NotNull ItemStack item, final @NotNull ItemTag... tags) {
+    final var registered = getService(ItemRegistryService.class).get(item);
+    if (registered == null) return false;
+
+    return Arrays.stream(tags).anyMatch(registered::hasTag);
+  }
+
 
   /**
    *
