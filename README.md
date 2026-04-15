@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-0.0.9.9.1-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
 [![](https://jitpack.io/v/Dreamin-MC/DreamAPI.svg)](https://jitpack.io/#Dreamin-MC/DreamAPI)
 [![Java](https://img.shields.io/badge/java-21-orange.svg)](https://www.oracle.com/java/)
-[![Minecraft](https://img.shields.io/badge/minecraft-1.21.10-green.svg)](https://www.minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/minecraft-26.2.1-green.svg)](https://www.minecraft.net/)
 [![License](https://img.shields.io/badge/license-GPL-lightgrey.svg)](LICENSE)
 
 ---
@@ -11,7 +11,7 @@
 ### 🧠 Overview
 
 **DreamAPI** is a **comprehensive and modular API** designed as the **technical foundation** for the entire **Dreamin Ecosystem**.
-Built for **Minecraft Paper 1.21.10**, it provides a rich set of tools and abstractions for creating **advanced plugins** with **minimal boilerplate** and **maximum flexibility**.
+Built for **Minecraft Paper 26.2.1**, it provides a rich set of tools and abstractions for creating **advanced plugins** with **minimal boilerplate** and **maximum flexibility**.
 
 ---
 
@@ -155,9 +155,14 @@ More modules coming soon!
 
 | Status | Version  | Compatibility |
 |--------|----------|---------------|
-| 🧪 In active development | `v0.0.9.9.1` | Paper 1.21.10 |
+| 🧪 In active development | `v0.0.9.9.1` | Paper 26.2.1 |
 | 🔜 Beta Release | `v0.1.0` | Enhanced documentation & stability |
 | 🚀 Stable Release | `v1.0.0` | Full API freeze & production-ready |
+
+| Version      | Minecraft |
+|--------------|-----------|
+| `v0.0.9.9.X` | 26.2.1+   |
+| `v0.0.1.0.X` | 1.21.10   |
 
 > ⚠️ *DreamAPI is under active development. Breaking changes may occur until v1.0.0.*
 > 
@@ -193,7 +198,7 @@ Contributions are welcome! Before submitting a PR:
 - Ensure **backward compatibility** when possible
 - Add **tests** for new features
 - Update **documentation** and examples
-- Test on **Paper 1.21.10+**
+- Test on **Paper 26.2.1+**
 
 ---
 

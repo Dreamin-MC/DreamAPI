@@ -17,7 +17,7 @@ subprojects {
 
   group = "fr.dreamin"
   version = "0.0.9.9.1"
-  description = "DreamAPI - API modulaire pour Paper 1.21.10"
+  description = "DreamAPI - API modulaire pour Paper 26.1.2"
 
   repositories {
     mavenCentral()
