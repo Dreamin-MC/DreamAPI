@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 import org.bukkit.entity.Display;
 import org.jetbrains.annotations.NotNull;
-import org.joml.AxisAngle4d;
 import org.joml.AxisAngle4f;
 
 @Getter

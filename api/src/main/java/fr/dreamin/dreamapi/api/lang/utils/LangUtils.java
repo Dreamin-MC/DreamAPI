@@ -52,7 +52,6 @@ public final class LangUtils {
   public static void updateTranslate(final @NotNull Player player, final @NotNull ItemStack item) {
     final Logger logger = DreamAPI.getAPI().plugin().getLogger();
 
-
     final ItemMeta meta = item.getItemMeta();
     if (meta == null) {
       logger.info("Meta=null -> skip");

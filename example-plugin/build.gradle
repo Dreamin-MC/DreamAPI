@@ -1,7 +1,7 @@
 plugins {
   id 'java'
-  id 'com.github.johnrengelman.shadow' version '8.1.1'
-  id 'xyz.jpenilla.run-paper' version '2.3.1'
+  id 'com.gradleup.shadow' version '9.4.1'
+  id 'xyz.jpenilla.run-paper' version '3.0.2'
 }
 
 group = "fr.dreamin"
@@ -10,11 +10,11 @@ description = "Example plugin"
 
 repositories {
   mavenCentral()
-  maven {url "https://repo.papermc.io/repository/maven-public/"}
-  maven {url "https://oss.sonatype.org/content/groups/public/"}
-  maven {url 'https://repo.extendedclip.com/releases/'}
-  maven { url 'https://repo.codemc.org/repository/maven-public/' }
-  maven {url 'https://jitpack.io' }
+  maven {url = "https://repo.papermc.io/repository/maven-public/"}
+  maven {url = "https://oss.sonatype.org/content/groups/public/"}
+  maven {url = 'https://repo.extendedclip.com/releases/'}
+  maven { url = 'https://repo.codemc.org/repository/maven-public/' }
+  maven {url = 'https://jitpack.io' }
 }
 
 def cloudCommandFrameworkVersion = "1.8.4"

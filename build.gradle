@@ -1,18 +1,18 @@
 plugins {
   id 'java'
   id 'maven-publish'
-  id 'com.github.johnrengelman.shadow' version '8.1.1'
+  id 'com.gradleup.shadow' version '9.4.1'
 }
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
+    languageVersion = JavaLanguageVersion.of(25)
   }
 }
 
 subprojects {
   apply plugin: "java"
-  apply plugin: "com.github.johnrengelman.shadow"
+  apply plugin: "com.gradleup.shadow"
   apply plugin: "java-library"
 
   group = "fr.dreamin"
@@ -22,15 +22,15 @@ subprojects {
   repositories {
     mavenCentral()
     maven { url = "https://repo.papermc.io/repository/maven-public/" }
-    maven { url 'https://repo.xenondevs.xyz/releases' }
-    maven { url "https://ci.mg-dev.eu/plugin/repository/everything"}
-    maven { url "https://maven.citizensnpcs.co/repo"}
+    maven { url = 'https://repo.xenondevs.xyz/releases' }
+    maven { url = "https://ci.mg-dev.eu/plugin/repository/everything"}
+    maven { url = "https://maven.citizensnpcs.co/repo"}
   }
 
   dependencies {
 
-    compileOnly "org.projectlombok:lombok:1.18.34"
-    annotationProcessor "org.projectlombok:lombok:1.18.34"
+    compileOnly "org.projectlombok:lombok:1.18.44"
+    annotationProcessor "org.projectlombok:lombok:1.18.44"
 
     compileOnly "org.jetbrains:annotations:24.1.0"
 
@@ -42,19 +42,19 @@ subprojects {
 
     compileOnly("net.luckperms:api:5.4")
 
-    implementation("xyz.xenondevs.invui:invui:2.0.0-alpha.15")
+    implementation("xyz.xenondevs.invui:invui:2.0.0-RC.2")
 
     compileOnly('net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT') {
       exclude group: '*', module: '*'
     }
 
-    testCompileOnly "org.projectlombok:lombok:1.18.34"
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.34"
+    testCompileOnly "org.projectlombok:lombok:1.18.44"
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.44"
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
   }
 
-  def targetJavaVersion = JavaVersion.VERSION_21
+  def targetJavaVersion = JavaVersion.VERSION_25
   java {
     sourceCompatibility = targetJavaVersion
     targetCompatibility = targetJavaVersion

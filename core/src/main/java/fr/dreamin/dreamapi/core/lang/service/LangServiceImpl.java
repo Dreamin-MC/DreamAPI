@@ -10,12 +10,10 @@ import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.translation.MiniMessageTranslationStore;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.Translator;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,6 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import xyz.xenondevs.invui.i18n.Languages;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +42,8 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
   private final @NotNull Map<UUID, Locale> playerLocales = new HashMap<>();
   private BukkitTask langUpdateTask;
 
+  private boolean enableItem = true, enableGUI = true;
+
   // ###############################################################
   // -------------------------- METHODS ----------------------------
   // ###############################################################
@@ -50,6 +51,7 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
   @Override
   public void onLoad(@NotNull Plugin plugin) {
     load();
+
     startLangMonitoring(plugin);
   }
 
@@ -123,6 +125,27 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
 
     this.langFiles.put(fileKey, langFile);
 
+  }
+
+  @Override
+  public void enableItem(boolean value) {
+    this.enableItem = value;
+  }
+
+  @Override
+  public boolean isEnableItem() {
+    return this.enableItem;
+  }
+
+  @Override
+  public void enableGUI(boolean value) {
+    this.enableGUI = value;
+    Languages.getInstance().enableServerSideTranslations(value);
+  }
+
+  @Override
+  public boolean isEnableGUI() {
+    return this.enableGUI;
   }
 
   @Override

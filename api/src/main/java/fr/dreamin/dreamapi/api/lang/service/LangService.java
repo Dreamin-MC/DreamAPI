@@ -13,6 +13,12 @@ public interface LangService {
   void load();
   void load(final @NotNull File file);
 
+  void enableItem(final boolean value);
+  boolean isEnableItem();
+
+  void enableGUI(final boolean value);
+  boolean isEnableGUI();
+
   Optional<Translator> getTranslator(final @NotNull String value);
   Translator createTranslator(final @NotNull String label, final @NotNull String namespace, final @NotNull String value);
 
