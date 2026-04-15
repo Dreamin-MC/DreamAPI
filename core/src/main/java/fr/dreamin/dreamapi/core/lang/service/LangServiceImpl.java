@@ -2,15 +2,28 @@ package fr.dreamin.dreamapi.core.lang.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.config.Configurations;
+import fr.dreamin.dreamapi.api.lang.event.LangUpdateEvent;
 import fr.dreamin.dreamapi.api.lang.model.LangFile;
 import fr.dreamin.dreamapi.api.lang.service.LangService;
+import fr.dreamin.dreamapi.api.lang.utils.LangUtils;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
+import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.translation.MiniMessageTranslationStore;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.Translator;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -20,10 +33,15 @@ import java.nio.file.Path;
 import java.util.*;
 
 @DreamAutoService(LangService.class)
-public final class LangServiceImpl implements LangService, DreamService {
+public final class LangServiceImpl implements LangService, DreamService, Listener {
+
+  private static final int CHECK_INTERVAL = 10;
 
   private final @NotNull Map<String, MiniMessageTranslationStore> translationStore = new HashMap<>();
   private final Map<String, LangFile> langFiles = new HashMap<>();
+
+  private final @NotNull Map<UUID, Locale> playerLocales = new HashMap<>();
+  private BukkitTask langUpdateTask;
 
   // ###############################################################
   // -------------------------- METHODS ----------------------------
@@ -32,11 +50,15 @@ public final class LangServiceImpl implements LangService, DreamService {
   @Override
   public void onLoad(@NotNull Plugin plugin) {
     load();
+    startLangMonitoring(plugin);
   }
 
   @Override
   public void onClose() {
     reset();
+    if (this.langUpdateTask != null) {
+      this.langUpdateTask.cancel();
+    }
   }
 
   // ###############################################################
@@ -169,6 +191,7 @@ public final class LangServiceImpl implements LangService, DreamService {
       .forEach(m -> GlobalTranslator.translator().removeSource(m));
     this.translationStore.clear();
     this.langFiles.clear();
+    this.playerLocales.clear();
   }
 
   // ###############################################################
@@ -204,6 +227,102 @@ public final class LangServiceImpl implements LangService, DreamService {
         yield new Locale(value.toLowerCase(Locale.ROOT));
       }
     };
+  }
+
+  private void startLangMonitoring(@NotNull Plugin plugin) {
+    this.langUpdateTask = Bukkit.getScheduler().runTaskTimer(plugin, this::checkAndUpdatePlayerItems, CHECK_INTERVAL, CHECK_INTERVAL);
+  }
+
+  private void checkAndUpdatePlayerItems() {
+    for (final var player : Bukkit.getOnlinePlayers()) {
+      final var currentLocale = player.locale();
+
+      if (!currentLocale.equals(this.playerLocales.get(player.getUniqueId()))) {
+        this.playerLocales.put(player.getUniqueId(), currentLocale);
+
+        Bukkit.getScheduler().runTaskLater(DreamAPI.getAPI().plugin(), () -> {
+          updatePlayerInventory(player);
+          new LangUpdateEvent(player, currentLocale).callEvent();
+        }, 2L);
+      }
+    }
+  }
+
+  private void updatePlayerInventory(@NotNull Player player) {
+    final var inv = player.getInventory();
+
+    for (var i = 0; i < inv.getSize(); i++) {
+      final var item = inv.getItem(i);
+      if (item == null || item.getType().isAir())
+        continue;
+      LangUtils.updateTranslate(player, item);
+    }
+
+    final var armor = inv.getArmorContents();
+    for (final var item : armor) {
+      if (item == null || item.getType().isAir())
+        continue;
+      LangUtils.updateTranslate(player, item);
+    }
+
+    player.updateInventory();
+  }
+
+  private void updatePlayerHeldItems(@NotNull Player player) {
+    final var inv = player.getInventory();
+
+    final var mainHand = inv.getItemInMainHand();
+    if (!mainHand.getType().isAir())
+      LangUtils.updateTranslate(player, mainHand);
+
+    final var offHand = inv.getItemInOffHand();
+    if (!offHand.getType().isAir())
+      LangUtils.updateTranslate(player, offHand);
+
+    player.updateInventory();
+  }
+
+  // ###############################################################
+  // ---------------------- LISTENER METHODS -----------------------
+  // ###############################################################
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  private void onSlotChange(final @NotNull PlayerInventorySlotChangeEvent event) {
+    final var player = event.getPlayer();
+    final var slot = event.getSlot();
+
+    final var oldItem = event.getOldItemStack();
+    final var newItem = event.getNewItemStack();
+
+    if (newItem.getType().isAir())
+      return;
+
+    if (oldItem.isSimilar(newItem) && oldItem.getAmount() == newItem.getAmount())
+      return;
+
+    Bukkit.getScheduler().runTask(DreamAPI.getAPI().plugin(), () -> {
+      final var liveItem = player.getInventory().getItem(slot);
+      if (liveItem == null || liveItem.getType().isAir())
+        return;
+
+      LangUtils.updateTranslate(player, liveItem);
+    });
+  }
+
+  @EventHandler
+  private void onJoin(final @NotNull PlayerJoinEvent event) {
+    final var player = event.getPlayer();
+
+    this.playerLocales.put(player.getUniqueId(), player.locale());
+
+    updatePlayerInventory(player);
+  }
+
+  @EventHandler
+  private void onQuit(final @NotNull PlayerQuitEvent event) {
+    final var player = event.getPlayer();
+
+    this.playerLocales.remove(player.getUniqueId());
   }
 
 }

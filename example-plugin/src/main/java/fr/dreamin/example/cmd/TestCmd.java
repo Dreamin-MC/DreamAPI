@@ -8,6 +8,7 @@ import fr.dreamin.dreamapi.api.item.ItemAction;
 import fr.dreamin.dreamapi.api.item.ItemDefinition;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemTag;
+import fr.dreamin.dreamapi.api.lang.utils.LangUtils;
 import fr.dreamin.dreamapi.api.nms.visual.service.VisualService;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import fr.dreamin.example.ExamplePlugin;
@@ -18,6 +19,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 @DreamCmd
 public final class TestCmd {
 
@@ -27,12 +30,11 @@ public final class TestCmd {
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
-    try {
-      ExamplePlugin.getService(VisualService.class).spawnFakeEntity(EntityType.ARMOR_STAND, player.getLocation(), player);
-    } catch (ReflectiveOperationException e) {
-      throw new RuntimeException(e);
-    }
+    final var item = new ItemBuilder(Material.PAPER).setName(Component.translatable("ult.botanist.name"))
+      .setLore(List.of(Component.translatable("ult.botanist.test", Component.translatable("ult.botanist.name"))))
+      .build();
 
+    player.getInventory().addItem(item);
   }
 
   @CommandDescription("Test")
