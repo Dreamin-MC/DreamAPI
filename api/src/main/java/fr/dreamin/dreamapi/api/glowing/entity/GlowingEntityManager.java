@@ -6,6 +6,7 @@ import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
 import fr.dreamin.dreamapi.api.nms.packet.PacketSender;
 import fr.dreamin.dreamapi.api.glowing.team.TeamDataCache;
 import fr.dreamin.dreamapi.api.glowing.team.TeamOptions;
+import fr.dreamin.dreamapi.api.glowing.team.TeamPacketFactory;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -66,7 +67,8 @@ public final class GlowingEntityManager {
 
     if (glowData == null) {
       // Create new glowing effect
-      glowData = new EntityGlowData(entityId, entityIdentifier, color, options, otherFlags);
+      final var originalTeamName = getCurrentTeamName(viewer, entityIdentifier);
+      glowData = new EntityGlowData(entityId, entityIdentifier, originalTeamName, color, options, otherFlags);
       playerData.entities.put(entityId, glowData);
 
       applyGlowingFlags(viewer, entityId, otherFlags);
@@ -110,6 +112,8 @@ public final class GlowingEntityManager {
 
     if (glowData.getColor() != null)
       removeTeamColor(viewer, glowData.getEntityIdentifier(), glowData.getColor(), playerData);
+
+    restoreOriginalTeam(viewer, glowData.getEntityIdentifier(), glowData.getOriginalTeamName());
   }
 
   public @NotNull Set<Integer> getGlowingEntityIds(final @NotNull Player viewer) {
@@ -132,6 +136,8 @@ public final class GlowingEntityManager {
       removeGlowingFlags(viewer, glowData.getEntityId(), glowData.getOtherFlags());
       if (glowData.getColor() != null)
         removeTeamColor(viewer, glowData.getEntityIdentifier(), glowData.getColor(), playerData);
+
+      restoreOriginalTeam(viewer, glowData.getEntityIdentifier(), glowData.getOriginalTeamName());
     }
 
     removePacketInterceptor(playerData);
@@ -183,6 +189,20 @@ public final class GlowingEntityManager {
     final var teamData = this.teamCache.getOrCreate(color, TeamOptions.builder().build());
     final var removeEntityPacket = teamData.getRemoveEntityPacket(entityIdentifier);
     PacketSender.send(viewer, removeEntityPacket);
+  }
+
+  private void restoreOriginalTeam(final @NotNull Player viewer, final @NotNull String entityIdentifier,
+                                   final @Nullable String originalTeamName) throws ReflectiveOperationException {
+    if (originalTeamName == null || originalTeamName.isEmpty()) return;
+    if (viewer.getScoreboard().getTeam(originalTeamName) == null) return;
+
+    final var restorePacket = TeamPacketFactory.createAddEntitiesToTeamPacket(originalTeamName, entityIdentifier);
+    PacketSender.send(viewer, restorePacket);
+  }
+
+  private @Nullable String getCurrentTeamName(final @NotNull Player viewer, final @NotNull String entityIdentifier) {
+    final var team = viewer.getScoreboard().getEntryTeam(entityIdentifier);
+    return team == null ? null : team.getName();
   }
 
   private void removePacketInterceptor(final @NotNull PlayerGlowingData playerData) throws ReflectiveOperationException {

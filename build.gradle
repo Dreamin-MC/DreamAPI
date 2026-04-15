@@ -27,31 +27,44 @@ subprojects {
     maven { url = "https://maven.citizensnpcs.co/repo"}
   }
 
+  def paperVersion = "26.1.2.build.+"
+  def lombokVersion = "1.18.44"
+  def jetbrainsAnnotationsVersion = "24.1.0"
+  def jacksonVersion = "2.19.1"
+  def httpClientVersion = "5.3.1"
+  def bkCommonLibVersion = "1.21.8-v1-SNAPSHOT"
+  def luckPermsVersion = "5.4"
+  def invuiVersion = "2.0.0-RC.2"
+  def citizensVersion = "2.0.37-SNAPSHOT"
+  def junitVersion = "5.10.0"
+
   dependencies {
 
-    compileOnly "org.projectlombok:lombok:1.18.44"
-    annotationProcessor "org.projectlombok:lombok:1.18.44"
+    compileOnly("io.papermc.paper:paper-api:$paperVersion")
 
-    compileOnly "org.jetbrains:annotations:24.1.0"
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.19.1")
+    compileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
 
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
+    compileOnly("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
-    compileOnly 'com.bergerkiller.bukkit:BKCommonLib:1.21.8-v1-SNAPSHOT'
+    implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
 
-    compileOnly("net.luckperms:api:5.4")
+    compileOnly("com.bergerkiller.bukkit:BKCommonLib:$bkCommonLibVersion")
 
-    implementation("xyz.xenondevs.invui:invui:2.0.0-RC.2")
+    compileOnly("net.luckperms:api:$luckPermsVersion")
 
-    compileOnly('net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT') {
+    implementation("xyz.xenondevs.invui:invui:$invuiVersion")
+
+    compileOnly("net.citizensnpcs:citizens-main:$citizensVersion") {
       exclude group: '*', module: '*'
     }
 
-    testCompileOnly "org.projectlombok:lombok:1.18.44"
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.44"
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
   }
 
   def targetJavaVersion = JavaVersion.VERSION_25

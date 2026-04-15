@@ -10,13 +10,14 @@ java {
   }
 }
 
+def cloudCommandFrameworkVersion = "1.8.4"
+
 dependencies {
   implementation project(":api")
   implementation project(":core")
-  compileOnly "io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT"
 
-  implementation("cloud.commandframework:cloud-paper:1.8.4")
-  implementation("cloud.commandframework:cloud-annotations:1.8.4")
+  implementation("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")
+  implementation("cloud.commandframework:cloud-annotations:$cloudCommandFrameworkVersion")
 
 }
 

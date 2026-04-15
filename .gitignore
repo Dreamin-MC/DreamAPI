@@ -14,6 +14,7 @@
 /build/
 /**/build/
 /**/run/
+/**/run_old/
 /**/out/
 /**/tmp/
 gradle-app.setting

@@ -5,7 +5,6 @@ repositories {
   maven { url = "https://oss.sonatype.org/content/groups/public/" }
 }
 
-def paperVersion = "1.21.10-R0.1-SNAPSHOT"
 
 def modelEngineVersion = "R4.0.9"
 def cloudCommandFrameworkVersion = "1.8.4"
@@ -14,16 +13,15 @@ def nettyVersion = "4.1.68.Final"
 
 dependencies {
   implementation project(":api")
-  compileOnly "io.papermc.paper:paper-api:$paperVersion"
 
   implementation("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")
   implementation("cloud.commandframework:cloud-annotations:$cloudCommandFrameworkVersion")
 
   implementation("com.flowpowered:flow-nbt:$flowNbtVersion")
 
-  compileOnly "io.netty:netty-all:$nettyVersion"
+  compileOnly("io.netty:netty-all:$nettyVersion")
 
-  compileOnly ("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
+  compileOnly("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
 
 }
 
