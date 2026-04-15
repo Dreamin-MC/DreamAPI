@@ -105,6 +105,7 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
 
     final var fileKey = getBaseName(file.getName());
     final var store = createTranslator(fileKey, langFile.namespace, langFile.value);
+    final Map<Locale, Map<String, String>> invuiTranslations = new HashMap<>();
 
     if (langFile.defaultLocale != null && !langFile.defaultLocale.isBlank())
       store.defaultLocale(parseLocale(langFile.defaultLocale));
@@ -118,10 +119,20 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
           if (value == null || value.locale == null || value.locale.isBlank() || value.value == null)
             continue;
 
-          store.register(entry.key, parseLocale(value.locale), value.value);
+          final var locale = parseLocale(value.locale);
+
+          store.register(entry.key, locale, value.value);
+          invuiTranslations
+            .computeIfAbsent(locale, ignored -> new HashMap<>())
+            .put(entry.key, value.value);
         }
       }
     }
+
+    if (this.enableGUI)
+      invuiTranslations.forEach((locale, translations) ->
+        Languages.getInstance().addLanguage(locale, translations)
+      );
 
     this.langFiles.put(fileKey, langFile);
 
