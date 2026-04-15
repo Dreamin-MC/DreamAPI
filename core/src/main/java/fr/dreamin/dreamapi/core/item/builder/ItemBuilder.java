@@ -9,6 +9,7 @@ import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.annotations.Internal;
 import fr.dreamin.dreamapi.core.item.Items;
 import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
@@ -163,6 +164,8 @@ public class ItemBuilder {
   }
 
   public ItemBuilder setHideToolType(final boolean b) {
+    if (!this.is.hasData(DataComponentTypes.TOOLTIP_DISPLAY)) return this;
+
     withMeta(meta -> meta.setHideTooltip(b));
     return this;
   }
@@ -675,7 +678,16 @@ public class ItemBuilder {
   }
 
   public xyz.xenondevs.invui.item.ItemBuilder toGuiItem() {
-    return new xyz.xenondevs.invui.item.ItemBuilder(build());
+    final var meta = this.itemMeta;
+    this.is.setItemMeta(meta);
+
+    final var item = new xyz.xenondevs.invui.item.ItemBuilder(this.is.clone())
+      .setName(meta.itemName());
+
+    if (meta.lore() != null && meta.hasLore())
+      item.setLore(Objects.requireNonNull(meta.lore()));
+
+    return item;
   }
 
   @Override

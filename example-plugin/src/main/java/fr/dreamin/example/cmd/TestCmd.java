@@ -18,8 +18,14 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import xyz.xenondevs.invui.gui.Gui;
+import xyz.xenondevs.invui.i18n.Languages;
+import xyz.xenondevs.invui.item.Item;
+import xyz.xenondevs.invui.window.Window;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @DreamCmd
 public final class TestCmd {
@@ -30,11 +36,6 @@ public final class TestCmd {
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
-    final var item = new ItemBuilder(Material.PAPER).setName(Component.translatable("ult.botanist.name"))
-      .setLore(List.of(Component.translatable("ult.botanist.test", Component.translatable("ult.botanist.name"))))
-      .build();
-
-    player.getInventory().addItem(item);
   }
 
   @CommandDescription("Test")

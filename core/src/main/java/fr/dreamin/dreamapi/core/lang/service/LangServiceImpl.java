@@ -131,7 +131,7 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
 
     if (this.enableGUI)
       invuiTranslations.forEach((locale, translations) ->
-        Languages.getInstance().addLanguage(locale, translations)
+        Languages.getInstance().addLanguage(locale == Locale.FRENCH ? Locale.FRANCE : locale, translations)
       );
 
     this.langFiles.put(fileKey, langFile);
