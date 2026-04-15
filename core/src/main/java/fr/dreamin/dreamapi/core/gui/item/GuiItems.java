@@ -22,6 +22,10 @@ public final class GuiItems {
     return NEXT(Material.AIR, translationKey, true);
   }
 
+  public static BoundItem.Builder NEXT(final @NotNull String translationKey, final boolean hideToolTip) {
+    return NEXT(Material.AIR, translationKey, hideToolTip);
+  }
+
   public static BoundItem.Builder NEXT(final boolean hideToolTip) {
     return NEXT(Material.AIR, null, hideToolTip);
   }
@@ -45,9 +49,9 @@ public final class GuiItems {
           return new ItemBuilder(Material.ARROW).setName(
             translationKey != null
             ? Component.translatable(translationKey)
-            : Component.translatable("Suivant")
+            : Component.text("Suivant")
           ).toGuiItem();
-        return new ItemBuilder(material).setHideToolType(hideToolTip).toGuiItem();
+        return new ItemBuilder(material).setHideToolType(material != Material.AIR && hideToolTip).toGuiItem();
       })
       .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() - 1));
   }
@@ -62,6 +66,10 @@ public final class GuiItems {
 
   public static BoundItem.Builder PREVIOUS(final @NotNull String translationKey) {
     return PREVIOUS(Material.AIR, translationKey, true);
+  }
+
+  public static BoundItem.Builder PREVIOUS(final @NotNull String translationKey, final boolean hideToolTip) {
+    return PREVIOUS(Material.AIR, translationKey, hideToolTip);
   }
 
   public static BoundItem.Builder PREVIOUS(final boolean hideToolTip) {
@@ -87,9 +95,9 @@ public final class GuiItems {
           return new ItemBuilder(Material.ARROW).setName(
             translationKey != null
               ? Component.translatable(translationKey)
-              : Component.translatable("Suivant")
+              : Component.text("Suivant")
           ).toGuiItem();
-        return new ItemBuilder(material).setHideToolType(hideToolTip).toGuiItem();
+        return new ItemBuilder(material).setHideToolType(material != Material.AIR && hideToolTip).toGuiItem();
       })
       .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() + 1));
   }
@@ -99,22 +107,38 @@ public final class GuiItems {
   // ###############################################################
 
   public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI) {
-    return BACK(backGUI, Material.OAK_DOOR, true);
+    return BACK(backGUI, Material.OAK_DOOR, null, true);
+  }
+
+  public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final @NotNull String translationKey) {
+    return BACK(backGUI, Material.OAK_DOOR, translationKey, true);
   }
 
   public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final @NotNull Material material) {
-    return BACK(backGUI, material, true);
+    return BACK(backGUI, material, null, true);
+  }
+
+  public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final @NotNull Material material, final @NotNull String translationKey) {
+    return BACK(backGUI, material, translationKey, true);
   }
 
   public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final boolean hideToolTip) {
-    return BACK(backGUI, Material.OAK_DOOR, hideToolTip);
+    return BACK(backGUI, Material.OAK_DOOR, null, hideToolTip);
   }
 
-  public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final @NotNull Material material, final boolean hideToolTip) {
+  public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final @NotNull String translationKey, final boolean hideToolTip) {
+    return BACK(backGUI, Material.OAK_DOOR, translationKey, hideToolTip);
+  }
+
+  public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final @NotNull Material material, final @Nullable String translationKey, final boolean hideToolTip) {
     return BoundItem.builder()
       .setItemProvider((player, gui) -> new ItemBuilder(material)
-        .setName(Component.translatable("Retour en arrière"))
-        .setHideToolType(hideToolTip)
+        .setName(
+          translationKey != null
+            ? Component.translatable(translationKey)
+            : Component.text("Retour en arrière")
+        )
+        .setHideToolType(material != Material.AIR && hideToolTip)
         .toGuiItem())
       .addClickHandler((item, gui, click) -> backGUI.open(click.player()));
 
