@@ -1,22 +1,22 @@
-package fr.dreamin.dreamapi.core.item.ui;
+package fr.dreamin.dreamapi.core.lang.ui;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.item.ItemRegistryService;
-import fr.dreamin.dreamapi.api.item.RegisteredItem;
+import fr.dreamin.dreamapi.api.lang.model.LangEntry;
+import fr.dreamin.dreamapi.api.lang.model.LangFile;
+import fr.dreamin.dreamapi.api.lang.service.LangService;
 import fr.dreamin.dreamapi.core.gui.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
+import fr.dreamin.dreamapi.core.item.ui.ItemRegistryGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import xyz.xenondevs.invui.Click;
 import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.gui.Markers;
@@ -29,21 +29,24 @@ import xyz.xenondevs.invui.window.AnvilWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ItemRegistryGUI implements GuiInterface {
+public final class LangFileGUI implements GuiInterface {
 
-  private final @NotNull ItemRegistryService itemRegistryService = DreamAPI.getAPI().getService(ItemRegistryService.class);
+  private final @NotNull LangService langService = DreamAPI.getAPI().getService(LangService.class);
 
-  private @Nullable String search;
+  private final @NotNull LangFile langFile;
+  private @NotNull String search;
 
   // ###############################################################
   // --------------------- CONSTRUCTOR METHODS ---------------------
   // ###############################################################
 
-  public ItemRegistryGUI() {
+  public LangFileGUI(final @NotNull LangFile langFile) {
+    this.langFile = langFile;
     this.search = "";
   }
 
-  public ItemRegistryGUI(final @Nullable String search) {
+  public LangFileGUI(final @NotNull LangFile langFile, final @NotNull String search) {
+    this.langFile = langFile;
     this.search = search;
   }
 
@@ -53,7 +56,7 @@ public final class ItemRegistryGUI implements GuiInterface {
 
   @Override
   public Component name(@NotNull Player player) {
-    return Component.text("Item Registry");
+    return Component.text("Lang File");
   }
 
   @Override
@@ -80,7 +83,6 @@ public final class ItemRegistryGUI implements GuiInterface {
       })
       .build();
   }
-
 
   public PagedGui<Item> pagedGui(@NotNull Player player) {
     return PagedGui.itemsBuilder()
@@ -119,46 +121,52 @@ public final class ItemRegistryGUI implements GuiInterface {
   // ----------------------- PRIVATE METHODS -----------------------
   // ###############################################################
 
-  private boolean matchesSearch(final @NotNull RegisteredItem registered) {
-    if (this.search == null || this.search.isBlank()) return true;
-
-    final var query = this.search.toLowerCase();
-
-    if (registered.id().toLowerCase().contains(query)) return true;
-
-    final var meta = registered.item().getItemMeta();
-    if (meta == null) return false;
-
-    if (meta.hasDisplayName()) {
-      final var name = PlainTextComponentSerializer.plainText()
-        .serialize(meta.displayName())
-        .toLowerCase();
-
-      if (name.contains(query)) return true;
-    }
-
-    return registered.item().getType().name().toLowerCase().contains(query);
+  private boolean matchesSearch(final @NotNull LangEntry langEntry) {
+    if (this.search.isBlank()) return true;
+    return langEntry.key.toLowerCase().contains(this.search.toLowerCase());
   }
 
   private List<Item> getItems() {
     final var rs = new ArrayList<Item>();
 
-    final var list = this.itemRegistryService.getAllRegisteredItems().stream()
+    final var list = this.langFile.keys.stream()
       .filter(this::matchesSearch)
       .toList();
 
-    for (final var registered : list) {
-      rs.add(new AbstractItem() {
-        @Override
-        public @NotNull ItemProvider getItemProvider(@NotNull Player player) {
-          return new ItemBuilder(registered.item()).toGuiItem();
-        }
+    for (final var langEntry : list) {
 
-        @Override
-        public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull Click click) {
-          player.getInventory().addItem(registered.item());
-        }
-      });
+      final long translationCount = langEntry.lang.stream()
+        .mapToLong(l -> l == null ? 0 : 1)
+        .sum();
+
+      final var lore = new ArrayList<Component>(List.of(
+        Component.empty(),
+        Component.text("Lang Entry Info: " + langEntry, NamedTextColor.GOLD),
+        Component.empty(),
+        Component.text("Translations: ", NamedTextColor.DARK_GRAY)
+          .append(Component.text(String.valueOf(translationCount), NamedTextColor.WHITE))
+      ));
+
+      for (final var lang : langEntry.lang) {
+        lore.addAll(List.of(
+          Component.empty(),
+          Component.text("Locale: ", NamedTextColor.DARK_GRAY)
+            .append(Component.text(lang.value, NamedTextColor.WHITE))
+        ));
+      }
+
+      rs.add(
+        Item.builder()
+          .setItemProvider(new ItemBuilder(Material.PAPER)
+            .setName(Component.text(langEntry.key))
+            .setLore(lore)
+            .toGuiItem()
+          )
+          .addClickHandler((item, click) -> {
+            click.player().sendMessage(Component.translatable(langEntry.key));
+          })
+          .build()
+      );
     }
 
     return rs;

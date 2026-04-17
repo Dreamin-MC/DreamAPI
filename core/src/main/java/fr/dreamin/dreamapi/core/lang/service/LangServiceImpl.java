@@ -132,9 +132,12 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     }
 
     if (this.enableGUI)
-      invuiTranslations.forEach((locale, translations) ->
-        Languages.getInstance().addLanguage(locale == Locale.FRENCH ? Locale.FRANCE : locale, translations)
-      );
+      invuiTranslations.forEach((locale, translations) -> {
+        if (locale == Locale.FRENCH) {
+          Languages.getInstance().addLanguage(locale.FRANCE, translations);
+          Languages.getInstance().addLanguage(locale, translations);
+        }
+      });
 
     this.langFiles.put(fileKey, langFile);
   }
@@ -175,6 +178,11 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
   }
 
   @Override
+  public Map<String, LangFile> getLangFiles() {
+    return Collections.unmodifiableMap(this.langFiles);
+  }
+
+  @Override
   public @NotNull Set<String> getLoadedFiles() {
     return Collections.unmodifiableSet(this.translationStore.keySet());
   }
@@ -198,23 +206,21 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
   }
 
   @Override
-  public boolean reload(@NotNull String file) {
-    final File langFile = new File(new File(DreamAPI.getAPI().plugin().getDataFolder(), "lang"), file + ".json");
-    if (!langFile.exists() || !langFile.isFile()) {
+  public boolean reload(@NotNull String fileKey) {
+    final var langFile = resolveLangFile(fileKey).orElse(null);
+    if (langFile == null)
       return false;
-    }
 
-    this.unload(file);
-    this.load(langFile);
+    unload(fileKey);
+    load(langFile);
     return true;
   }
 
   @Override
-  public boolean add(@NotNull String file) {
-    final File langFile = new File(new File(DreamAPI.getAPI().plugin().getDataFolder(), "lang"), file + ".json");
-    if (!langFile.exists() || !langFile.isFile()) {
+  public boolean add(@NotNull String fileKey) {
+    final var langFile = resolveLangFile(fileKey).orElse(null);
+    if (langFile == null)
       return false;
-    }
 
     this.load(langFile);
     return true;
@@ -229,18 +235,38 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     this.playerLocales.clear();
   }
 
+  @Override
+  public boolean isSupportedLangFile(@NotNull File file) {
+    return file.getName().toLowerCase(Locale.ROOT).endsWith(".json");
+  }
+
+  @Override
+  public @NotNull String buildFileKey(@NotNull File langFolder, @NotNull File file) {
+    final String relativePath = langFolder.toPath().relativize(file.toPath()).toString();
+    final String withoutExtension = relativePath.replaceFirst("\\.[^.]+$", "");
+    return withoutExtension.replace('\\', '_').replace('/', '_');
+  }
+
   // ###############################################################
   // ----------------------- PRIVATE METHODS -----------------------
   // ###############################################################
 
-  private boolean isSupportedLangFile(@NotNull File file) {
-    return file.getName().toLowerCase(Locale.ROOT).endsWith(".json");
-  }
+  private @NotNull Optional<File> resolveLangFile(@NotNull String fileKey) {
+    final var langFolder = new File(DreamAPI.getAPI().plugin().getDataFolder(), "lang");
+    if (!langFolder.exists() || !langFolder.isDirectory()) {
+      return Optional.empty();
+    }
 
-  private @NotNull String buildFileKey(@NotNull File langFolder, @NotNull File file) {
-    final String relativePath = langFolder.toPath().relativize(file.toPath()).toString();
-    final String withoutExtension = relativePath.replaceFirst("\\.[^.]+$", "");
-    return withoutExtension.replace('\\', '_').replace('/', '_');
+    try (final var paths = Files.walk(langFolder.toPath())) {
+      return paths
+        .filter(Files::isRegularFile)
+        .map(Path::toFile)
+        .filter(this::isSupportedLangFile)
+        .filter(file -> buildFileKey(langFolder, file).equals(fileKey))
+        .findFirst();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to resolve lang file for key " + fileKey, e);
+    }
   }
 
   private @NotNull String getBaseName(@NotNull String fileName) {

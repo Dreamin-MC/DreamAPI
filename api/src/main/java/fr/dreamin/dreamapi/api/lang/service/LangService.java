@@ -5,6 +5,7 @@ import net.kyori.adventure.translation.Translator;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,11 +23,15 @@ public interface LangService {
   Optional<Translator> getTranslator(final @NotNull String value);
   Translator createTranslator(final @NotNull String label, final @NotNull String namespace, final @NotNull String value);
 
+  Map<String, LangFile> getLangFiles();
   @NotNull Set<String> getLoadedFiles();
   @NotNull Optional<LangFile> getLangFile(@NotNull String file);
   boolean unload(@NotNull String file);
   boolean reload(@NotNull String file);
   boolean add(@NotNull String file);
   void reset();
+
+  boolean isSupportedLangFile(@NotNull File file);
+  @NotNull String buildFileKey(@NotNull File langFolder, @NotNull File file);
 
 }
