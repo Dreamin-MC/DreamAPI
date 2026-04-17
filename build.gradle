@@ -16,7 +16,7 @@ subprojects {
   apply plugin: "java-library"
 
   group = "fr.dreamin"
-  version = "0.0.9.9.3"
+  version = "0.1.0"
   description = "DreamAPI - API modulaire pour Paper 26.1.2"
 
   repositories {
@@ -37,6 +37,7 @@ subprojects {
   def invuiVersion = "2.0.0-RC.2"
   def citizensVersion = "2.0.37-SNAPSHOT"
   def junitVersion = "5.10.0"
+  def jomlVersion = "1.10.8"
 
   dependencies {
 
@@ -64,6 +65,8 @@ subprojects {
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
+    testCompileOnly("io.papermc.paper:paper-api:$paperVersion")
+    testImplementation("org.joml:joml:$jomlVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
   }
 

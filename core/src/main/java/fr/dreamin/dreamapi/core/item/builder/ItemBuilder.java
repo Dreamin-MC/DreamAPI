@@ -681,8 +681,11 @@ public class ItemBuilder {
     final var meta = this.itemMeta;
     this.is.setItemMeta(meta);
 
-    final var item = new xyz.xenondevs.invui.item.ItemBuilder(this.is.clone())
-      .setName(meta.itemName());
+    final var item = new xyz.xenondevs.invui.item.ItemBuilder(this.is.clone());
+
+    if (meta == null) return item;
+
+    item.setName(meta.itemName());
 
     if (meta.lore() != null && meta.hasLore())
       item.setLore(Objects.requireNonNull(meta.lore()));

@@ -10,6 +10,10 @@ def modelEngineVersion = "R4.0.9"
 def cloudCommandFrameworkVersion = "1.8.4"
 def flowNbtVersion = "1.0.0"
 def nettyVersion = "4.1.68.Final"
+def paperVersion = "26.1.2.build.+"
+def jomlVersion = "1.10.8"
+def junitPlatformVersion = "1.10.0"
+def jacksonVersion = "2.19.1"
 
 dependencies {
   implementation project(":api")
@@ -23,6 +27,11 @@ dependencies {
 
   compileOnly("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
 
+  testCompileOnly("io.papermc.paper:paper-api:$paperVersion")
+  testRuntimeOnly("io.papermc.paper:paper-api:$paperVersion")
+  testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+  testImplementation("org.joml:joml:$jomlVersion")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
 }
 
 

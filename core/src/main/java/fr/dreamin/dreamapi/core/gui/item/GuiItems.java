@@ -53,7 +53,7 @@ public final class GuiItems {
           ).toGuiItem();
         return new ItemBuilder(material).setHideToolType(material != Material.AIR && hideToolTip).toGuiItem();
       })
-      .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() - 1));
+      .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() + 1));
   }
 
   // ###############################################################
@@ -99,7 +99,7 @@ public final class GuiItems {
           ).toGuiItem();
         return new ItemBuilder(material).setHideToolType(material != Material.AIR && hideToolTip).toGuiItem();
       })
-      .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() + 1));
+      .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() - 1));
   }
 
   // ###############################################################
