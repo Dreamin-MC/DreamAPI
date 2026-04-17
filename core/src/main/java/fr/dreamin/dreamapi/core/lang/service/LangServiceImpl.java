@@ -103,9 +103,11 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     if (langFile.value == null || langFile.value.isBlank())
       throw new IllegalArgumentException("Missing value for lang file " + file.getName());
 
-    final var fileKey = getBaseName(file.getName());
+    final var langFolder = new File(DreamAPI.getAPI().plugin().getDataFolder(), "lang");
+    final var fileKey = buildFileKey(langFolder, file);
+
     final var store = createTranslator(fileKey, langFile.namespace, langFile.value);
-    final Map<Locale, Map<String, String>> invuiTranslations = new HashMap<>();
+    final var invuiTranslations = new HashMap<Locale, Map<String, String>>();
 
     if (langFile.defaultLocale != null && !langFile.defaultLocale.isBlank())
       store.defaultLocale(parseLocale(langFile.defaultLocale));
@@ -135,7 +137,6 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
       );
 
     this.langFiles.put(fileKey, langFile);
-
   }
 
   @Override
@@ -234,6 +235,12 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
 
   private boolean isSupportedLangFile(@NotNull File file) {
     return file.getName().toLowerCase(Locale.ROOT).endsWith(".json");
+  }
+
+  private @NotNull String buildFileKey(@NotNull File langFolder, @NotNull File file) {
+    final String relativePath = langFolder.toPath().relativize(file.toPath()).toString();
+    final String withoutExtension = relativePath.replaceFirst("\\.[^.]+$", "");
+    return withoutExtension.replace('\\', '_').replace('/', '_');
   }
 
   private @NotNull String getBaseName(@NotNull String fileName) {
