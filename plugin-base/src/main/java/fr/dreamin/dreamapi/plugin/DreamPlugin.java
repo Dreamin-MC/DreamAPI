@@ -100,6 +100,9 @@ public abstract class DreamPlugin extends JavaPlugin {
   @Getter
   public static DreamPlugin instance;
 
+  @Getter
+  public static @NotNull ServiceAnnotationProcessor serviceManager;
+
   private PaperCommandManager<CommandSender> manager;
   private AnnotationParser<CommandSender> annotationParser;
 
@@ -112,8 +115,6 @@ public abstract class DreamPlugin extends JavaPlugin {
   @Getter
   protected @NotNull Set<Class<?>> preScannedClasses;
 
-  @Getter
-  protected @NotNull ServiceAnnotationProcessor serviceManager;
 
   @Getter
   protected @NotNull DreamServiceInspector serviceInspector;
@@ -157,24 +158,24 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     this.dreamAPI = DreamAPI.getAPI();
 
-    this.serviceManager = new ServiceAnnotationProcessor(this, this.preScannedClasses);
+    serviceManager = new ServiceAnnotationProcessor(this, this.preScannedClasses);
     loadServices();
-    this.serviceManager.process();
-    this.serviceInspector = new DreamServiceInspector(this, this.serviceManager);
+    serviceManager.process();
+    this.serviceInspector = new DreamServiceInspector(this, serviceManager);
 
-    if (this.serviceManager.isLoaded(ItemRegistryServiceImpl.class))
-      new ItemAnnotationProcessor(this, getService(ItemRegistryService.class), this.serviceManager, this.preScannedClasses)
+    if (serviceManager.isLoaded(ItemRegistryServiceImpl.class))
+      new ItemAnnotationProcessor(this, getService(ItemRegistryService.class), serviceManager, this.preScannedClasses)
         .process();
 
-    if (this.serviceManager.isLoaded(RecipeCategoryRegistryServiceImpl.class))
-      new RecipeAnnotationProcessor(this, getService(RecipeRegistryService.class), this.serviceManager, this.preScannedClasses)
+    if (serviceManager.isLoaded(RecipeCategoryRegistryServiceImpl.class))
+      new RecipeAnnotationProcessor(this, getService(RecipeRegistryService.class), serviceManager, this.preScannedClasses)
         .process();
 
     initCmds();
-    new CmdAnnotationProcessor(this, this.annotationParser, this.serviceManager, this.preScannedClasses)
+    new CmdAnnotationProcessor(this, this.annotationParser, serviceManager, this.preScannedClasses)
       .process();
 
-    new ListenerAnnotationProcessor(this, this.serviceManager, this.preScannedClasses)
+    new ListenerAnnotationProcessor(this, serviceManager, this.preScannedClasses)
       .process();
 
     onDreamEnable();
@@ -327,7 +328,7 @@ public abstract class DreamPlugin extends JavaPlugin {
    * @param <T>
    */
   public @NotNull <T extends DreamService> Optional<T> findDreamService(final @NotNull Class<T> clazz) {
-    return Optional.ofNullable(this.serviceManager.getDreamService(clazz));
+    return Optional.ofNullable(serviceManager.getDreamService(clazz));
   }
 
   /**
@@ -338,7 +339,7 @@ public abstract class DreamPlugin extends JavaPlugin {
    * @return The loaded DreamService, or null if not found
    */
   public <T extends DreamService> @NotNull T getDreamService(@NotNull Class<T> clazz) {
-    T service = this.serviceManager.getDreamService(clazz);
+    T service = serviceManager.getDreamService(clazz);
     if (service == null) {
       throw new IllegalStateException(String.format(
         "DreamService '%s' is not loaded or not registered.",
@@ -409,12 +410,12 @@ public abstract class DreamPlugin extends JavaPlugin {
       services.addAll(LOAD_MODE_SERVICES.get(LoadMode.ALL));
 
     for (Class<? extends DreamService> service : services) {
-      this.serviceManager.loadServiceFromClass(service);
+      serviceManager.loadServiceFromClass(service);
     }
 
     // FIXME (Scraven, 29/12/2025): load if TeamService is loaded
     if (isLuckPermsAvailable())
-      this.serviceManager.loadServiceFromClass(LuckPermsServiceImpl.class);
+      serviceManager.loadServiceFromClass(LuckPermsServiceImpl.class);
 
   }
 
@@ -462,42 +463,42 @@ public abstract class DreamPlugin extends JavaPlugin {
       this.annotationParser.parse(new BroadcastCmd(this));
 
     if (this.itemRegistryCmd) {
-      if (!this.serviceManager.isLoaded(ItemRegistryServiceImpl.class))
-        this.serviceManager.loadServiceFromClass(ItemRegistryServiceImpl.class);
+      if (!serviceManager.isLoaded(ItemRegistryServiceImpl.class))
+        serviceManager.loadServiceFromClass(ItemRegistryServiceImpl.class);
       this.annotationParser.parse(new ItemRegistryCmd());
     }
 
     if (this.glowingCmd) {
-      if (!this.serviceManager.isLoaded(GlowingServiceImpl.class))
-        this.serviceManager.loadServiceFromClass(GlowingServiceImpl.class);
+      if (!serviceManager.isLoaded(GlowingServiceImpl.class))
+        serviceManager.loadServiceFromClass(GlowingServiceImpl.class);
       this.annotationParser.parse(new GlowingCmd());
     }
 
     if (this.nmsVisualCmd) {
-      if (!this.serviceManager.isLoaded(VisualServiceImpl.class))
-        this.serviceManager.loadServiceFromClass(VisualServiceImpl.class);
+      if (!serviceManager.isLoaded(VisualServiceImpl.class))
+        serviceManager.loadServiceFromClass(VisualServiceImpl.class);
       this.annotationParser.parse(new VisualCmd());
     }
 
     if (this.debugCmd) {
-      if (!this.serviceManager.isLoaded(PlayerDebugServiceImpl.class))
-        this.serviceManager.loadServiceFromClass(PlayerDebugServiceImpl.class);
+      if (!serviceManager.isLoaded(PlayerDebugServiceImpl.class))
+        serviceManager.loadServiceFromClass(PlayerDebugServiceImpl.class);
 
-      if (!this.serviceManager.isLoaded(DebugServiceImpl.class))
-        this.serviceManager.loadServiceFromClass(DebugServiceImpl.class);
+      if (!serviceManager.isLoaded(DebugServiceImpl.class))
+        serviceManager.loadServiceFromClass(DebugServiceImpl.class);
 
       this.annotationParser.parse(new DebugCmd());
     }
 
     if (this.langCmd) {
-      if (!this.serviceManager.isLoaded(LangServiceImpl.class))
-        this.serviceManager.loadServiceFromClass(LangServiceImpl.class);
+      if (!serviceManager.isLoaded(LangServiceImpl.class))
+        serviceManager.loadServiceFromClass(LangServiceImpl.class);
 
       this.annotationParser.parse(new LangCmd());
     }
 
     if (this.serviceCmd)
-      this.annotationParser.parse(new ServiceCmd(this, this.serviceManager, this.serviceInspector));
+      this.annotationParser.parse(new ServiceCmd(this, serviceManager, this.serviceInspector));
 
   }
 
