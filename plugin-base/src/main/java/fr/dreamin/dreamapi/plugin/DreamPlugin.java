@@ -147,7 +147,7 @@ public abstract class DreamPlugin extends JavaPlugin {
     ItemKeys.init(this);
 
     try {
-      preScannedClasses = ClassScanner.getClasses(this, this.getClass().getPackageName(), true);
+      preScannedClasses = ClassScanner.getClasses(this, this.getClass().getPackageName(), true, getClassScanParentPackageLevels());
     } catch (IOException | ClassNotFoundException e) {
       getLogger().severe(String.format("[DreamAPI] Failed to scan classes: %s", e.getMessage()));
       throw new RuntimeException(e);
@@ -184,6 +184,22 @@ public abstract class DreamPlugin extends JavaPlugin {
       String.format("DreamAPI initialized successfully with provider: %s",
         this.dreamAPI.getClass().getSimpleName())
     );
+  }
+
+  /**
+   * Number of package levels to trim before classpath scanning.
+   * <p>
+   * Example: if main package is {@code fr.dreamin.project.core} and this method
+   * returns {@code 1}, scanner starts at {@code fr.dreamin.project} and can include
+   * sibling packages such as {@code .api}.
+   * </p>
+   * <p>
+   * Default is {@code 0} to restrict scan to the plugin package.
+   * Override and return {@code 1} (or more) to include sibling packages.
+   * </p>
+   */
+  protected int getClassScanParentPackageLevels() {
+    return 0;
   }
 
   /**

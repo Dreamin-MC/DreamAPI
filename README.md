@@ -1,6 +1,6 @@
 # ✨ DreamAPI
 
-[![Version](https://img.shields.io/badge/version-0.1.6-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
+[![Version](https://img.shields.io/badge/version-0.1.7-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
 [![](https://jitpack.io/v/Dreamin-MC/DreamAPI.svg)](https://jitpack.io/#Dreamin-MC/DreamAPI)
 [![Java](https://img.shields.io/badge/java-21-orange.svg)](https://www.oracle.com/java/)
 [![Minecraft](https://img.shields.io/badge/minecraft-26.2.1-green.svg)](https://www.minecraft.net/)
@@ -110,7 +110,7 @@ DreamAPI is organized into **specialized modules** covering all aspects of plugi
 <dependency>
     <groupId>com.github.Dreamin-MC</groupId>
     <artifactId>DreamAPI</artifactId>
-    <version>0.1.6:all</version>
+    <version>0.1.7:all</version>
 </dependency>
 ```
 
@@ -121,7 +121,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.Dreamin-MC:DreamAPI:0.1.6:all")
+    compileOnly("com.github.Dreamin-MC:DreamAPI:0.1.7:all")
 }
 ```
 
@@ -132,7 +132,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.Dreamin-MC:DreamAPI:0.1.6:all'
+    compileOnly 'com.github.Dreamin-MC:DreamAPI:0.1.7:all'
 }
 ```
 
@@ -155,7 +155,7 @@ More modules coming soon!
 
 | Status | Version  | Compatibility |
 |--------|----------|---------------|
-| 🧪 In active development | `v0.1.6` | Paper 26.2.1 |
+| 🧪 In active development | `v0.1.7` | Paper 26.2.1 |
 | 🔜 Beta Release | `v0.1.0` | Enhanced documentation & stability |
 | 🚀 Stable Release | `v1.0.0` | Full API freeze & production-ready |
 
