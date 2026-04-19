@@ -103,6 +103,9 @@ public abstract class DreamPlugin extends JavaPlugin {
   @Getter
   public static @NotNull ServiceAnnotationProcessor serviceManager;
 
+  @Getter
+  public static @NotNull Set<Class<?>> preScannedClasses;
+
   private PaperCommandManager<CommandSender> manager;
   private AnnotationParser<CommandSender> annotationParser;
 
@@ -111,10 +114,6 @@ public abstract class DreamPlugin extends JavaPlugin {
    */
   @Getter
   protected DreamAPI.IApiProvider dreamAPI;
-
-  @Getter
-  protected @NotNull Set<Class<?>> preScannedClasses;
-
 
   @Getter
   protected @NotNull DreamServiceInspector serviceInspector;
@@ -148,7 +147,7 @@ public abstract class DreamPlugin extends JavaPlugin {
     ItemKeys.init(this);
 
     try {
-      this.preScannedClasses = ClassScanner.getClasses(this, this.getClass().getPackageName(), true);
+      preScannedClasses = ClassScanner.getClasses(this, this.getClass().getPackageName(), true);
     } catch (IOException | ClassNotFoundException e) {
       getLogger().severe(String.format("[DreamAPI] Failed to scan classes: %s", e.getMessage()));
       throw new RuntimeException(e);
@@ -158,24 +157,24 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     this.dreamAPI = DreamAPI.getAPI();
 
-    serviceManager = new ServiceAnnotationProcessor(this, this.preScannedClasses);
+    serviceManager = new ServiceAnnotationProcessor(this, preScannedClasses);
     loadServices();
     serviceManager.process();
     this.serviceInspector = new DreamServiceInspector(this, serviceManager);
 
     if (serviceManager.isLoaded(ItemRegistryServiceImpl.class))
-      new ItemAnnotationProcessor(this, getService(ItemRegistryService.class), serviceManager, this.preScannedClasses)
+      new ItemAnnotationProcessor(this, getService(ItemRegistryService.class), serviceManager, preScannedClasses)
         .process();
 
     if (serviceManager.isLoaded(RecipeCategoryRegistryServiceImpl.class))
-      new RecipeAnnotationProcessor(this, getService(RecipeRegistryService.class), serviceManager, this.preScannedClasses)
+      new RecipeAnnotationProcessor(this, getService(RecipeRegistryService.class), serviceManager, preScannedClasses)
         .process();
 
     initCmds();
-    new CmdAnnotationProcessor(this, this.annotationParser, serviceManager, this.preScannedClasses)
+    new CmdAnnotationProcessor(this, this.annotationParser, serviceManager, preScannedClasses)
       .process();
 
-    new ListenerAnnotationProcessor(this, serviceManager, this.preScannedClasses)
+    new ListenerAnnotationProcessor(this, serviceManager, preScannedClasses)
       .process();
 
     onDreamEnable();
