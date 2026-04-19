@@ -45,7 +45,7 @@ public final class GuiItems {
   public static BoundItem.Builder NEXT(final @NotNull Material material, final @Nullable String translationKey, final boolean hideToolTip) {
     return BoundItem.pagedBuilder()
       .setItemProvider((player, gui) -> {
-        if (gui.getPage() > 0)
+        if (gui.getPage() < gui.getPageCount() - 1)
           return new ItemBuilder(Material.ARROW).setName(
             translationKey != null
             ? Component.translatable(translationKey)
@@ -91,7 +91,7 @@ public final class GuiItems {
   public static BoundItem.Builder PREVIOUS(final @NotNull Material material, final @Nullable String translationKey, final boolean hideToolTip) {
     return BoundItem.pagedBuilder()
       .setItemProvider((player, gui) -> {
-        if (gui.getPage() < gui.getPageCount() - 1)
+        if (gui.getPage() > 0)
           return new ItemBuilder(Material.ARROW).setName(
             translationKey != null
               ? Component.translatable(translationKey)
