@@ -5,8 +5,7 @@ repositories {
   maven { url = "https://oss.sonatype.org/content/groups/public/" }
 }
 
-
-def modelEngineVersion = "R4.0.9"
+def modelEngineVersion = "R4.1.0"
 def cloudCommandFrameworkVersion = "1.8.4"
 def flowNbtVersion = "1.0.0"
 def nettyVersion = "4.1.68.Final"
