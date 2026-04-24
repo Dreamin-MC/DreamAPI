@@ -59,6 +59,15 @@ public class PacketReflection {
   // ###############################################################
 
   private static Class<?> packetClass;
+
+  private static Class<?> worldBorderClass;
+  private static Class<?> packetWorldBorderClass;
+  private static Class<?> packetWorldBorderCenterClass;
+  private static Class<?> packetWorldBorderSizeClass;
+  private static Class<?> packetWorldBorderLerpClass;
+  private static Class<?> packetWorldBorderWarningDelayClass;
+  private static Class<?> packetWorldBorderWarningDistanceClass;
+
   private static Class<?> packetMetadataClass;
   private static Class<?> packetTeamClass;
   private static Class<?> packetTeamParamsClass;
@@ -175,6 +184,15 @@ public class PacketReflection {
 
     // Packets
     packetClass = Class.forName(PacketConstants.NMS_PACKET);
+
+    worldBorderClass = Class.forName(PacketConstants.NMS_WORLD_BORDER);
+    packetWorldBorderClass = Class.forName(PacketConstants.NMS_PACKET_WORLD_BORDER);
+    packetWorldBorderCenterClass = Class.forName(PacketConstants.NMS_PACKET_WORLD_BORDER_CENTER);
+    packetWorldBorderSizeClass = Class.forName(PacketConstants.NMS_PACKET_WORLD_BORDER_SIZE);
+    packetWorldBorderLerpClass = Class.forName(PacketConstants.NMS_PACKET_WORLD_BORDER_LERP_SIZE);
+    packetWorldBorderWarningDelayClass = Class.forName(PacketConstants.NMS_PACKET_WORLD_BORDER_WARNING_DELAY);
+    packetWorldBorderWarningDistanceClass = Class.forName(PacketConstants.NMS_PACKET_WORLD_BORDER_WARNING_DISTANCE);
+
     packetMetadataClass = Class.forName(PacketConstants.NMS_PACKET_METADATA);
     packetTeamClass = Class.forName(PacketConstants.NMS_PACKET_TEAM);
     packetTeamParamsClass = Class.forName(PacketConstants.NMS_PACKET_TEAM_PARAMS);
@@ -309,15 +327,17 @@ public class PacketReflection {
     return dataValueCreateMethod.invoke(null, watcherObjectFlags, flags);
   }
 
-  public static @NotNull Object createMetadataPacket(final int entityId, final @NotNull List<Object> dataValues)
-    throws ReflectiveOperationException {
+  public static @NotNull Object createMetadataPacket(final int entityId, final @NotNull List<Object> dataValues) throws ReflectiveOperationException {
     ensureInitialized();
     return packetMetadataConstructor.newInstance(entityId, dataValues);
   }
 
-  public static @NotNull Object createTeamPacket(final @NotNull String teamName, final int mode,
-                                                 final @NotNull Optional<Object> params, final @NotNull java.util.Collection<String> entities)
-    throws ReflectiveOperationException {
+  public static @NotNull Object createTeamPacket(
+    final @NotNull String teamName,
+    final int mode,
+    final @NotNull Optional<Object> params,
+    final @NotNull java.util.Collection<String> entities
+  ) throws ReflectiveOperationException {
     ensureInitialized();
     return packetTeamConstructor.newInstance(teamName, mode, params, entities);
   }
@@ -332,7 +352,14 @@ public class PacketReflection {
     return packetTeamParamsConstructor.newInstance(team);
   }
 
-  public static void configureTeam(final @NotNull Object team, final char colorCode, final @NotNull String collisionRule, final @NotNull String visibility, final boolean friendlyFire, final boolean seeInvisibles) throws ReflectiveOperationException {
+  public static void configureTeam(
+    final @NotNull Object team,
+    final char colorCode,
+    final @NotNull String collisionRule,
+    final @NotNull String visibility,
+    final boolean friendlyFire,
+    final boolean seeInvisibles
+  ) throws ReflectiveOperationException {
     ensureInitialized();
 
     final var colorConstant = getColorConstantMethod.invoke(null, colorCode);
@@ -349,7 +376,11 @@ public class PacketReflection {
   /**
    * Set team prefix and suffix (use empty strings to prevent tab list coloring)
    */
-  public static void setTeamPrefixSuffix(final @NotNull Object team, final @NotNull String prefix, final @NotNull String suffix) throws ReflectiveOperationException {
+  public static void setTeamPrefixSuffix(
+    final @NotNull Object team,
+    final @NotNull String prefix,
+    final @NotNull String suffix
+  ) throws ReflectiveOperationException {
     ensureInitialized();
 
     // Create empty components
@@ -365,14 +396,21 @@ public class PacketReflection {
     setTeamSuffixMethod.invoke(team, suffixComponent);
   }
 
-  public static @NotNull Object createAddShulkerEntityPacket(final int entityId, final @NotNull UUID uuid, final @NotNull Location location) throws ReflectiveOperationException {
+  public static @NotNull Object createAddShulkerEntityPacket(
+    final int entityId,
+    final @NotNull UUID uuid,
+    final @NotNull Location location) throws ReflectiveOperationException {
     ensureInitialized();
     return packetAddEntityConstructor.newInstance(
       entityId, uuid, location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw(), shulkerEntityType, 0, vec3Zero, 0d
     );
   }
 
-  public static @NotNull Object createSpawnEntityPacket(final int entityId, final @NotNull UUID uuid, final @NotNull EntityType type, final @NotNull Location location) throws ReflectiveOperationException {
+  public static @NotNull Object createSpawnEntityPacket(
+    final int entityId,
+    final @NotNull UUID uuid,
+    final @NotNull EntityType type,
+    final @NotNull Location location) throws ReflectiveOperationException {
     ensureInitialized();
 
     final var nmsEntityType = getNmsEntityType(type);
@@ -438,8 +476,7 @@ public class PacketReflection {
   }
 
   @SuppressWarnings("unchecked")
-  public static @NotNull List<Object> getMetadataItems(final @NotNull Object packet)
-    throws ReflectiveOperationException {
+  public static @NotNull List<Object> getMetadataItems(final @NotNull Object packet) throws ReflectiveOperationException {
     ensureInitialized();
     return (List<Object>) packetMetadataItemsField.get(packet);
   }
@@ -459,8 +496,7 @@ public class PacketReflection {
     return (byte) dataValueValueMethod.invoke(dataValue);
   }
 
-  public static @NotNull Object createAccessorFromSerializer(final @NotNull Object serializer, final int id)
-    throws ReflectiveOperationException {
+  public static @NotNull Object createAccessorFromSerializer(final @NotNull Object serializer, final int id) throws ReflectiveOperationException {
     ensureInitialized();
     return serializerCreateAccessorMethod.invoke(serializer, id);
   }
@@ -483,29 +519,29 @@ public class PacketReflection {
   // -------------------------- HELPERS ----------------------------
   // ###############################################################
 
-  private static @NotNull Field getAccessibleField(final @NotNull Class<?> clazz, final @NotNull String name)
-    throws NoSuchFieldException {
+  private static @NotNull Field getAccessibleField(final @NotNull Class<?> clazz, final @NotNull String name) throws NoSuchFieldException {
     final var field = clazz.getDeclaredField(name);
     field.setAccessible(true);
     return field;
   }
 
-  private static @NotNull Method getAccessibleMethod(final @NotNull Class<?> clazz, final @NotNull String name, final @NotNull Class<?>... parameterTypes)
-    throws NoSuchMethodException {
+  private static @NotNull Method getAccessibleMethod(
+    final @NotNull Class<?> clazz,
+    final @NotNull String name,
+    final @NotNull Class<?>... parameterTypes
+  ) throws NoSuchMethodException {
     final var method = clazz.getDeclaredMethod(name, parameterTypes);
     method.setAccessible(true);
     return method;
   }
 
-  private static @NotNull Constructor<?> getAccessibleConstructor(final @NotNull Class<?> clazz, final @NotNull Class<?>... parameterTypes)
-    throws NoSuchMethodException {
+  private static @NotNull Constructor<?> getAccessibleConstructor(final @NotNull Class<?> clazz, final @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
     final var constructor = clazz.getDeclaredConstructor(parameterTypes);
     constructor.setAccessible(true);
     return constructor;
   }
 
-  private static @NotNull Object getEnumConstant(final @NotNull Class<?> enumClass, final @NotNull String name)
-    throws ReflectiveOperationException {
+  private static @NotNull Object getEnumConstant(final @NotNull Class<?> enumClass, final @NotNull String name) {
     final var constants = enumClass.getEnumConstants();
     for (final var constant : constants) {
       if (((Enum<?>) constant).name().equals(name)) {

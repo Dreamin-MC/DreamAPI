@@ -28,6 +28,15 @@ public final class PacketConstants {
 
   // Packets
   public static final String NMS_PACKET = "net.minecraft.network.protocol.Packet";
+
+  public static final String NMS_WORLD_BORDER = "net.minecraft.world.level.border.WorldBorder";
+  public static final String NMS_PACKET_WORLD_BORDER = "net.minecraft.network.protocol.game.ClientboundInitializeBorderPacket";
+  public static final String NMS_PACKET_WORLD_BORDER_CENTER = "net.minecraft.network.protocol.game.ClientboundSetBorderCenterPacket";
+  public static final String NMS_PACKET_WORLD_BORDER_SIZE = "net.minecraft.network.protocol.game.ClientboundSetBorderSizePacket";
+  public static final String NMS_PACKET_WORLD_BORDER_LERP_SIZE = "net.minecraft.network.protocol.game.ClientboundSetBorderLerpSizePacket";
+  public static final String NMS_PACKET_WORLD_BORDER_WARNING_DELAY = "net.minecraft.network.protocol.game.ClientboundSetBorderWarningDelayPacket";
+  public static final String NMS_PACKET_WORLD_BORDER_WARNING_DISTANCE = "net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePacket";
+
   public static final String NMS_PACKET_METADATA = "net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket";
   public static final String NMS_PACKET_TEAM = "net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket";
   public static final String NMS_PACKET_TEAM_PARAMS = "net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket$Parameters";
