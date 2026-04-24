@@ -19,6 +19,7 @@ public final class ExamplePlugin extends DreamPlugin implements Listener {
     setNmsVisualCmd(true);
     setServiceCmd(true);
     setLangCmd(true);
+    setWorldBorderCmd(true);
 
   }
 

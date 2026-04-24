@@ -22,6 +22,7 @@ import fr.dreamin.dreamapi.core.lang.service.LangServiceImpl;
 import fr.dreamin.dreamapi.core.nms.visual.service.VisualServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeCategoryRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
+import fr.dreamin.dreamapi.core.worldborder.service.WorldBorderServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.scanner.RecipeAnnotationProcessor;
 import fr.dreamin.dreamapi.core.cuboid.service.CuboidServiceImpl;
 import fr.dreamin.dreamapi.core.event.scanner.ListenerAnnotationProcessor;
@@ -47,6 +48,7 @@ import fr.dreamin.dreamapi.plugin.cmd.admin.item.ItemRegistryCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.lang.LangCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.nms.visual.VisualCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.service.ServiceCmd;
+import fr.dreamin.dreamapi.plugin.cmd.admin.worldborder.WorldBorderCmd;
 import lombok.Getter;
 import lombok.Setter;
 import net.luckperms.api.LuckPerms;
@@ -122,7 +124,15 @@ public abstract class DreamPlugin extends JavaPlugin {
   protected @NotNull BroadcastContext broadcastContext;
 
   @Getter @Setter
-  protected boolean broadcastCmd = false, glowingCmd = false, nmsVisualCmd = false, itemRegistryCmd, debugCmd = false, serviceCmd = false, langCmd = false;
+  protected boolean
+    broadcastCmd = false,
+    glowingCmd = false,
+    nmsVisualCmd = false,
+    itemRegistryCmd = false,
+    debugCmd = false,
+    serviceCmd = false,
+    langCmd = false,
+    worldBorderCmd = false;
 
   // ##############################################################
   // -------------------- JAVAPLUGIN METHODS ----------------------
@@ -512,6 +522,13 @@ public abstract class DreamPlugin extends JavaPlugin {
       this.annotationParser.parse(new LangCmd());
     }
 
+    if (this.worldBorderCmd) {
+      if (!serviceManager.isLoaded(WorldServiceImpl.class))
+        serviceManager.loadServiceFromClass(WorldServiceImpl.class);
+
+      this.annotationParser.parse(new WorldBorderCmd());
+    }
+
     if (this.serviceCmd)
       this.annotationParser.parse(new ServiceCmd(this, serviceManager, this.serviceInspector));
 
@@ -540,7 +557,8 @@ public abstract class DreamPlugin extends JavaPlugin {
       CuboidServiceImpl.class,
       
       HologramServiceImpl.class,
-      LangServiceImpl.class
+      LangServiceImpl.class,
+      WorldBorderServiceImpl.class
     ),
 
     LoadMode.MINIMAL, Set.of(

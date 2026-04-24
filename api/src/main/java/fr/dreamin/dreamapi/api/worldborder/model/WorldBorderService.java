@@ -106,4 +106,35 @@ public interface WorldBorderService {
    * @param timeUnit  the time unit of the duration parameter
    */
   void setBorder(final @NotNull Player player, final double size, final long time, final @NotNull TimeUnit timeUnit);
+
+  /**
+   * Plays a temporary pulse effect on a player's personal world border.
+   *
+   * @param player       the target player
+   * @param minSize      the minimum border size reached during pulse
+   * @param maxSize      the maximum border size reached during pulse
+   * @param pulses       number of full pulses (shrink+expand)
+   * @param duration     duration of each half pulse
+   */
+  void pulseBorder(
+    final @NotNull Player player,
+    final double minSize,
+    final double maxSize,
+    final int pulses,
+    final @NotNull Duration duration
+  );
+
+  /**
+   * Enables or disables the low-health overlay system.
+   *
+   * @param enabled true to enable, false to disable
+   */
+  void setHealthOverlayEnabled(boolean enabled);
+
+  /**
+   * Returns whether the low-health overlay system is enabled.
+   *
+   * @return true if enabled, false otherwise
+   */
+  boolean isHealthOverlayEnabled();
 }

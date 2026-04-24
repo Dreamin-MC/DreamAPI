@@ -1,15 +1,18 @@
 package fr.dreamin.dreamapi.api.worldborder.model;
 
+import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import static fr.dreamin.dreamapi.api.worldborder.model.ConsumerSupplierTupel.of;
 
 /**
  * The nms adapter impl for the world border
  */
 public class WorldBorder extends AbstractWorldBorder {
 
-    private final net.minecraft.world.level.border.WorldBorder handle;
+    private final Object handle;
 
     /**
      * Ctor
@@ -17,8 +20,7 @@ public class WorldBorder extends AbstractWorldBorder {
      * @param player the bukkit player
      */
     public WorldBorder(Player player) {
-        this(new net.minecraft.world.level.border.WorldBorder());
-        this.handle.world = ((CraftWorld) player.getWorld()).getHandle();
+        this(PacketReflection.createWorldBorderHandle());
     }
 
     /**
@@ -27,7 +29,7 @@ public class WorldBorder extends AbstractWorldBorder {
      * @param world the bukkit world
      */
     public WorldBorder(World world) {
-        this(((CraftWorld) world).getHandle().getWorldBorder());
+        this(PacketReflection.getWorldBorderHandle(world));
     }
 
     /**
@@ -35,34 +37,30 @@ public class WorldBorder extends AbstractWorldBorder {
      *
      * @param worldBorder the nms world border
      */
-    public WorldBorder(net.minecraft.world.level.border.WorldBorder worldBorder) {
+    private WorldBorder(Object worldBorder) {
         super(
                 of(
-                        position -> worldBorder.setCenter(position.x(), position.z()),
-                        () -> new Position(worldBorder.getCenterX(), worldBorder.getCenterZ())
+                        position -> PacketReflection.setWorldBorderCenter(worldBorder, position.x(), position.z()),
+                        () -> new Position(PacketReflection.getWorldBorderCenterX(worldBorder), PacketReflection.getWorldBorderCenterZ(worldBorder))
                 ),
-                () -> new Position(worldBorder.getMinX(), worldBorder.getMinZ()),
-                () -> new Position(worldBorder.getMaxX(), worldBorder.getMaxZ()),
-                of(worldBorder::setSize, worldBorder::getSize),
-                of(worldBorder::setSafeZone, worldBorder::getSafeZone),
-                of(worldBorder::setWarningTime, worldBorder::getWarningTime),
-                of(worldBorder::setWarningBlocks, worldBorder::getWarningBlocks),
-                worldBorder::lerpSizeBetween
+                () -> new Position(PacketReflection.getWorldBorderMinX(worldBorder), PacketReflection.getWorldBorderMinZ(worldBorder)),
+                () -> new Position(PacketReflection.getWorldBorderMaxX(worldBorder), PacketReflection.getWorldBorderMaxZ(worldBorder)),
+                of(size -> PacketReflection.setWorldBorderSize(worldBorder, size), () -> PacketReflection.getWorldBorderSize(worldBorder)),
+                of(buffer -> PacketReflection.setWorldBorderSafeZone(worldBorder, buffer), () -> PacketReflection.getWorldBorderSafeZone(worldBorder)),
+                of(seconds -> PacketReflection.setWorldBorderWarningTime(worldBorder, seconds), () -> PacketReflection.getWorldBorderWarningTime(worldBorder)),
+                of(blocks -> PacketReflection.setWorldBorderWarningBlocks(worldBorder, blocks), () -> PacketReflection.getWorldBorderWarningBlocks(worldBorder)),
+                (oldSize, newSize, time, startTime) -> PacketReflection.lerpWorldBorderSize(worldBorder, oldSize, newSize, time)
         );
         this.handle = worldBorder;
     }
 
     @Override
     public void send(@NotNull Player player, @NotNull WorldBorderAction worldBorderAction) {
-        var packet = switch (worldBorderAction) {
-            case INITIALIZE -> new ClientboundInitializeBorderPacket(handle);
-            case LERP_SIZE -> new ClientboundSetBorderLerpSizePacket(handle);
-            case SET_CENTER -> new ClientboundSetBorderCenterPacket(handle);
-            case SET_SIZE -> new ClientboundSetBorderSizePacket(handle);
-            case SET_WARNING_BLOCKS -> new ClientboundSetBorderWarningDistancePacket(handle);
-            case SET_WARNING_TIME -> new ClientboundSetBorderWarningDelayPacket(handle);
-        };
-
-        ((CraftPlayer) player).getHandle().connection.send(packet);
+        try {
+            final var packet = PacketReflection.createWorldBorderPacket(handle, worldBorderAction);
+            PacketReflection.sendPacket(player, packet);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to send world border packet", e);
+        }
     }
 }

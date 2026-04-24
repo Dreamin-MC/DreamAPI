@@ -1,10 +1,12 @@
 package fr.dreamin.dreamapi.api.nms.packet;
 
+import fr.dreamin.dreamapi.api.worldborder.model.WorldBorderAction;
 import io.netty.channel.Channel;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,6 +34,7 @@ public class PacketReflection {
 
   private static String craftPackage;
   private static Class<?> craftEntityClass;
+  private static Class<?> craftWorldClass;
 
   // ###############################################################
   // ---------------------- ENTITY & DATA --------------------------
@@ -76,6 +80,12 @@ public class PacketReflection {
   private static Class<?> packetBlockUpdateClass;
 
   private static Constructor<?> packetMetadataConstructor;
+  private static Constructor<?> packetWorldBorderConstructor;
+  private static Constructor<?> packetWorldBorderCenterConstructor;
+  private static Constructor<?> packetWorldBorderSizeConstructor;
+  private static Constructor<?> packetWorldBorderLerpConstructor;
+  private static Constructor<?> packetWorldBorderWarningDelayConstructor;
+  private static Constructor<?> packetWorldBorderWarningDistanceConstructor;
   private static Field packetMetadataEntityIdField;
   private static Field packetMetadataItemsField;
 
@@ -151,6 +161,32 @@ public class PacketReflection {
   private static Constructor<?> blockPosConstructor;
 
   // ###############################################################
+  // ----------------------- WORLD BORDER --------------------------
+  // ###############################################################
+
+  private static Constructor<?> worldBorderConstructor;
+
+  private static Method craftWorldGetHandleMethod;
+  private static Method levelGetWorldBorderMethod;
+
+  private static Method worldBorderSetCenterMethod;
+  private static Method worldBorderGetCenterXMethod;
+  private static Method worldBorderGetCenterZMethod;
+  private static Method worldBorderGetMinXMethod;
+  private static Method worldBorderGetMinZMethod;
+  private static Method worldBorderGetMaxXMethod;
+  private static Method worldBorderGetMaxZMethod;
+  private static Method worldBorderSetSizeMethod;
+  private static Method worldBorderGetSizeMethod;
+  private static Method worldBorderSetSafeZoneMethod;
+  private static Method worldBorderGetSafeZoneMethod;
+  private static Method worldBorderSetWarningTimeMethod;
+  private static Method worldBorderGetWarningTimeMethod;
+  private static Method worldBorderSetWarningBlocksMethod;
+  private static Method worldBorderGetWarningBlocksMethod;
+  private static Method worldBorderLerpSizeBetweenMethod;
+
+  // ###############################################################
   // ----------------------- INITIALIZATION ------------------------
   // ###############################################################
 
@@ -166,7 +202,7 @@ public class PacketReflection {
 
       initialized = true;
     } catch (Exception e) {
-      throw new RuntimeException("Failed to initialize PacketReflection for 1.21.10", e);
+      throw new RuntimeException("Failed to initialize PacketReflection for 26.1.2", e);
     }
   }
 
@@ -174,6 +210,7 @@ public class PacketReflection {
     // CraftBukkit
     craftPackage = Bukkit.getServer().getClass().getPackage().getName();
     craftEntityClass = Class.forName(craftPackage + "." + PacketConstants.CRAFT_ENTITY);
+    craftWorldClass = Class.forName(craftPackage + ".CraftWorld");
 
     // Entity & Data
     nmsEntityClass = Class.forName(PacketConstants.NMS_ENTITY);
@@ -226,8 +263,31 @@ public class PacketReflection {
   private static void loadMethods() throws NoSuchMethodException {
     // Entity & Data
     getHandleMethod = getAccessibleMethod(craftEntityClass, "getHandle");
+    craftWorldGetHandleMethod = getAccessibleMethod(craftWorldClass, "getHandle");
     getEntityDataMethod = getAccessibleMethod(nmsEntityClass, "getEntityData");
     watcherGetMethod = getAccessibleMethod(synchedDataClass, "get", dataAccessorClass);
+
+    // World border
+    levelGetWorldBorderMethod = getAccessibleMethod(craftWorldGetHandleMethod.getReturnType(), "getWorldBorder");
+
+    worldBorderSetCenterMethod = getAccessibleMethod(worldBorderClass, "setCenter", double.class, double.class);
+    worldBorderGetCenterXMethod = getAccessibleMethod(worldBorderClass, "getCenterX");
+    worldBorderGetCenterZMethod = getAccessibleMethod(worldBorderClass, "getCenterZ");
+    worldBorderGetMinXMethod = getAccessibleMethod(worldBorderClass, "getMinX");
+    worldBorderGetMinZMethod = getAccessibleMethod(worldBorderClass, "getMinZ");
+    worldBorderGetMaxXMethod = getAccessibleMethod(worldBorderClass, "getMaxX");
+    worldBorderGetMaxZMethod = getAccessibleMethod(worldBorderClass, "getMaxZ");
+    worldBorderSetSizeMethod = getAccessibleMethod(worldBorderClass, "setSize", double.class);
+    worldBorderGetSizeMethod = getAccessibleMethod(worldBorderClass, "getSize");
+    worldBorderSetSafeZoneMethod = getAccessibleMethod(worldBorderClass, "setSafeZone", double.class);
+    worldBorderGetSafeZoneMethod = getAccessibleMethod(worldBorderClass, "getSafeZone");
+    worldBorderSetWarningTimeMethod = getAccessibleMethod(worldBorderClass, "setWarningTime", int.class);
+    worldBorderGetWarningTimeMethod = getAccessibleMethod(worldBorderClass, "getWarningTime");
+    worldBorderSetWarningBlocksMethod = getAccessibleMethod(worldBorderClass, "setWarningBlocks", int.class);
+    worldBorderGetWarningBlocksMethod = getAccessibleMethod(worldBorderClass, "getWarningBlocks");
+    worldBorderLerpSizeBetweenMethod = getOptionalAccessibleMethod(worldBorderClass,
+      new String[]{"lerpSizeBetween", "transitionSizeBetween"},
+      double.class, double.class, long.class);
 
     // Data values
     dataValueCreateMethod = getAccessibleMethod(dataValueClass, "create", dataAccessorClass, Object.class);
@@ -271,6 +331,15 @@ public class PacketReflection {
 
   private static void loadConstructors() throws NoSuchMethodException {
     // Packets
+    worldBorderConstructor = getAccessibleConstructor(worldBorderClass);
+
+    packetWorldBorderConstructor = getAccessibleConstructor(packetWorldBorderClass, worldBorderClass);
+    packetWorldBorderCenterConstructor = getAccessibleConstructor(packetWorldBorderCenterClass, worldBorderClass);
+    packetWorldBorderSizeConstructor = getAccessibleConstructor(packetWorldBorderSizeClass, worldBorderClass);
+    packetWorldBorderLerpConstructor = getOptionalAccessibleConstructor(packetWorldBorderLerpClass, worldBorderClass);
+    packetWorldBorderWarningDelayConstructor = getAccessibleConstructor(packetWorldBorderWarningDelayClass, worldBorderClass);
+    packetWorldBorderWarningDistanceConstructor = getAccessibleConstructor(packetWorldBorderWarningDistanceClass, worldBorderClass);
+
     packetMetadataConstructor = getAccessibleConstructor(packetMetadataClass, int.class, List.class);
     packetTeamConstructor = getAccessibleConstructor(packetTeamClass,
       String.class, int.class, Optional.class, java.util.Collection.class);
@@ -451,6 +520,188 @@ public class PacketReflection {
     return packetBlockUpdateConstructor.newInstance(blockPos, blockState);
   }
 
+  public static @NotNull Object createWorldBorderHandle() {
+    ensureInitialized();
+    try {
+      return worldBorderConstructor.newInstance();
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to create world border handle", e);
+    }
+  }
+
+  public static @NotNull Object getWorldBorderHandle(final @NotNull World world) {
+    ensureInitialized();
+    try {
+      final var level = craftWorldGetHandleMethod.invoke(world);
+      return levelGetWorldBorderMethod.invoke(level);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border handle", e);
+    }
+  }
+
+  public static void setWorldBorderCenter(final @NotNull Object worldBorder, final double x, final double z) {
+    ensureInitialized();
+    try {
+      worldBorderSetCenterMethod.invoke(worldBorder, x, z);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to set world border center", e);
+    }
+  }
+
+  public static double getWorldBorderCenterX(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetCenterXMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border centerX", e);
+    }
+  }
+
+  public static double getWorldBorderCenterZ(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetCenterZMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border centerZ", e);
+    }
+  }
+
+  public static double getWorldBorderMinX(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetMinXMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border minX", e);
+    }
+  }
+
+  public static double getWorldBorderMinZ(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetMinZMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border minZ", e);
+    }
+  }
+
+  public static double getWorldBorderMaxX(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetMaxXMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border maxX", e);
+    }
+  }
+
+  public static double getWorldBorderMaxZ(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetMaxZMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border maxZ", e);
+    }
+  }
+
+  public static void setWorldBorderSize(final @NotNull Object worldBorder, final double size) {
+    ensureInitialized();
+    try {
+      worldBorderSetSizeMethod.invoke(worldBorder, size);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to set world border size", e);
+    }
+  }
+
+  public static double getWorldBorderSize(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetSizeMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border size", e);
+    }
+  }
+
+  public static void setWorldBorderSafeZone(final @NotNull Object worldBorder, final double safeZone) {
+    ensureInitialized();
+    try {
+      worldBorderSetSafeZoneMethod.invoke(worldBorder, safeZone);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to set world border safe zone", e);
+    }
+  }
+
+  public static double getWorldBorderSafeZone(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (double) worldBorderGetSafeZoneMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border safe zone", e);
+    }
+  }
+
+  public static void setWorldBorderWarningTime(final @NotNull Object worldBorder, final int seconds) {
+    ensureInitialized();
+    try {
+      worldBorderSetWarningTimeMethod.invoke(worldBorder, seconds);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to set world border warning time", e);
+    }
+  }
+
+  public static int getWorldBorderWarningTime(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (int) worldBorderGetWarningTimeMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border warning time", e);
+    }
+  }
+
+  public static void setWorldBorderWarningBlocks(final @NotNull Object worldBorder, final int blocks) {
+    ensureInitialized();
+    try {
+      worldBorderSetWarningBlocksMethod.invoke(worldBorder, blocks);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to set world border warning blocks", e);
+    }
+  }
+
+  public static int getWorldBorderWarningBlocks(final @NotNull Object worldBorder) {
+    ensureInitialized();
+    try {
+      return (int) worldBorderGetWarningBlocksMethod.invoke(worldBorder);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to get world border warning blocks", e);
+    }
+  }
+
+  public static void lerpWorldBorderSize(final @NotNull Object worldBorder, final double oldSize, final double newSize, final long time) {
+    ensureInitialized();
+    try {
+      if (worldBorderLerpSizeBetweenMethod == null) {
+        worldBorderSetSizeMethod.invoke(worldBorder, newSize);
+        return;
+      }
+      worldBorderLerpSizeBetweenMethod.invoke(worldBorder, oldSize, newSize, time);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Failed to lerp world border size", e);
+    }
+  }
+
+  public static @NotNull Object createWorldBorderPacket(final @NotNull Object worldBorder, final @NotNull WorldBorderAction action)
+    throws ReflectiveOperationException {
+    ensureInitialized();
+    return switch (action) {
+      case INITIALIZE -> packetWorldBorderConstructor.newInstance(worldBorder);
+      case LERP_SIZE -> (packetWorldBorderLerpConstructor == null
+        ? packetWorldBorderSizeConstructor
+        : packetWorldBorderLerpConstructor).newInstance(worldBorder);
+      case SET_CENTER -> packetWorldBorderCenterConstructor.newInstance(worldBorder);
+      case SET_SIZE -> packetWorldBorderSizeConstructor.newInstance(worldBorder);
+      case SET_WARNING_BLOCKS -> packetWorldBorderWarningDistanceConstructor.newInstance(worldBorder);
+      case SET_WARNING_TIME -> packetWorldBorderWarningDelayConstructor.newInstance(worldBorder);
+    };
+  }
+
   public static void sendPacket(final @NotNull Player player, final @NotNull Object packet) throws ReflectiveOperationException {
     ensureInitialized();
     final var nmsPlayer = getHandleMethod.invoke(player);
@@ -530,15 +781,56 @@ public class PacketReflection {
     final @NotNull String name,
     final @NotNull Class<?>... parameterTypes
   ) throws NoSuchMethodException {
-    final var method = clazz.getDeclaredMethod(name, parameterTypes);
-    method.setAccessible(true);
-    return method;
+    Class<?> current = clazz;
+
+    // Walk up the class hierarchy because Paper/NMS can move methods between levels.
+    while (current != null) {
+      try {
+        final var method = current.getDeclaredMethod(name, parameterTypes);
+        method.setAccessible(true);
+        return method;
+      } catch (NoSuchMethodException ignored) {
+        current = current.getSuperclass();
+      }
+    }
+
+    // Last fallback for public methods declared on interfaces.
+    try {
+      final var method = clazz.getMethod(name, parameterTypes);
+      method.setAccessible(true);
+      return method;
+    } catch (NoSuchMethodException ignored) {
+      throw new NoSuchMethodException(clazz.getName() + "." + name + Arrays.toString(parameterTypes));
+    }
   }
 
   private static @NotNull Constructor<?> getAccessibleConstructor(final @NotNull Class<?> clazz, final @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
     final var constructor = clazz.getDeclaredConstructor(parameterTypes);
     constructor.setAccessible(true);
     return constructor;
+  }
+
+  private static Constructor<?> getOptionalAccessibleConstructor(final @NotNull Class<?> clazz, final @NotNull Class<?>... parameterTypes) {
+    try {
+      return getAccessibleConstructor(clazz, parameterTypes);
+    } catch (NoSuchMethodException ignored) {
+      return null;
+    }
+  }
+
+  private static Method getOptionalAccessibleMethod(
+    final @NotNull Class<?> clazz,
+    final @NotNull String[] names,
+    final @NotNull Class<?>... parameterTypes
+  ) {
+    for (final var name : names) {
+      try {
+        return getAccessibleMethod(clazz, name, parameterTypes);
+      } catch (NoSuchMethodException ignored) {
+        // Try next method name.
+      }
+    }
+    return null;
   }
 
   private static @NotNull Object getEnumConstant(final @NotNull Class<?> enumClass, final @NotNull String name) {
