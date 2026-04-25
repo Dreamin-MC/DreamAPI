@@ -212,6 +212,22 @@ public final class LangUtils {
     return false;
   }
 
+  public static boolean containsTranslated(
+    final @NotNull PlayerInventory inventory,
+    final @NotNull UUID uuid,
+    final @NotNull ItemStack rawItem
+  ) {
+    for (final var content : inventory.getStorageContents()) {
+      if (content == null || content.getType().isAir())
+        continue;
+
+      if (isSimilar(uuid, rawItem, content))
+        return true;
+    }
+
+    return false;
+  }
+
   public static boolean removeTranslated(
     final @NotNull Player player,
     final @NotNull ItemStack rawItem
