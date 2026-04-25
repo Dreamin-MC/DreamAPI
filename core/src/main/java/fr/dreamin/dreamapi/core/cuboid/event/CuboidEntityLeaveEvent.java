@@ -5,11 +5,11 @@ import fr.dreamin.dreamapi.api.event.ToolsCancelEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Event triggered when a player enters a cuboid region.
+ * Event triggered when a player leaves a cuboid region.
  *
  * @author Dreamin
  * @since 1.0.0
@@ -17,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 @ToString
 @Getter
 @RequiredArgsConstructor
-public final class CuboidEnterEvent extends ToolsCancelEvent {
+public class CuboidEntityLeaveEvent extends ToolsCancelEvent {
 
-  private final @NotNull Player player;
+  private final @NotNull Entity player;
   private final @NotNull Cuboid cuboid;
 
 }

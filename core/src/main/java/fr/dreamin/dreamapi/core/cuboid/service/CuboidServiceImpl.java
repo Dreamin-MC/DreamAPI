@@ -6,13 +6,18 @@ import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;
 import fr.dreamin.dreamapi.api.cuboid.Cuboid;
-import fr.dreamin.dreamapi.core.cuboid.event.CuboidEnterEvent;
-import fr.dreamin.dreamapi.core.cuboid.event.CuboidLeaveEvent;
+import fr.dreamin.dreamapi.core.cuboid.event.*;
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -112,14 +117,83 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     }
   }
 
+  @EventHandler
+  private void onPlayerTeleport(final @NotNull PlayerTeleportEvent event) {
+    var player = event.getPlayer();
+    var from = event.getFrom();
+    var to = event.getTo();
+    if ((from.getBlockX() == to.getBlockX() &&
+      from.getBlockY() == to.getBlockY() &&
+      from.getBlockZ() == to.getBlockZ()))
+      return;
+
+    var currentCuboids = playerCuboids.computeIfAbsent(player.getUniqueId(), id -> new HashSet<>());
+
+    for (Cuboid cuboid : cuboids) {
+      boolean wasIn = currentCuboids.contains(cuboid);
+      boolean isIn = cuboid.isLocationIn(to);
+
+      if (!wasIn && isIn)
+        enter(player, cuboid, event, currentCuboids);
+      else if (wasIn && !isIn)
+        leave(player, cuboid, event, currentCuboids);
+    }
+  }
+
+  @EventHandler
+  private void onEntityMove(final @NotNull EntityMoveEvent event) {
+    var entity = event.getEntity();
+    var from = event.getFrom();
+    var to = event.getTo();
+    if ((from.getBlockX() == to.getBlockX() &&
+      from.getBlockY() == to.getBlockY() &&
+      from.getBlockZ() == to.getBlockZ()))
+      return;
+
+    var currentCuboids = playerCuboids.computeIfAbsent(entity.getUniqueId(), id -> new HashSet<>());
+
+    for (Cuboid cuboid : cuboids) {
+      boolean wasIn = currentCuboids.contains(cuboid);
+      boolean isIn = cuboid.isLocationIn(to);
+
+      if (!wasIn && isIn)
+        enter(entity, cuboid, event, currentCuboids);
+      else if (wasIn && !isIn)
+        leave(entity, cuboid, event, currentCuboids);
+    }
+  }
+
+  @EventHandler
+  private void onEntityTeleport(final @NotNull EntityTeleportEvent event) {
+    var entity = event.getEntity();
+    var from = event.getFrom();
+    var to = event.getTo();
+    if ((from.getBlockX() == to.getBlockX() &&
+      from.getBlockY() == to.getBlockY() &&
+      from.getBlockZ() == to.getBlockZ()))
+      return;
+
+    var currentCuboids = playerCuboids.computeIfAbsent(entity.getUniqueId(), id -> new HashSet<>());
+
+    for (Cuboid cuboid : cuboids) {
+      boolean wasIn = currentCuboids.contains(cuboid);
+      boolean isIn = cuboid.isLocationIn(to);
+
+      if (!wasIn && isIn)
+        enter(entity, cuboid, event, currentCuboids);
+      else if (wasIn && !isIn)
+        leave(entity, cuboid, event, currentCuboids);
+    }
+  }
+
   // ###############################################################
   // ----------------------- PRIVATE METHODS -----------------------
   // ###############################################################
 
   /**
-   * Handles the player entering a cuboid.
+   * Handles the entity entering a cuboid.
    *
-   * @param player
+   * @param entity
    * @param cuboid
    * @param event
    * @param currentCuboids
@@ -128,12 +202,12 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
    * @since 1.0.0
    */
   private void enter(
-    final @NotNull Player player,
+    final @NotNull Entity entity,
     final @NotNull Cuboid cuboid,
-    final @NotNull PlayerMoveEvent event,
+    final @NotNull Cancellable event,
     final @NotNull Set<Cuboid> currentCuboids
   ) {
-    var enterEvent = new CuboidEnterEvent(player, cuboid);
+    var enterEvent = getCuboidEnterEvent(entity, cuboid);
     if (DreamAPI.getAPI().callEvent(enterEvent).isCancelled())
       event.setCancelled(true);
     else
@@ -141,9 +215,9 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
   }
 
   /**
-   * Handles the player leaving a cuboid.
+   * Handles the entity leaving a cuboid.
    *
-   * @param player
+   * @param entity
    * @param cuboid
    * @param event
    * @param currentCuboids
@@ -152,16 +226,34 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
    * @since 1.0.0
    */
   private void leave(
-    final @NotNull Player player,
+    final @NotNull Entity entity,
     final @NotNull Cuboid cuboid,
-    final @NotNull PlayerMoveEvent event,
+    final @NotNull Cancellable event,
     final @NotNull Set<Cuboid> currentCuboids
   ) {
-    var leaveEvent = new CuboidLeaveEvent(player, cuboid);
+    var leaveEvent = getCuboidLeaveEvent(entity, cuboid);
     if (DreamAPI.getAPI().callEvent(leaveEvent).isCancelled())
       event.setCancelled(true);
     else
       currentCuboids.remove(cuboid);
+  }
+
+  private CuboidEntityEnterEvent getCuboidEnterEvent(final @NotNull Entity entity, final @NotNull Cuboid cuboid) {
+    if (entity instanceof Player player)
+      return new CuboidPlayerEnterEvent(player, cuboid);
+    else if (entity instanceof Mannequin mannequin)
+      return new CuboidMannequinEnterEvent(mannequin, cuboid);
+    else
+      return new CuboidEntityEnterEvent(entity, cuboid);
+  }
+
+  private CuboidEntityLeaveEvent getCuboidLeaveEvent(final @NotNull Entity entity, final @NotNull Cuboid cuboid) {
+    if (entity instanceof Player player)
+      return new CuboidPlayerLeaveEvent(player, cuboid);
+    else if (entity instanceof Mannequin mannequin)
+      return new CuboidMannequinLeaveEvent(mannequin, cuboid);
+    else
+      return new CuboidEntityLeaveEvent(entity, cuboid);
   }
 
 }

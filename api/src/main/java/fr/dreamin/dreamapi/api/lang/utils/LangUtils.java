@@ -51,7 +51,17 @@ public final class LangUtils {
     return copy;
   }
 
+  public static ItemStack translate(final @NotNull Locale locale, final @NotNull ItemStack item) {
+    final var copy = item.clone();
+    updateTranslate(locale, copy);
+    return copy;
+  }
+
   public static void updateTranslate(final @NotNull Player player, final @NotNull ItemStack item) {
+    updateTranslate(player.locale(), item);
+  }
+
+  public static void updateTranslate(final @NotNull Locale locale, final @NotNull ItemStack item) {
     final var meta = item.getItemMeta();
     if (meta == null)
       return;
@@ -66,7 +76,7 @@ public final class LangUtils {
     if (rawItemName != null) {
       final var oldItemName = meta.hasItemName() ? meta.itemName() : null;
       final var sourceItemName = deserializeComponent(rawItemName);
-      final var newItemName = sourceItemName == null ? null : GlobalTranslator.render(sourceItemName, player.locale());
+      final var newItemName = sourceItemName == null ? null : GlobalTranslator.render(sourceItemName, locale);
 
       if (!Objects.equals(oldItemName, newItemName)) {
         meta.itemName(newItemName);
@@ -78,7 +88,7 @@ public final class LangUtils {
     if (rawDisplayName != null) {
       final var oldDisplayName = meta.hasDisplayName() ? meta.displayName() : null;
       final var sourceDisplayName = deserializeComponent(rawDisplayName);
-      final var newDisplayName = sourceDisplayName == null ? null : GlobalTranslator.render(sourceDisplayName, player.locale());
+      final var newDisplayName = sourceDisplayName == null ? null : GlobalTranslator.render(sourceDisplayName, locale);
 
       if (!Objects.equals(oldDisplayName, newDisplayName)) {
         meta.displayName(newDisplayName);
@@ -91,7 +101,7 @@ public final class LangUtils {
       final var oldLore = meta.lore();
       final var sourceLore = deserializeLore(rawLore);
       final var newLore = sourceLore.stream()
-        .map(line -> GlobalTranslator.render(line, player.locale()))
+        .map(line -> GlobalTranslator.render(line, locale))
         .toList();
 
       if (!Objects.equals(oldLore, newLore)) {
@@ -103,9 +113,7 @@ public final class LangUtils {
     if (changed)
       item.setItemMeta(meta);
 
-    final var appliedMeta = item.getItemMeta();
   }
-
 
   public static boolean isSimilar(
     final @NotNull Player player,
@@ -116,6 +124,21 @@ public final class LangUtils {
       return false;
 
     return translate(player, rawItem).isSimilar(translatedItem);
+  }
+
+  public static boolean isSimilar(
+    final @NotNull UUID uuid,
+    final @NotNull ItemStack rawItem,
+    final @NotNull ItemStack translatedItem
+  ) {
+    if (rawItem.getType() != translatedItem.getType())
+      return false;
+
+    final var locale = DreamAPI.getAPI().getService(LangService.class).getLocale(uuid).orElse(null);
+    if (locale == null)
+      return false;
+
+    return translate(locale, rawItem).isSimilar(translatedItem);
   }
 
   public static boolean isSimilar(
@@ -213,6 +236,42 @@ public final class LangUtils {
         continue;
 
       if (!isSimilar(player, rawItem, content))
+        continue;
+
+      if (content.getAmount() <= remaining) {
+        remaining -= content.getAmount();
+        inventory.setItem(slot, null);
+      } else {
+        content.setAmount(content.getAmount() - remaining);
+        inventory.setItem(slot, content);
+        remaining = 0;
+      }
+
+      if (remaining <= 0)
+        return true;
+
+    }
+
+    return false;
+  }
+
+  public static boolean removeTranslated(
+    final @NotNull PlayerInventory inventory,
+    final @NotNull UUID uuid,
+    final @NotNull ItemStack rawItem
+  ) {
+
+    if (rawItem.getAmount() <= 0)
+      return false;
+
+    var remaining = rawItem.getAmount();
+
+    for (var slot = 0; slot < inventory.getSize(); slot++) {
+      final var content = inventory.getItem(slot);
+      if (content == null || content.getType().isAir())
+        continue;
+
+      if (!isSimilar(uuid, rawItem, content))
         continue;
 
       if (content.getAmount() <= remaining) {
