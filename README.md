@@ -161,7 +161,7 @@ More modules coming soon!
 
 | Version                 | Minecraft |
 |-------------------------|-----------|
-| `v0.0.9.9.X` `v0.0.1.X` | 26.2.1+   |
+| `v0.0.9.9.X` `v0.1.X` `v0.2.x` | 26.2.1+   |
 | `v0.0.9.9`              | 1.21.10   |
 
 > ⚠️ *DreamAPI is under active development. Breaking changes may occur until v1.0.0.*
