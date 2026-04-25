@@ -5,14 +5,14 @@ import net.kyori.adventure.translation.Translator;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public interface LangService {
 
   void load();
   void load(final @NotNull File file);
+
+  Optional<Locale> getLocale(final @NotNull UUID uuid);
 
   void enableItem(final boolean value);
   boolean isEnableItem();

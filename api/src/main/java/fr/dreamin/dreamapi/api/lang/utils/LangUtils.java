@@ -3,20 +3,20 @@ package fr.dreamin.dreamapi.api.lang.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.config.Configurations;
+import fr.dreamin.dreamapi.api.lang.service.LangService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 public final class LangUtils {
@@ -33,7 +33,9 @@ public final class LangUtils {
   private static final GsonComponentSerializer COMPONENT_SERIALIZER = GsonComponentSerializer.gson();
   private static final TypeReference<List<String>> STRING_LIST_TYPE = new TypeReference<>() {};
 
-  private LangUtils() {}
+  // ###############################################################
+  // ----------------------- PUBLIC METHODS ------------------------
+  // ###############################################################
 
   public static Component translate(
     final @NotNull Player player,
@@ -63,7 +65,7 @@ public final class LangUtils {
     final var rawItemName = meta.getPersistentDataContainer().get(ITEM_NAME_SOURCE_KEY, PersistentDataType.STRING);
     if (rawItemName != null) {
       final var oldItemName = meta.hasItemName() ? meta.itemName() : null;
-      final var sourceItemName = deserializeComponent(rawItemName, "itemName");
+      final var sourceItemName = deserializeComponent(rawItemName);
       final var newItemName = sourceItemName == null ? null : GlobalTranslator.render(sourceItemName, player.locale());
 
       if (!Objects.equals(oldItemName, newItemName)) {
@@ -75,7 +77,7 @@ public final class LangUtils {
     final var rawDisplayName = meta.getPersistentDataContainer().get(DISPLAY_NAME_SOURCE_KEY, PersistentDataType.STRING);
     if (rawDisplayName != null) {
       final var oldDisplayName = meta.hasDisplayName() ? meta.displayName() : null;
-      final var sourceDisplayName = deserializeComponent(rawDisplayName, "displayName");
+      final var sourceDisplayName = deserializeComponent(rawDisplayName);
       final var newDisplayName = sourceDisplayName == null ? null : GlobalTranslator.render(sourceDisplayName, player.locale());
 
       if (!Objects.equals(oldDisplayName, newDisplayName)) {
@@ -104,12 +106,206 @@ public final class LangUtils {
     final var appliedMeta = item.getItemMeta();
   }
 
+
+  public static boolean isSimilar(
+    final @NotNull Player player,
+    final @NotNull ItemStack rawItem,
+    final @NotNull ItemStack translatedItem
+  ) {
+    if (rawItem.getType() != translatedItem.getType())
+      return false;
+
+    return translate(player, rawItem).isSimilar(translatedItem);
+  }
+
+  public static boolean isSimilar(
+    final @NotNull ItemStack rawItem,
+    final @NotNull ItemStack translatedItem
+  ) {
+    if (rawItem.getType() != translatedItem.getType())
+      return false;
+
+    final var rawMeta = rawItem.getItemMeta();
+    final var translatedMeta = translatedItem.getItemMeta();
+
+    if (rawMeta == null || translatedMeta == null)
+      return rawMeta == translatedMeta;
+
+    final var rawCopy = rawItem.clone();
+    final var translatedCopy = translatedItem.clone();
+
+    final var rawCopyMeta = rawCopy.getItemMeta();
+    final var translatedCopyMeta = translatedCopy.getItemMeta();
+
+    if (rawCopyMeta == null || translatedCopyMeta == null)
+      return rawCopyMeta == translatedCopyMeta;
+
+    striptranslatedFileds(rawCopyMeta);
+    striptranslatedFileds(translatedCopyMeta);
+
+    rawCopy.setItemMeta(rawCopyMeta);
+    translatedCopy.setItemMeta(translatedCopyMeta);
+
+    if (!rawCopy.isSimilar(translatedCopy))
+      return false;
+
+    return hasSameTranslationSource(rawMeta, translatedMeta);
+  }
+
+  public static boolean containsTranslated(
+    final @NotNull Player player,
+    final @NotNull ItemStack rawItem
+  ) {
+    return containsTranslated(player.getInventory(), player, rawItem);
+  }
+
+  public static boolean containsTranslated(
+    final @NotNull PlayerInventory inventory,
+    final @NotNull Player player,
+    final @NotNull ItemStack rawItem
+  ) {
+    for (final var content : inventory.getStorageContents()) {
+      if (content == null || content.getType().isAir())
+        continue;
+
+      if (isSimilar(player, rawItem, content))
+        return true;
+    }
+
+    return false;
+  }
+
+  public static boolean containsTranslated(
+    final @NotNull PlayerInventory inventory,
+    final @NotNull ItemStack rawItem
+  ) {
+    for (final var content : inventory.getStorageContents()) {
+      if (content == null || content.getType().isAir())
+        continue;
+
+      if (isSimilar(rawItem, content))
+        return true;
+    }
+    return false;
+  }
+
+  public static boolean removeTranslated(
+    final @NotNull Player player,
+    final @NotNull ItemStack rawItem
+  ) {
+    return removeTranslated(player.getInventory(), player, rawItem);
+  }
+
+  public static boolean removeTranslated(
+    final @NotNull PlayerInventory inventory,
+    final @NotNull Player player,
+    final @NotNull ItemStack rawItem
+  ) {
+
+    if (rawItem.getAmount() <= 0)
+      return false;
+
+    var remaining = rawItem.getAmount();
+
+    for (var slot = 0; slot < inventory.getSize(); slot++) {
+      final var content = inventory.getItem(slot);
+      if (content == null || content.getType().isAir())
+        continue;
+
+      if (!isSimilar(player, rawItem, content))
+        continue;
+
+      if (content.getAmount() <= remaining) {
+        remaining -= content.getAmount();
+        inventory.setItem(slot, null);
+      } else {
+        content.setAmount(content.getAmount() - remaining);
+        inventory.setItem(slot, content);
+        remaining = 0;
+      }
+
+      if (remaining <= 0)
+        return true;
+
+    }
+
+    return false;
+  }
+
+  public static boolean removeTranslated(
+    final @NotNull PlayerInventory inventory,
+    final @NotNull ItemStack rawItem
+  ) {
+    if (rawItem.getAmount() <= 0)
+      return false;
+
+    var remaining = rawItem.getAmount();
+
+    for (var slot = 0; slot < inventory.getSize(); slot++) {
+      final var content = inventory.getItem(slot);
+      if (content == null || content.getType().isAir())
+        continue;
+
+      if (!isSimilar(rawItem, content))
+        continue;
+
+      if (content.getAmount() <= remaining) {
+        remaining -= content.getAmount();
+        inventory.setItem(slot, null);
+      }
+      else {
+        content.setAmount(content.getAmount() - remaining);
+        inventory.setItem(slot, content);
+        remaining = 0;
+      }
+
+      if (remaining <= 0)
+        return true;
+
+    }
+
+    return false;
+  }
+
+  // ###############################################################
+  // ----------------------- PRIVATE METHODS -----------------------
+  // ###############################################################
+
+  private static void striptranslatedFileds(final @NotNull ItemMeta meta) {
+    meta.itemName(null);
+    meta.displayName(null);
+    meta.lore(null);
+  }
+
+  private static boolean hasSameTranslationSource(
+    final @NotNull ItemMeta rawMeta,
+    final @NotNull ItemMeta translatedMeta
+  ) {
+    ensureItemNameSource(rawMeta);
+    ensureDisplayNameSource(rawMeta);
+    ensureLoreSource(rawMeta);
+
+    final var rawPdc = rawMeta.getPersistentDataContainer();
+    final var translatedPdc = translatedMeta.getPersistentDataContainer();
+
+    return Objects.equals(
+      rawPdc.get(ITEM_NAME_SOURCE_KEY, PersistentDataType.STRING),
+      translatedPdc.get(ITEM_NAME_SOURCE_KEY, PersistentDataType.STRING)
+    ) && Objects.equals(
+      rawPdc.get(DISPLAY_NAME_SOURCE_KEY, PersistentDataType.STRING),
+      translatedPdc.get(DISPLAY_NAME_SOURCE_KEY, PersistentDataType.STRING)
+    ) && Objects.equals(
+      rawPdc.get(LORE_SOURCE_KEY, PersistentDataType.STRING),
+      translatedPdc.get(LORE_SOURCE_KEY, PersistentDataType.STRING)
+    );
+  }
+
   private static boolean ensureItemNameSource(final @NotNull ItemMeta meta) {
     final var pdc = meta.getPersistentDataContainer();
     if (pdc.has(ITEM_NAME_SOURCE_KEY, PersistentDataType.STRING))
       return false;
 
-    if (!meta.hasItemName() || meta.itemName() == null)
+    if (!meta.hasItemName())
       return false;
 
     pdc.set(ITEM_NAME_SOURCE_KEY, PersistentDataType.STRING, COMPONENT_SERIALIZER.serialize(meta.itemName()));
@@ -125,7 +321,7 @@ public final class LangUtils {
     if (!meta.hasDisplayName() || meta.displayName() == null)
       return false;
 
-    pdc.set(DISPLAY_NAME_SOURCE_KEY, PersistentDataType.STRING, COMPONENT_SERIALIZER.serialize(meta.displayName()));
+    pdc.set(DISPLAY_NAME_SOURCE_KEY, PersistentDataType.STRING, COMPONENT_SERIALIZER.serialize(Objects.requireNonNull(meta.displayName())));
     return true;
   }
 
@@ -151,8 +347,7 @@ public final class LangUtils {
   }
 
   private static @Nullable Component deserializeComponent(
-    final @NotNull String raw,
-    final @NotNull String field
+    final @NotNull String raw
   ) {
     try {
       return COMPONENT_SERIALIZER.deserialize(raw);
@@ -161,9 +356,7 @@ public final class LangUtils {
     }
   }
 
-  private static @NotNull List<Component> deserializeLore(
-    final @NotNull String raw
-  ) {
+  private static @NotNull List<Component> deserializeLore(final @NotNull String raw) {
     try {
       final var serializedLore = Configurations.MAPPER.readValue(raw, STRING_LIST_TYPE);
       final var lore = new ArrayList<Component>(serializedLore.size());

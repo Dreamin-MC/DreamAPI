@@ -143,6 +143,11 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
   }
 
   @Override
+  public Optional<Locale> getLocale(@NotNull UUID uuid) {
+    return Optional.ofNullable(this.playerLocales.get(uuid));
+  }
+
+  @Override
   public void enableItem(boolean value) {
     this.enableItem = value;
   }
@@ -385,11 +390,5 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     updatePlayerInventory(player);
   }
 
-  @EventHandler
-  private void onQuit(final @NotNull PlayerQuitEvent event) {
-    final var player = event.getPlayer();
-
-    this.playerLocales.remove(player.getUniqueId());
-  }
 
 }
