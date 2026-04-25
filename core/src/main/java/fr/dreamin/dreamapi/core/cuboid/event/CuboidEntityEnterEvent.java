@@ -9,7 +9,7 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Event triggered when a player enters a cuboid region.
+ * Event triggered when a entity enters a cuboid region.
  *
  * @author Dreamin
  * @since 1.0.0
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class CuboidEntityEnterEvent extends ToolsCancelEvent {
 
-  private final @NotNull Entity player;
+  private final @NotNull Entity entity;
   private final @NotNull Cuboid cuboid;
 
 }
