@@ -1,5 +1,6 @@
 package fr.dreamin.dreamapi.api.nms.tablist.service;
 
+import fr.dreamin.dreamapi.api.nms.tablist.model.TabListMode;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,6 +53,16 @@ public interface TabListService {
    * Enables or disables automatic application of default mode on join.
    */
   void setAutoEnabled(final boolean enabled);
+
+  /**
+   * Returns tab cleanup delay used when masking entries (in ticks).
+   */
+  long getTabCleanupDelayTicks();
+
+  /**
+   * Sets tab cleanup delay used when masking entries (in ticks).
+   */
+  void setTabCleanupDelayTicks(final long ticks);
 
   /**
    * Convenience method: empties the tab-list entries.

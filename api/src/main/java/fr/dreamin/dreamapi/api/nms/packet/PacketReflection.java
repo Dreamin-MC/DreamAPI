@@ -539,14 +539,15 @@ public class PacketReflection {
       nmsPlayers.add(getHandleMethod.invoke(player));
     }
 
+    if (packetPlayerInfoCreateInitializingMethod != null) {
+      return packetPlayerInfoCreateInitializingMethod.invoke(null, nmsPlayers);
+    }
+
     if (packetPlayerInfoUpdateConstructor != null) {
       final var actions = EnumSet.allOf((Class<? extends Enum>) packetPlayerInfoUpdateActionClass);
       return packetPlayerInfoUpdateConstructor.newInstance(actions, nmsPlayers);
     }
 
-    if (packetPlayerInfoCreateInitializingMethod != null) {
-      return packetPlayerInfoCreateInitializingMethod.invoke(null, nmsPlayers);
-    }
 
     throw new NoSuchMethodException("Unable to create ClientboundPlayerInfoUpdatePacket");
   }

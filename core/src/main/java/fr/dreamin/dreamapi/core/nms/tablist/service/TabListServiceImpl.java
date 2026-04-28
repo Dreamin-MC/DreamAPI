@@ -3,7 +3,7 @@ package fr.dreamin.dreamapi.core.nms.tablist.service;
 import fr.dreamin.dreamapi.api.annotations.Inject;
 import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
 import fr.dreamin.dreamapi.api.nms.packet.PacketSender;
-import fr.dreamin.dreamapi.api.nms.tablist.service.TabListMode;
+import fr.dreamin.dreamapi.api.nms.tablist.model.TabListMode;
 import fr.dreamin.dreamapi.api.nms.tablist.service.TabListService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,21 +32,33 @@ import java.util.concurrent.ConcurrentHashMap;
 @DreamAutoService(TabListService.class)
 public final class TabListServiceImpl implements TabListService, DreamService, Listener {
 
+  private static final long DEFAULT_TAB_CLEANUP_DELAY_TICKS = 10L;
+
   private final @NotNull Plugin plugin;
   private final @NotNull Map<UUID, ViewerState> viewers = new ConcurrentHashMap<>();
 
   private volatile @NotNull TabListMode defaultMode = TabListMode.VISIBLE;
   private volatile boolean autoEnabled = false;
+  private volatile long tabCleanupDelayTicks = DEFAULT_TAB_CLEANUP_DELAY_TICKS;
+
+  // ###############################################################
+  // --------------------- CONSTRUCTOR METHODS ---------------------
+  // ###############################################################
 
   public TabListServiceImpl(final @NotNull Plugin plugin) {
     PacketReflection.initialize();
     this.plugin = plugin;
   }
 
+  // ###############################################################
+  // -------------------------- METHODS ----------------------------
+  // ###############################################################
+
   @Override
   public void onClose() {
     for (final var onlinePlayer : Bukkit.getOnlinePlayers()) {
       removeInterceptor(onlinePlayer.getUniqueId());
+      cancelPendingCleanup(onlinePlayer.getUniqueId());
     }
     this.viewers.clear();
   }
@@ -119,45 +132,22 @@ public final class TabListServiceImpl implements TabListService, DreamService, L
     reapplyAutoManagedPlayers();
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
-  private void onPlayerJoin(final @NotNull PlayerJoinEvent event) {
-    final var joinedPlayer = event.getPlayer();
-
-    // Delay by one tick to run after vanilla join synchronization packets are queued.
-    Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
-      final var joinedState = this.viewers.computeIfAbsent(joinedPlayer.getUniqueId(), ignored -> new ViewerState());
-      if (joinedState.customMode != null || this.autoEnabled) {
-        applyEffectiveMode(joinedPlayer, joinedState);
-      }
-      cleanupStateIfUnused(joinedPlayer.getUniqueId(), joinedState);
-
-      final var joinedPlayerUuid = joinedPlayer.getUniqueId();
-      for (final var entry : this.viewers.entrySet()) {
-        final var viewerState = entry.getValue();
-        if (resolveEffectiveMode(viewerState) == TabListMode.VISIBLE) {
-          continue;
-        }
-
-        final var viewer = Bukkit.getPlayer(entry.getKey());
-        if (viewer == null || !viewer.isOnline()) {
-          continue;
-        }
-
-        try {
-          removeTabEntries(viewer, List.of(joinedPlayerUuid));
-        } catch (ReflectiveOperationException e) {
-          throw new RuntimeException("Failed to keep tab-list hidden for " + viewer.getName(), e);
-        }
-      }
-    }, 1L);
+  @Override
+  public long getTabCleanupDelayTicks() {
+    return this.tabCleanupDelayTicks;
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
-  private void onPlayerQuit(final @NotNull PlayerQuitEvent event) {
-    final var uuid = event.getPlayer().getUniqueId();
-    removeInterceptor(uuid);
-    this.viewers.remove(uuid);
+  @Override
+  public void setTabCleanupDelayTicks(final long ticks) {
+    if (ticks < 1L) {
+      throw new IllegalArgumentException("Tab cleanup delay must be >= 1 tick");
+    }
+    this.tabCleanupDelayTicks = ticks;
   }
+
+  // ###############################################################
+  // ----------------------- PRIVATE METHODS -----------------------
+  // ###############################################################
 
   private void applyEffectiveMode(final @NotNull Player player, final @NotNull ViewerState state) {
     final var effectiveMode = resolveEffectiveMode(state);
@@ -170,7 +160,8 @@ public final class TabListServiceImpl implements TabListService, DreamService, L
       }
 
       installInterceptor(player, state);
-      removeTabEntries(player, Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).toList());
+
+      scheduleTabCleanupForViewer(player.getUniqueId(), this.tabCleanupDelayTicks);
       if (effectiveMode == TabListMode.HIDDEN) {
         player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
       }
@@ -235,7 +226,8 @@ public final class TabListServiceImpl implements TabListService, DreamService, L
     final var interceptorName = "dreamapi-tablist-" + player.getUniqueId();
 
     if (channel.pipeline().get(interceptorName) == null) {
-      channel.pipeline().addBefore("packet_handler", interceptorName, new TabListUpdateInterceptor(() -> resolveEffectiveMode(state) != TabListMode.VISIBLE));
+      channel.pipeline().addBefore("packet_handler", interceptorName,
+        new TabListUpdateInterceptor(player.getUniqueId(), () -> resolveEffectiveMode(state) != TabListMode.VISIBLE));
     }
 
     state.interceptorName = interceptorName;
@@ -245,6 +237,13 @@ public final class TabListServiceImpl implements TabListService, DreamService, L
     if (state.customMode != null || state.interceptorName != null) {
       return;
     }
+
+    final var cleanupTask = state.cleanupTask;
+    if (cleanupTask != null) {
+      cleanupTask.cancel();
+      state.cleanupTask = null;
+    }
+
     this.viewers.remove(viewerUuid, state);
   }
 
@@ -272,16 +271,77 @@ public final class TabListServiceImpl implements TabListService, DreamService, L
     }
   }
 
+  private void scheduleTabCleanupForViewer(final @NotNull UUID viewerUuid, final long delayTicks) {
+    final var state = this.viewers.get(viewerUuid);
+    if (state == null) {
+      return;
+    }
+
+    final var previousTask = state.cleanupTask;
+    if (previousTask != null) {
+      previousTask.cancel();
+    }
+
+    state.cleanupTask = Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+      final var currentState = this.viewers.get(viewerUuid);
+      if (currentState == null || currentState != state) {
+        state.cleanupTask = null;
+        return;
+      }
+
+      final var viewer = Bukkit.getPlayer(viewerUuid);
+      if (viewer == null || !viewer.isOnline()) {
+        state.cleanupTask = null;
+        return;
+      }
+
+      if (resolveEffectiveMode(currentState) == TabListMode.VISIBLE) {
+        currentState.cleanupTask = null;
+        return;
+      }
+
+      try {
+        removeTabEntries(viewer, Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).toList());
+      } catch (ReflectiveOperationException e) {
+        throw new RuntimeException("Failed to keep tab-list hidden for " + viewer.getName(), e);
+      } finally {
+        currentState.cleanupTask = null;
+      }
+    }, delayTicks);
+  }
+
+  private void cancelPendingCleanup(final @NotNull UUID viewerUuid) {
+    final var state = this.viewers.get(viewerUuid);
+    if (state == null) {
+      return;
+    }
+
+    final var cleanupTask = state.cleanupTask;
+    if (cleanupTask != null) {
+      cleanupTask.cancel();
+      state.cleanupTask = null;
+    }
+  }
+
   @FunctionalInterface
   private interface VisibilitySupplier {
     boolean isHiddenModeEnabled();
   }
 
-  private static final class TabListUpdateInterceptor extends ChannelDuplexHandler {
+  // ###############################################################
+  // ----------------------- STATIC METHODS ------------------------
+  // ###############################################################
 
+  private final class TabListUpdateInterceptor extends ChannelDuplexHandler {
+
+    private final @NotNull UUID viewerUuid;
     private final @NotNull VisibilitySupplier visibilitySupplier;
 
-    private TabListUpdateInterceptor(final @NotNull VisibilitySupplier visibilitySupplier) {
+    private TabListUpdateInterceptor(
+      final @NotNull UUID viewerUuid,
+      final @NotNull VisibilitySupplier visibilitySupplier
+    ) {
+      this.viewerUuid = viewerUuid;
       this.visibilitySupplier = visibilitySupplier;
     }
 
@@ -289,7 +349,9 @@ public final class TabListServiceImpl implements TabListService, DreamService, L
     public void write(final @NotNull ChannelHandlerContext ctx, final @NotNull Object msg, final @NotNull ChannelPromise promise) throws Exception {
       if (this.visibilitySupplier.isHiddenModeEnabled()
         && PacketReflection.getPacketPlayerInfoUpdateClass().isInstance(msg)) {
-        promise.setSuccess();
+        // Keep packet flow for skin/game profile consistency, then re-hide tab entries.
+        super.write(ctx, msg, promise);
+        scheduleTabCleanupForViewer(this.viewerUuid, tabCleanupDelayTicks);
         return;
       }
 
@@ -300,7 +362,55 @@ public final class TabListServiceImpl implements TabListService, DreamService, L
   private static final class ViewerState {
     private volatile @Nullable TabListMode customMode;
     private volatile @Nullable String interceptorName;
+    private volatile @Nullable BukkitTask cleanupTask;
   }
+
+  // ###############################################################
+  // ---------------------- LISTENER METHODS -----------------------
+  // ###############################################################
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  private void onPlayerJoin(final @NotNull PlayerJoinEvent event) {
+    final var joinedPlayer = event.getPlayer();
+
+    // Delay by one tick to run after vanilla join synchronization packets are queued.
+    Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+      final var joinedState = this.viewers.computeIfAbsent(joinedPlayer.getUniqueId(), ignored -> new ViewerState());
+      if (joinedState.customMode != null || this.autoEnabled) {
+        applyEffectiveMode(joinedPlayer, joinedState);
+        if (resolveEffectiveMode(joinedState) != TabListMode.VISIBLE) {
+          scheduleTabCleanupForViewer(joinedPlayer.getUniqueId(), this.tabCleanupDelayTicks);
+        }
+      }
+      cleanupStateIfUnused(joinedPlayer.getUniqueId(), joinedState);
+
+      for (final var entry : this.viewers.entrySet()) {
+        final var viewerState = entry.getValue();
+        if (resolveEffectiveMode(viewerState) == TabListMode.VISIBLE) {
+          continue;
+        }
+
+        final var viewer = Bukkit.getPlayer(entry.getKey());
+        if (viewer == null || !viewer.isOnline()) {
+          continue;
+        }
+
+        scheduleTabCleanupForViewer(viewer.getUniqueId(), this.tabCleanupDelayTicks);
+      }
+    }, 1L);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  private void onPlayerQuit(final @NotNull PlayerQuitEvent event) {
+    final var uuid = event.getPlayer().getUniqueId();
+    cancelPendingCleanup(uuid);
+    removeInterceptor(uuid);
+    final var state = this.viewers.get(uuid);
+    if (state != null) {
+      cleanupStateIfUnused(uuid, state);
+    }
+  }
+
 }
 
 

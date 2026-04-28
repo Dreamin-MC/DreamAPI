@@ -7,7 +7,7 @@ import cloud.commandframework.annotations.CommandPermission;
 import cloud.commandframework.annotations.suggestions.Suggestions;
 import cloud.commandframework.context.CommandContext;
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.nms.tablist.service.TabListMode;
+import fr.dreamin.dreamapi.api.nms.tablist.model.TabListMode;
 import fr.dreamin.dreamapi.api.nms.tablist.service.TabListService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,7 +33,9 @@ public final class TabListCmd {
       .append(Component.text(this.tabListService.isAutoEnabled() ? "ON" : "OFF",
         this.tabListService.isAutoEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED))
       .append(Component.text(" | default: ", NamedTextColor.DARK_GRAY))
-      .append(Component.text(this.tabListService.getDefaultMode().name(), NamedTextColor.YELLOW)));
+      .append(Component.text(this.tabListService.getDefaultMode().name(), NamedTextColor.YELLOW))
+      .append(Component.text(" | cleanupDelay: ", NamedTextColor.DARK_GRAY))
+      .append(Component.text(this.tabListService.getTabCleanupDelayTicks() + "t", NamedTextColor.AQUA)));
   }
 
   @CommandDescription("Enable/disable automatic default mode application on join")
@@ -145,6 +147,32 @@ public final class TabListCmd {
     this.tabListService.refresh(target);
     sender.sendMessage(Component.text("Tab-list refreshed for ", NamedTextColor.GRAY)
       .append(Component.text(target.getName(), NamedTextColor.WHITE))
+      .append(Component.text(".", NamedTextColor.GRAY)));
+  }
+
+  @CommandDescription("Show tab-list cleanup delay (ticks)")
+  @CommandMethod("tablist cleanupdelay")
+  @CommandPermission("dreamapi.cmd.tablist.cleanupdelay")
+  private void onCleanupDelayStatus(final @NotNull CommandSender sender) {
+    sender.sendMessage(Component.text("Tab-list cleanup delay: ", NamedTextColor.GRAY)
+      .append(Component.text(this.tabListService.getTabCleanupDelayTicks() + " ticks", NamedTextColor.AQUA)));
+  }
+
+  @CommandDescription("Set tab-list cleanup delay (ticks)")
+  @CommandMethod("tablist cleanupdelay <ticks>")
+  @CommandPermission("dreamapi.cmd.tablist.cleanupdelay")
+  private void onCleanupDelaySet(
+    final @NotNull CommandSender sender,
+    final @Argument("ticks") long ticks
+  ) {
+    if (ticks < 1L) {
+      sender.sendMessage(Component.text("Invalid value. Ticks must be >= 1.", NamedTextColor.RED));
+      return;
+    }
+
+    this.tabListService.setTabCleanupDelayTicks(ticks);
+    sender.sendMessage(Component.text("Tab-list cleanup delay set to ", NamedTextColor.GRAY)
+      .append(Component.text(ticks + " ticks", NamedTextColor.AQUA))
       .append(Component.text(".", NamedTextColor.GRAY)));
   }
 

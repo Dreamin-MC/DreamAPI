@@ -1,4 +1,4 @@
-package fr.dreamin.dreamapi.api.nms.tablist.service;
+package fr.dreamin.dreamapi.api.nms.tablist.model;
 
 /**
  * Player tab-list visibility modes.

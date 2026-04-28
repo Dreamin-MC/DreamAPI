@@ -1,6 +1,6 @@
 # ✨ DreamAPI
 
-[![Version](https://img.shields.io/badge/version-0.2.7-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
+[![Version](https://img.shields.io/badge/version-0.2.8-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
 [![](https://jitpack.io/v/Dreamin-MC/DreamAPI.svg)](https://jitpack.io/#Dreamin-MC/DreamAPI)
 [![Java](https://img.shields.io/badge/java-25-orange.svg)](https://www.oracle.com/java/)
 [![Minecraft](https://img.shields.io/badge/minecraft-26.2.1-green.svg)](https://www.minecraft.net/)
@@ -110,7 +110,7 @@ DreamAPI is organized into **specialized modules** covering all aspects of plugi
 <dependency>
     <groupId>com.github.Dreamin-MC</groupId>
     <artifactId>DreamAPI</artifactId>
-    <version>0.2.7:all</version>
+    <version>0.2.8:all</version>
 </dependency>
 ```
 
@@ -121,7 +121,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.Dreamin-MC:DreamAPI:0.2.7:all")
+    compileOnly("com.github.Dreamin-MC:DreamAPI:0.2.8:all")
 }
 ```
 
@@ -132,7 +132,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.Dreamin-MC:DreamAPI:0.2.7:all'
+    compileOnly 'com.github.Dreamin-MC:DreamAPI:0.2.8:all'
 }
 ```
 
@@ -145,7 +145,6 @@ DreamAPI is the **cornerstone** of the **Dreamin Ecosystem**, providing shared f
 | Project | Description |
 |---------|-------------|
 | 🧠 **DreamAPI** | Central and modular API foundation *(you are here)* |
-| 🌈 **DreamHud** | Dynamic HUD display system using bossbars |
 
 More modules coming soon!
 
@@ -155,7 +154,7 @@ More modules coming soon!
 
 | Status | Version  | Compatibility |
 |--------|----------|---------------|
-| 🧪 In active development | `v0.2.7` | Paper 26.2.1 |
+| 🧪 In active development | `v0.2.8` | Paper 26.2.1 |
 | 🔜 Beta Release | `v0.1.0` | Enhanced documentation & stability |
 | 🚀 Stable Release | `v1.0.0` | Full API freeze & production-ready |
 
