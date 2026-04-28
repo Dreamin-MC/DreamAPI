@@ -31,7 +31,6 @@ This folder is the fastest way to discover and use DreamAPI services.
 - [`docs/services/visual-service.md`](/docs/services/visual-service.md)
 - [`docs/services/tablist-service.md`](/docs/services/tablist-service.md)
 - [`docs/services/worldborder-service.md`](/docs/services/worldborder-service.md)
-- [`docs/services/persistent-worldborder-service.md`](/docs/services/persistent-worldborder-service.md)
 - [`docs/services/hologram-service.md`](/docs/services/hologram-service.md)
 - [`docs/services/animation-service.md`](/docs/services/animation-service.md)
 - [`docs/services/skin-service.md`](/docs/services/skin-service.md)

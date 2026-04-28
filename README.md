@@ -63,7 +63,6 @@ For plugin integration, service pages are usually the most useful entry point.
 - [`TabListService`](/docs/services/tablist-service.md)
 - [`VisualService`](/docs/services/visual-service.md)
 - [`WorldBorderService`](/docs/services/worldborder-service.md)
-- [`PersistentWorldBorderService`](/docs/services/persistent-worldborder-service.md)
 
 **Gameplay & Data**
 

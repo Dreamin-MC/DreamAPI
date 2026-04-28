@@ -1,6 +1,6 @@
 # PlayerDebugService (Core)
 
-Navigation: [`docs/services/persistent-worldborder-service.md`](/docs/services/persistent-worldborder-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/team-service.md`](/docs/services/team-service.md)
+Navigation: [`docs/services/worldborder-service.md`](/docs/services/worldborder-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/team-service.md`](/docs/services/team-service.md)
 
 ## Purpose
 
@@ -35,5 +35,5 @@ PlayerDebugService playerDebug = DreamPlugin.getService(PlayerDebugService.class
 playerDebug.startDebug(targetPlayer, executorPlayer);
 ```
 
-Navigation: [`docs/services/persistent-worldborder-service.md`](/docs/services/persistent-worldborder-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/team-service.md`](/docs/services/team-service.md)
+Navigation: [`docs/services/worldborder-service.md`](/docs/services/worldborder-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/team-service.md`](/docs/services/team-service.md)
 

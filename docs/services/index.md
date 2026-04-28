@@ -30,7 +30,6 @@ Use this page as the main directory for all DreamAPI services.
 | `visual-service.md` | visual/nms | fake entities/blocks and frozen time | ALL, VISUAL |
 | `world-service.md` | gameplay/data | clone/reset/delete worlds | ALL, GAMEPLAY |
 | `worldborder-service.md` | visual/gameplay | personal border behavior and pulse | ALL |
-| `persistent-worldborder-service.md` | visual/gameplay | persistent world border abstraction | via worldborder impl |
 | `player-debug-service.md` | core/internal | target-debugger mapping | ALL, MINIMAL, DEBUG |
 | `team-service.md` | core/internal | scoreboard teams and display updates | ALL, GAMEPLAY |
 | `day-cycle-service.md` | core/internal | simulated day/night loops | ALL, GAMEPLAY |
