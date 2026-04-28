@@ -50,25 +50,46 @@ DreamAPI/
 
 ---
 
-### API Modules
+### Services Documentation
 
-| Module | Description |
-|--------|-------------|
-| Animation | Cinematic builder and interpolation-ready camera segments |
-| Command | Command bootstrap through Cloud Command Framework |
-| Config | JSON/YAML-compatible configuration and object mapping helpers |
-| Database | SQL utility layer (MySQL/Postgres abstractions) |
-| Dialog | Paper dialog API wrapper (work in progress) |
-| Event | Event helpers and annotation-driven listeners |
-| Game | Game state switching and ticking interface |
-| Glowing | Per-viewer glowing for entities and blocks |
-| GUI | Inventory GUI integration utilities |
-| HTTP | HTTP client helper layer |
-| Item | Registry and action-driven custom item behavior |
-| Logger | Structured debug logging and writers |
-| Recipe | Dynamic recipe registration and conditions |
-| Services | Auto-loading service framework |
-| World/WorldBorder | World lifecycle and per-player border APIs |
+For plugin integration, service pages are usually the most useful entry point.
+
+**Visual & NMS**
+
+- [`AnimationService`](/docs/services/animation-service.md)
+- [`GlowingService`](/docs/services/glowing-service.md)
+- [`HologramService`](/docs/services/hologram-service.md)
+- [`SkinService`](/docs/services/skin-service.md)
+- [`TabListService`](/docs/services/tablist-service.md)
+- [`VisualService`](/docs/services/visual-service.md)
+- [`WorldBorderService`](/docs/services/worldborder-service.md)
+- [`PersistentWorldBorderService`](/docs/services/persistent-worldborder-service.md)
+
+**Gameplay & Data**
+
+- [`CuboidService`](/docs/services/cuboid-service.md)
+- [`GameService`](/docs/services/game-service.md)
+- [`ItemRegistryService`](/docs/services/item-registry-service.md)
+- [`RecipeRegistryService`](/docs/services/recipe-registry-service.md)
+- [`RecipeCategoryRegistryService`](/docs/services/recipe-category-registry-service.md)
+- [`RecipeViewerService`](/docs/services/recipe-viewer-service.md)
+- [`WorldService`](/docs/services/world-service.md)
+
+**Utility & Integration**
+
+- [`DebugService`](/docs/services/debug-service.md)
+- [`LangService`](/docs/services/lang-service.md)
+- [`LuckPermsService`](/docs/services/luckperms-service.md)
+- [`DialogService` (experimental)](/docs/services/dialog-service.md)
+
+**Core/Internal Services**
+
+- [`PlayerDebugService`](/docs/services/player-debug-service.md)
+- [`TeamService`](/docs/services/team-service.md)
+- [`DayCycleService`](/docs/services/day-cycle-service.md)
+- [`Service Runtime`](/docs/services/service-runtime.md)
+
+Full directory: [`docs/services/index.md`](/docs/services/index.md)
 
 ---
 
