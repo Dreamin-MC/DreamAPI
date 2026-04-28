@@ -1,6 +1,6 @@
 # DebugService
 
-Navigation: [`docs/services/cuboid-service.md`](docs/services/cuboid-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/dialog-service.md`](docs/services/dialog-service.md)
+Navigation: [`docs/services/cuboid-service.md`](/docs/services/cuboid-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/dialog-service.md`](/docs/services/dialog-service.md)
 
 ## Purpose
 
@@ -8,9 +8,9 @@ Central asynchronous debug logger with category and writer routing.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/logger/DebugService.java`](api/src/main/java/fr/dreamin/dreamapi/api/logger/DebugService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/DebugServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/logger/DebugServiceImpl.java)
-- Dependency service: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/logger/DebugService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/logger/DebugService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/DebugServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/logger/DebugServiceImpl.java)
+- Dependency service: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java)
 
 ## Availability
 
@@ -50,5 +50,5 @@ debug.setRetentionDays(7);
 debug.cleanupOldLogs();
 ```
 
-Navigation: [`docs/services/cuboid-service.md`](docs/services/cuboid-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/dialog-service.md`](docs/services/dialog-service.md)
+Navigation: [`docs/services/cuboid-service.md`](/docs/services/cuboid-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/dialog-service.md`](/docs/services/dialog-service.md)
 

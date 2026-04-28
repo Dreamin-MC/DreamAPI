@@ -12,7 +12,7 @@ The `plugin-base` module exposes `DreamPlugin`, the base class that bootstraps D
 
 ## Key class
 
-- [`plugin-base/src/main/java/fr/dreamin/dreamapi/plugin/DreamPlugin.java`](plugin-base/src/main/java/fr/dreamin/dreamapi/plugin/DreamPlugin.java)
+- [`plugin-base/src/main/java/fr/dreamin/dreamapi/plugin/DreamPlugin.java`](/plugin-base/src/main/java/fr/dreamin/dreamapi/plugin/DreamPlugin.java)
 
 ## Recommended usage
 

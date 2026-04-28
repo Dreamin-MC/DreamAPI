@@ -1,6 +1,6 @@
 # RecipeViewerService
 
-Navigation: [`docs/services/recipe-registry-service.md`](docs/services/recipe-registry-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/skin-service.md`](docs/services/skin-service.md)
+Navigation: [`docs/services/recipe-registry-service.md`](/docs/services/recipe-registry-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/skin-service.md`](/docs/services/skin-service.md)
 
 ## Purpose
 
@@ -8,7 +8,7 @@ Defines UI preview operations for custom recipes.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeViewerService.java`](api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeViewerService.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeViewerService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeViewerService.java)
 
 ## Availability
 
@@ -41,5 +41,5 @@ public final class MyRecipeViewerService implements RecipeViewerService {
 }
 ```
 
-Navigation: [`docs/services/recipe-registry-service.md`](docs/services/recipe-registry-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/skin-service.md`](docs/services/skin-service.md)
+Navigation: [`docs/services/recipe-registry-service.md`](/docs/services/recipe-registry-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/skin-service.md`](/docs/services/skin-service.md)
 

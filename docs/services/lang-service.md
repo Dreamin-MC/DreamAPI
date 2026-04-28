@@ -1,6 +1,6 @@
 # LangService
 
-Navigation: [`docs/services/item-registry-service.md`](docs/services/item-registry-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/luckperms-service.md`](docs/services/luckperms-service.md)
+Navigation: [`docs/services/item-registry-service.md`](/docs/services/item-registry-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/luckperms-service.md`](/docs/services/luckperms-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Loads translation files and resolves locale-aware text.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/lang/service/LangService.java`](api/src/main/java/fr/dreamin/dreamapi/api/lang/service/LangService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/lang/service/LangServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/lang/service/LangServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/lang/service/LangService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/lang/service/LangService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/lang/service/LangServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/lang/service/LangServiceImpl.java)
 
 ## Availability
 
@@ -72,5 +72,5 @@ player.sendMessage(msg);
 - File key is normalized path, not always plain filename.
 - Missing namespace/value in JSON file causes load errors.
 
-Navigation: [`docs/services/item-registry-service.md`](docs/services/item-registry-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/luckperms-service.md`](docs/services/luckperms-service.md)
+Navigation: [`docs/services/item-registry-service.md`](/docs/services/item-registry-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/luckperms-service.md`](/docs/services/luckperms-service.md)
 

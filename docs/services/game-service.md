@@ -1,6 +1,6 @@
 # GameService
 
-Navigation: [`docs/services/dialog-service.md`](docs/services/dialog-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/glowing-service.md`](docs/services/glowing-service.md)
+Navigation: [`docs/services/dialog-service.md`](/docs/services/dialog-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/glowing-service.md`](/docs/services/glowing-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Handles game-state transitions and per-tick state forwarding.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/game/GameService.java`](api/src/main/java/fr/dreamin/dreamapi/api/game/GameService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/game/GameServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/game/GameServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/game/GameService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/game/GameService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/game/GameServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/game/GameServiceImpl.java)
 
 ## Availability
 
@@ -31,7 +31,7 @@ Handles game-state transitions and per-tick state forwarding.
 ## Setup checklist
 
 1. Include `GameServiceImpl` in `@EnableServices(include = ...)`.
-2. Implement `GameState` with clear [`enter/exit/tick`](enter/exit/tick) responsibilities.
+2. Implement `GameState` with clear `enter/exit/tick` responsibilities.
 3. Bridge Bukkit scheduler ticks to `game.tick(...)`.
 
 ## Practical example
@@ -53,5 +53,5 @@ new BukkitRunnable() {
 - Not including service in `@EnableServices` causes `getService(...)` failures.
 - Heavy logic inside `tick(...)` can impact server TPS.
 
-Navigation: [`docs/services/dialog-service.md`](docs/services/dialog-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/glowing-service.md`](docs/services/glowing-service.md)
+Navigation: [`docs/services/dialog-service.md`](/docs/services/dialog-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/glowing-service.md`](/docs/services/glowing-service.md)
 

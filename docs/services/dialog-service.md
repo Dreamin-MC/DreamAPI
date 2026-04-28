@@ -1,6 +1,6 @@
 # DialogService (Experimental)
 
-Navigation: [`docs/services/debug-service.md`](docs/services/debug-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/game-service.md`](docs/services/game-service.md)
+Navigation: [`docs/services/debug-service.md`](/docs/services/debug-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/game-service.md`](/docs/services/game-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Wrapper around Paper dialog APIs for notice/confirm/form experiences.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/dialog/DialogService.java`](api/src/main/java/fr/dreamin/dreamapi/api/dialog/DialogService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/dialog/DialogServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/dialog/DialogServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/dialog/DialogService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/dialog/DialogService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/dialog/DialogServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/dialog/DialogServiceImpl.java)
 
 ## Availability
 
@@ -48,5 +48,5 @@ DialogService dialogs = new DialogServiceImpl();
 dialogs.notice(player, "Server Rules", "Understood");
 ```
 
-Navigation: [`docs/services/debug-service.md`](docs/services/debug-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/game-service.md`](docs/services/game-service.md)
+Navigation: [`docs/services/debug-service.md`](/docs/services/debug-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/game-service.md`](/docs/services/game-service.md)
 

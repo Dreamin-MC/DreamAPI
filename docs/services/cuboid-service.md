@@ -1,6 +1,6 @@
 # CuboidService
 
-Navigation: [`docs/services/animation-service.md`](docs/services/animation-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/debug-service.md`](docs/services/debug-service.md)
+Navigation: [`docs/services/animation-service.md`](/docs/services/animation-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/debug-service.md`](/docs/services/debug-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Tracks cuboid zones and emits enter/leave logic for moving entities.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/cuboid/service/CuboidService.java`](api/src/main/java/fr/dreamin/dreamapi/api/cuboid/service/CuboidService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/cuboid/service/CuboidServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/cuboid/service/CuboidServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/cuboid/service/CuboidService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/cuboid/service/CuboidService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/cuboid/service/CuboidServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/cuboid/service/CuboidServiceImpl.java)
 
 ## Availability
 
@@ -43,5 +43,5 @@ if (cuboids.getCuboids().contains(spawnCuboid)) {
 }
 ```
 
-Navigation: [`docs/services/animation-service.md`](docs/services/animation-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/debug-service.md`](docs/services/debug-service.md)
+Navigation: [`docs/services/animation-service.md`](/docs/services/animation-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/debug-service.md`](/docs/services/debug-service.md)
 

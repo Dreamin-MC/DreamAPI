@@ -153,22 +153,22 @@ DreamAPI is the shared technical base used by Dreamin modules and plugins.
 
 ### Documentation
 
-- **Documentation hub**: [`docs/index.md`](docs/index.md)
-- **Architecture**: [`docs/architecture.md`](docs/architecture.md)
-- **Services folder guide**: [`docs/services/README.md`](docs/services/README.md)
-- **Service recipes**: [`docs/examples/service-recipes.md`](docs/examples/service-recipes.md)
+- **Documentation hub**: [`docs/index.md`](/docs/index.md)
+- **Architecture**: [`docs/architecture.md`](/docs/architecture.md)
+- **Services folder guide**: [`docs/services/README.md`](/docs/services/README.md)
+- **Service recipes**: [`docs/examples/service-recipes.md`](/docs/examples/service-recipes.md)
 - **Module docs**:
-  - [`docs/modules/api.md`](docs/modules/api.md)
-  - [`docs/modules/core.md`](docs/modules/core.md)
-  - [`docs/modules/plugin-base.md`](docs/modules/plugin-base.md)
-  - [`docs/modules/example-plugin.md`](docs/modules/example-plugin.md)
-- **Service documentation (one page per service)**: [`docs/services/index.md`](docs/services/index.md)
+  - [`docs/modules/api.md`](/docs/modules/api.md)
+  - [`docs/modules/core.md`](/docs/modules/core.md)
+  - [`docs/modules/plugin-base.md`](/docs/modules/plugin-base.md)
+  - [`docs/modules/example-plugin.md`](/docs/modules/example-plugin.md)
+- **Service documentation (one page per service)**: [`docs/services/index.md`](/docs/services/index.md)
 
 If you are integrating DreamAPI publicly, start with:
-1. [`docs/index.md`](docs/index.md)
-2. [`docs/architecture.md`](docs/architecture.md)
-3. [`docs/services/README.md`](docs/services/README.md)
-4. [`docs/examples/service-recipes.md`](docs/examples/service-recipes.md)
+1. [`docs/index.md`](/docs/index.md)
+2. [`docs/architecture.md`](/docs/architecture.md)
+3. [`docs/services/README.md`](/docs/services/README.md)
+4. [`docs/examples/service-recipes.md`](/docs/examples/service-recipes.md)
 
 ---
 

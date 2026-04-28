@@ -1,6 +1,6 @@
 # TeamService (Core)
 
-Navigation: [`docs/services/player-debug-service.md`](docs/services/player-debug-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/day-cycle-service.md`](docs/services/day-cycle-service.md)
+Navigation: [`docs/services/player-debug-service.md`](/docs/services/player-debug-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/day-cycle-service.md`](/docs/services/day-cycle-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Provides scoreboard team management for entities and player display styling.
 
 ## Source links
 
-- Interface: [`core/src/main/java/fr/dreamin/dreamapi/core/team/TeamService.java`](core/src/main/java/fr/dreamin/dreamapi/core/team/TeamService.java)
-- Implementation: [`core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java)
+- Interface: [`core/src/main/java/fr/dreamin/dreamapi/core/team/TeamService.java`](/core/src/main/java/fr/dreamin/dreamapi/core/team/TeamService.java)
+- Implementation: [`core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java)
 
 ## Availability
 
@@ -55,5 +55,5 @@ var team = teams.createOrGetTeam(player);
 teams.setPrefix(team, Component.text("[VIP] "));
 ```
 
-Navigation: [`docs/services/player-debug-service.md`](docs/services/player-debug-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/day-cycle-service.md`](docs/services/day-cycle-service.md)
+Navigation: [`docs/services/player-debug-service.md`](/docs/services/player-debug-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/day-cycle-service.md`](/docs/services/day-cycle-service.md)
 

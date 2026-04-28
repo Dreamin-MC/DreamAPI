@@ -11,8 +11,8 @@ The `core` module provides runtime implementations for API interfaces.
 
 ## Key classes
 
-- [`core/src/main/java/fr/dreamin/dreamapi/core/ApiProviderImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/ApiProviderImpl.java)
-- [`core/src/main/java/fr/dreamin/dreamapi/core/service/ServiceAnnotationProcessor.java`](core/src/main/java/fr/dreamin/dreamapi/core/service/ServiceAnnotationProcessor.java)
+- [`core/src/main/java/fr/dreamin/dreamapi/core/ApiProviderImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/ApiProviderImpl.java)
+- [`core/src/main/java/fr/dreamin/dreamapi/core/service/ServiceAnnotationProcessor.java`](/core/src/main/java/fr/dreamin/dreamapi/core/service/ServiceAnnotationProcessor.java)
 
 ## Notes
 

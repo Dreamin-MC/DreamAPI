@@ -1,6 +1,6 @@
 # RecipeRegistryService
 
-Navigation: [`docs/services/recipe-category-registry-service.md`](docs/services/recipe-category-registry-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/recipe-viewer-service.md`](docs/services/recipe-viewer-service.md)
+Navigation: [`docs/services/recipe-category-registry-service.md`](/docs/services/recipe-category-registry-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/recipe-viewer-service.md`](/docs/services/recipe-viewer-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Registers and manages custom recipes with condition-aware crafting flow.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeRegistryService.java`](api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeRegistryService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/recipe/service/RecipeRegistryServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/recipe/service/RecipeRegistryServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeRegistryService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeRegistryService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/recipe/service/RecipeRegistryServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/recipe/service/RecipeRegistryServiceImpl.java)
 
 ## Availability
 
@@ -46,5 +46,5 @@ var loaded = recipes.getRecipe(customRecipe.getKey());
 - Reusing recipe keys overrides in-memory mapping.
 - Bulk runtime updates should end with `reload()`.
 
-Navigation: [`docs/services/recipe-category-registry-service.md`](docs/services/recipe-category-registry-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/recipe-viewer-service.md`](docs/services/recipe-viewer-service.md)
+Navigation: [`docs/services/recipe-category-registry-service.md`](/docs/services/recipe-category-registry-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/recipe-viewer-service.md`](/docs/services/recipe-viewer-service.md)
 

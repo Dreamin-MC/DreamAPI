@@ -1,6 +1,6 @@
 # SkinService
 
-Navigation: [`docs/services/recipe-viewer-service.md`](docs/services/recipe-viewer-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/tablist-service.md`](docs/services/tablist-service.md)
+Navigation: [`docs/services/recipe-viewer-service.md`](/docs/services/recipe-viewer-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/tablist-service.md`](/docs/services/tablist-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Handles player skin apply/reset and named skin registry.
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/skin/service/SkinService.java`](api/src/main/java/fr/dreamin/dreamapi/api/skin/service/SkinService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/skin/service/SkinServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/skin/service/SkinServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/skin/service/SkinService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/skin/service/SkinService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/skin/service/SkinServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/skin/service/SkinServiceImpl.java)
 
 ## Availability
 
@@ -43,5 +43,5 @@ skins.fetchSkinFromName("jeb_").thenAccept(skin -> {
 });
 ```
 
-Navigation: [`docs/services/recipe-viewer-service.md`](docs/services/recipe-viewer-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/tablist-service.md`](docs/services/tablist-service.md)
+Navigation: [`docs/services/recipe-viewer-service.md`](/docs/services/recipe-viewer-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/tablist-service.md`](/docs/services/tablist-service.md)
 

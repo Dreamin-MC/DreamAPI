@@ -10,8 +10,8 @@
 
 ## Key classes
 
-- [`example-plugin/src/main/java/fr/dreamin/example/ExamplePlugin.java`](example-plugin/src/main/java/fr/dreamin/example/ExamplePlugin.java)
-- [`example-plugin/src/main/resources/paper-plugin.yml`](example-plugin/src/main/resources/paper-plugin.yml)
+- [`example-plugin/src/main/java/fr/dreamin/example/ExamplePlugin.java`](/example-plugin/src/main/java/fr/dreamin/example/ExamplePlugin.java)
+- [`example-plugin/src/main/resources/paper-plugin.yml`](/example-plugin/src/main/resources/paper-plugin.yml)
 
 ## Runtime notes
 

@@ -1,6 +1,6 @@
 # PlayerDebugService (Core)
 
-Navigation: [`docs/services/persistent-worldborder-service.md`](docs/services/persistent-worldborder-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/team-service.md`](docs/services/team-service.md)
+Navigation: [`docs/services/persistent-worldborder-service.md`](/docs/services/persistent-worldborder-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/team-service.md`](/docs/services/team-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Tracks debugger-target relations for player-scoped debug flows.
 
 ## Source links
 
-- Interface: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugService.java`](core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugService.java)
-- Implementation: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java)
+- Interface: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugService.java`](/core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugService.java)
+- Implementation: [`core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/logger/PlayerDebugServiceImpl.java)
 
 ## Availability
 
@@ -35,5 +35,5 @@ PlayerDebugService playerDebug = DreamPlugin.getService(PlayerDebugService.class
 playerDebug.startDebug(targetPlayer, executorPlayer);
 ```
 
-Navigation: [`docs/services/persistent-worldborder-service.md`](docs/services/persistent-worldborder-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/team-service.md`](docs/services/team-service.md)
+Navigation: [`docs/services/persistent-worldborder-service.md`](/docs/services/persistent-worldborder-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/team-service.md`](/docs/services/team-service.md)
 

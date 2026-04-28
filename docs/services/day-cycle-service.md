@@ -1,6 +1,6 @@
 # DayCycleService (Core)
 
-Navigation: [`docs/services/team-service.md`](docs/services/team-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/service-runtime.md`](docs/services/service-runtime.md)
+Navigation: [`docs/services/team-service.md`](/docs/services/team-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/service-runtime.md`](/docs/services/service-runtime.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Manages simulated day/night cycles per world.
 
 ## Source links
 
-- Interface: [`core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleService.java`](core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleService.java)
-- Implementation: [`core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleServiceImpl.java)
+- Interface: [`core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleService.java`](/core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleService.java)
+- Implementation: [`core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/time/day/impl/DayCycleServiceImpl.java)
 
 ## Availability
 
@@ -51,5 +51,5 @@ dayCycle.addWorld(world, new SimulateTime(6, 0, 0), new SimulateTime(18, 0, 0));
 dayCycle.startAll();
 ```
 
-Navigation: [`docs/services/team-service.md`](docs/services/team-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/service-runtime.md`](docs/services/service-runtime.md)
+Navigation: [`docs/services/team-service.md`](/docs/services/team-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/service-runtime.md`](/docs/services/service-runtime.md)
 

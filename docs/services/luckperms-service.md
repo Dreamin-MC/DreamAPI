@@ -1,6 +1,6 @@
 # LuckPermsService
 
-Navigation: [`docs/services/lang-service.md`](docs/services/lang-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/recipe-category-registry-service.md`](docs/services/recipe-category-registry-service.md)
+Navigation: [`docs/services/lang-service.md`](/docs/services/lang-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/recipe-category-registry-service.md`](/docs/services/recipe-category-registry-service.md)
 
 ## Purpose
 
@@ -8,9 +8,9 @@ Provides LuckPerms-backed metadata and permission operations with DreamAPI integ
 
 ## Source links
 
-- API: [`api/src/main/java/fr/dreamin/dreamapi/api/luckperms/LuckPermsService.java`](api/src/main/java/fr/dreamin/dreamapi/api/luckperms/LuckPermsService.java)
-- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/luckperms/LuckPermsServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/luckperms/LuckPermsServiceImpl.java)
-- Dependency: [`core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java)
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/luckperms/LuckPermsService.java`](/api/src/main/java/fr/dreamin/dreamapi/api/luckperms/LuckPermsService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/luckperms/LuckPermsServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/luckperms/LuckPermsServiceImpl.java)
+- Dependency: [`core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java`](/core/src/main/java/fr/dreamin/dreamapi/core/team/TeamServiceImpl.java)
 
 ## Availability
 
@@ -57,5 +57,5 @@ lp.getPrefix(player.getUniqueId()).thenAccept(prefix -> {
 });
 ```
 
-Navigation: [`docs/services/lang-service.md`](docs/services/lang-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/recipe-category-registry-service.md`](docs/services/recipe-category-registry-service.md)
+Navigation: [`docs/services/lang-service.md`](/docs/services/lang-service.md) | [`docs/services/index.md`](/docs/services/index.md) | [`docs/services/recipe-category-registry-service.md`](/docs/services/recipe-category-registry-service.md)
 
