@@ -108,7 +108,7 @@ Full directory: [`docs/services/index.md`](/docs/services/index.md)
 <dependency>
   <groupId>com.github.Dreamin-MC</groupId>
   <artifactId>DreamAPI</artifactId>
-  <version>0.2.8:all</version>
+  <version>0.2.8</version>
 </dependency>
 ```
 
@@ -119,7 +119,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly("com.github.Dreamin-MC:DreamAPI:0.2.8:all")
+  compileOnly("com.github.Dreamin-MC:DreamAPI:0.2.8")
 }
 ```
 
@@ -130,7 +130,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly "com.github.Dreamin-MC:DreamAPI:0.2.8:all"
+  compileOnly "com.github.Dreamin-MC:DreamAPI:0.2.8"
 }
 ```
 
