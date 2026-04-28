@@ -16,6 +16,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,6 +81,9 @@ public class PacketReflection {
   private static Class<?> packetAddEntityClass;
   private static Class<?> packetRemoveEntitiesClass;
   private static Class<?> packetBlockUpdateClass;
+  private static Class<?> packetPlayerInfoUpdateClass;
+  private static Class<?> packetPlayerInfoRemoveClass;
+  private static Class<?> packetPlayerInfoUpdateActionClass;
 
   private static Constructor<?> packetMetadataConstructor;
   private static Constructor<?> packetWorldBorderConstructor;
@@ -94,6 +100,10 @@ public class PacketReflection {
   private static Constructor<?> packetAddEntityConstructor;
   private static Constructor<?> packetRemoveEntitiesConstructor;
   private static Constructor<?> packetBlockUpdateConstructor;
+  private static Constructor<?> packetPlayerInfoRemoveConstructor;
+  private static Constructor<?> packetPlayerInfoUpdateConstructor;
+
+  private static Method packetPlayerInfoCreateInitializingMethod;
 
   // ###############################################################
   // ------------------------ NETWORKING ---------------------------
@@ -236,6 +246,9 @@ public class PacketReflection {
     packetAddEntityClass = Class.forName(PacketConstants.NMS_PACKET_ADD_ENTITY);
     packetRemoveEntitiesClass = Class.forName(PacketConstants.NMS_PACKET_REMOVE_ENTITIES);
     packetBlockUpdateClass = Class.forName(PacketConstants.NMS_PACKET_BLOCK_UPDATE);
+    packetPlayerInfoUpdateClass = Class.forName(PacketConstants.NMS_PACKET_PLAYER_INFO_UPDATE);
+    packetPlayerInfoRemoveClass = Class.forName(PacketConstants.NMS_PACKET_PLAYER_INFO_REMOVE);
+    packetPlayerInfoUpdateActionClass = Class.forName(PacketConstants.NMS_PACKET_PLAYER_INFO_UPDATE + "$Action");
 
     // Networking
     serverPlayerClass = Class.forName(PacketConstants.NMS_SERVER_PLAYER);
@@ -299,6 +312,13 @@ public class PacketReflection {
     // Networking
     sendPacketMethod = getAccessibleMethod(serverPacketListenerClass, "send", packetClass);
 
+    // Tab list packets
+    packetPlayerInfoCreateInitializingMethod = getOptionalAccessibleMethod(
+      packetPlayerInfoUpdateClass,
+      new String[]{"createPlayerInitializing"},
+      Collection.class
+    );
+
     // Team
     setTeamColorMethod = getAccessibleMethod(playerTeamClass, "setColor", chatFormattingClass);
     setCollisionRuleMethod = getAccessibleMethod(playerTeamClass, "setCollisionRule", collisionRuleClass);
@@ -357,6 +377,10 @@ public class PacketReflection {
     // Block packets
     blockPosConstructor = getAccessibleConstructor(blockPosClass, int.class, int.class, int.class);
     packetBlockUpdateConstructor = getAccessibleConstructor(packetBlockUpdateClass, blockPosClass, blockStateClass);
+
+    // Tab list packets
+    packetPlayerInfoRemoveConstructor = getAccessibleConstructor(packetPlayerInfoRemoveClass, List.class);
+    packetPlayerInfoUpdateConstructor = getOptionalAccessibleConstructor(packetPlayerInfoUpdateClass, EnumSet.class, Collection.class);
   }
 
   private static void loadConstants() throws Exception {
@@ -499,6 +523,32 @@ public class PacketReflection {
   public static @NotNull Object createRemoveEntitiesPacket(final int... entityIds) throws ReflectiveOperationException {
     ensureInitialized();
     return packetRemoveEntitiesConstructor.newInstance((Object) entityIds);
+  }
+
+  public static @NotNull Object createPlayerInfoRemovePacket(final @NotNull List<UUID> profileIds) throws ReflectiveOperationException {
+    ensureInitialized();
+    return packetPlayerInfoRemoveConstructor.newInstance(profileIds);
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static @NotNull Object createPlayerInfoUpdatePacket(final @NotNull Collection<? extends Player> players) throws ReflectiveOperationException {
+    ensureInitialized();
+
+    final List<Object> nmsPlayers = new ArrayList<>(players.size());
+    for (final var player : players) {
+      nmsPlayers.add(getHandleMethod.invoke(player));
+    }
+
+    if (packetPlayerInfoUpdateConstructor != null) {
+      final var actions = EnumSet.allOf((Class<? extends Enum>) packetPlayerInfoUpdateActionClass);
+      return packetPlayerInfoUpdateConstructor.newInstance(actions, nmsPlayers);
+    }
+
+    if (packetPlayerInfoCreateInitializingMethod != null) {
+      return packetPlayerInfoCreateInitializingMethod.invoke(null, nmsPlayers);
+    }
+
+    throw new NoSuchMethodException("Unable to create ClientboundPlayerInfoUpdatePacket");
   }
 
   public static @NotNull Object createBlockChangePacket(final @NotNull Location location, final @NotNull Material type) throws ReflectiveOperationException {
@@ -764,6 +814,11 @@ public class PacketReflection {
   public static @NotNull Class<?> getPacketMetadataClass() {
     ensureInitialized();
     return packetMetadataClass;
+  }
+
+  public static @NotNull Class<?> getPacketPlayerInfoUpdateClass() {
+    ensureInitialized();
+    return packetPlayerInfoUpdateClass;
   }
 
   // ###############################################################

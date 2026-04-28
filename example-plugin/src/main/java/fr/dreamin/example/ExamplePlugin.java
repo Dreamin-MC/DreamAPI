@@ -17,6 +17,7 @@ public final class ExamplePlugin extends DreamPlugin implements Listener {
     setDebugCmd(true);
     setGlowingCmd(true);
     setNmsVisualCmd(true);
+    setTabListCmd(true);
     setServiceCmd(true);
     setLangCmd(true);
     setWorldBorderCmd(true);

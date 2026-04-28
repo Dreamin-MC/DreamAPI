@@ -16,7 +16,7 @@ subprojects {
   apply plugin: "java-library"
 
   group = "fr.dreamin"
-  version = "0.2.6"
+  version = "0.2.7"
   description = "DreamAPI - API modulaire pour Paper 26.1.2"
 
   repositories {

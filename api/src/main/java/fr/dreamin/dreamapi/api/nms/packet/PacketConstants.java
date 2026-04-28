@@ -43,6 +43,8 @@ public final class PacketConstants {
   public static final String NMS_PACKET_ADD_ENTITY = "net.minecraft.network.protocol.game.ClientboundAddEntityPacket";
   public static final String NMS_PACKET_REMOVE_ENTITIES = "net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket";
   public static final String NMS_PACKET_BLOCK_UPDATE = "net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket";
+  public static final String NMS_PACKET_PLAYER_INFO_UPDATE = "net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket";
+  public static final String NMS_PACKET_PLAYER_INFO_REMOVE = "net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket";
 
   // Networking
   public static final String NMS_SERVER_PLAYER = "net.minecraft.server.level.ServerPlayer";
