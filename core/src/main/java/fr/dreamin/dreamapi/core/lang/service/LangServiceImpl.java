@@ -148,6 +148,34 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
   }
 
   @Override
+  public Optional<String> getTranslation(final @NotNull Player player, final @NotNull String key) {
+    return findTranslation(player.locale(), key);
+  }
+
+  @Override
+  public Optional<String> getTranslation(final @NotNull Locale locale, final @NotNull String key) {
+    return findTranslation(locale, key);
+  }
+
+  @Override
+  public Optional<String> findTranslation(final @NotNull UUID uuid, final @NotNull String key) {
+    return getLocale(uuid).flatMap(locale -> findTranslation(locale, key));
+  }
+
+  @Override
+  public Optional<String> findTranslation(final @NotNull Locale locale, final @NotNull String key) {
+    if (key.isBlank()) {
+      return Optional.empty();
+    }
+
+    return this.langFiles.entrySet().stream()
+      .sorted(Map.Entry.comparingByKey())
+      .map(entry -> findTranslationInFile(entry.getValue(), locale, key))
+      .flatMap(Optional::stream)
+      .findFirst();
+  }
+
+  @Override
   public void enableItem(boolean value) {
     this.enableItem = value;
   }
@@ -272,6 +300,58 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     } catch (IOException e) {
       throw new RuntimeException("Failed to resolve lang file for key " + fileKey, e);
     }
+  }
+
+  private @NotNull Optional<String> findTranslationInFile(final @NotNull LangFile file, final @NotNull Locale locale, final @NotNull String key) {
+    if (file.keys == null) {
+      return Optional.empty();
+    }
+
+    for (final var entry : file.keys) {
+      if (entry == null || entry.key == null || entry.lang == null || !entry.key.equals(key)) {
+        continue;
+      }
+
+      String languageFallback = null;
+
+      for (final var value : entry.lang) {
+        if (value == null || value.locale == null || value.locale.isBlank() || value.value == null) {
+          continue;
+        }
+
+        final var translationLocale = parseLocale(value.locale);
+        if (translationLocale.equals(locale)) {
+          return Optional.of(value.value);
+        }
+
+        if (languageFallback == null && translationLocale.getLanguage().equals(locale.getLanguage())) {
+          languageFallback = value.value;
+        }
+      }
+
+      if (languageFallback != null) {
+        return Optional.of(languageFallback);
+      }
+
+      if (file.defaultLocale == null || file.defaultLocale.isBlank()) {
+        return Optional.empty();
+      }
+
+      final var defaultLocale = parseLocale(file.defaultLocale);
+      for (final var value : entry.lang) {
+        if (value == null || value.locale == null || value.locale.isBlank() || value.value == null) {
+          continue;
+        }
+
+        if (parseLocale(value.locale).equals(defaultLocale)) {
+          return Optional.of(value.value);
+        }
+      }
+
+      return Optional.empty();
+    }
+
+    return Optional.empty();
   }
 
   private @NotNull String getBaseName(@NotNull String fileName) {

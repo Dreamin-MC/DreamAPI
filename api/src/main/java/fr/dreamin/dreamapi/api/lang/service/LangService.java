@@ -2,6 +2,7 @@ package fr.dreamin.dreamapi.api.lang.service;
 
 import fr.dreamin.dreamapi.api.lang.model.LangFile;
 import net.kyori.adventure.translation.Translator;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -13,6 +14,11 @@ public interface LangService {
   void load(final @NotNull File file);
 
   Optional<Locale> getLocale(final @NotNull UUID uuid);
+
+  Optional<String> getTranslation(final @NotNull Player player, final @NotNull String key);
+  Optional<String> getTranslation(final @NotNull Locale locale, final @NotNull String key);
+  Optional<String> findTranslation(final @NotNull Locale locale, final @NotNull String key);
+  Optional<String> findTranslation(final @NotNull UUID uuid, final @NotNull String key);
 
   void enableItem(final boolean value);
   boolean isEnableItem();
