@@ -1,6 +1,6 @@
 # WorldBorderService
 
-Navigation: `docs/services/world-service.md` | `docs/services/index.md` | `docs/services/persistent-worldborder-service.md`
+Navigation: [`docs/services/world-service.md`](docs/services/world-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/persistent-worldborder-service.md`](docs/services/persistent-worldborder-service.md)
 
 ## Purpose
 
@@ -8,9 +8,9 @@ Controls personal/world borders, transitions, pulse effects, and health overlay 
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/worldborder/model/WorldBorderService.java`
-- API extension: `api/src/main/java/fr/dreamin/dreamapi/api/worldborder/model/PersistentWorldBorderService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/worldborder/service/WorldBorderServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/worldborder/model/WorldBorderService.java`](api/src/main/java/fr/dreamin/dreamapi/api/worldborder/model/WorldBorderService.java)
+- API extension: [`api/src/main/java/fr/dreamin/dreamapi/api/worldborder/model/PersistentWorldBorderService.java`](api/src/main/java/fr/dreamin/dreamapi/api/worldborder/model/PersistentWorldBorderService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/worldborder/service/WorldBorderServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/worldborder/service/WorldBorderServiceImpl.java)
 
 ## Availability
 
@@ -51,5 +51,5 @@ borders.setBorder(player, 200.0);
 borders.pulseBorder(player, 20.0, 120.0, 3, Duration.ofSeconds(1));
 ```
 
-Navigation: `docs/services/world-service.md` | `docs/services/index.md` | `docs/services/persistent-worldborder-service.md`
+Navigation: [`docs/services/world-service.md`](docs/services/world-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/persistent-worldborder-service.md`](docs/services/persistent-worldborder-service.md)
 

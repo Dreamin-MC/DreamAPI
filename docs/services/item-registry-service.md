@@ -1,6 +1,6 @@
 # ItemRegistryService
 
-Navigation: `docs/services/hologram-service.md` | `docs/services/index.md` | `docs/services/lang-service.md`
+Navigation: [`docs/services/hologram-service.md`](docs/services/hologram-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/lang-service.md`](docs/services/lang-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Registers custom item definitions and routes item actions to handlers.
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/item/ItemRegistryService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/item/service/ItemRegistryServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/item/ItemRegistryService.java`](api/src/main/java/fr/dreamin/dreamapi/api/item/ItemRegistryService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/item/service/ItemRegistryServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/item/service/ItemRegistryServiceImpl.java)
 
 ## Availability
 
@@ -54,5 +54,5 @@ if (!items.isRegistered("starter_pickaxe")) {
 - Duplicate ids throw on `register(...)`.
 - `get(ItemStack)` returns `null` when metadata key is absent.
 
-Navigation: `docs/services/hologram-service.md` | `docs/services/index.md` | `docs/services/lang-service.md`
+Navigation: [`docs/services/hologram-service.md`](docs/services/hologram-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/lang-service.md`](docs/services/lang-service.md)
 

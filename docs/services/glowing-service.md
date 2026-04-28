@@ -1,6 +1,6 @@
 # GlowingService
 
-Navigation: `docs/services/game-service.md` | `docs/services/index.md` | `docs/services/hologram-service.md`
+Navigation: [`docs/services/game-service.md`](docs/services/game-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/hologram-service.md`](docs/services/hologram-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Provides per-viewer glow control for entities and blocks, with timers and animat
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/glowing/service/GlowingService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/glowing/service/GlowingServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/glowing/service/GlowingService.java`](api/src/main/java/fr/dreamin/dreamapi/api/glowing/service/GlowingService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/glowing/service/GlowingServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/glowing/service/GlowingServiceImpl.java)
 
 ## Availability
 
@@ -69,5 +69,5 @@ glowing.glowBlock(block, ChatColor.GREEN, 100L, viewer);
 - Empty viewers in `stop*` methods means "stop for all known viewers".
 - Air blocks are ignored by implementation.
 
-Navigation: `docs/services/game-service.md` | `docs/services/index.md` | `docs/services/hologram-service.md`
+Navigation: [`docs/services/game-service.md`](docs/services/game-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/hologram-service.md`](docs/services/hologram-service.md)
 

@@ -1,6 +1,6 @@
 # WorldService
 
-Navigation: `docs/services/visual-service.md` | `docs/services/index.md` | `docs/services/worldborder-service.md`
+Navigation: [`docs/services/visual-service.md`](docs/services/visual-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/worldborder-service.md`](docs/services/worldborder-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Manages world clone/reset/delete/create pipelines and temporary-world lifecycle.
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/world/service/WorldService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/world/impl/WorldServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/world/service/WorldService.java`](api/src/main/java/fr/dreamin/dreamapi/api/world/service/WorldService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/world/impl/WorldServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/world/impl/WorldServiceImpl.java)
 
 ## Availability
 
@@ -53,5 +53,5 @@ worldService.cloneWorld("arena_template", "arena_live", world -> {
 - Using world methods without callback checks can hide async failures.
 - Cloning/deleting active player worlds without flow checks can break gameplay.
 
-Navigation: `docs/services/visual-service.md` | `docs/services/index.md` | `docs/services/worldborder-service.md`
+Navigation: [`docs/services/visual-service.md`](docs/services/visual-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/worldborder-service.md`](docs/services/worldborder-service.md)
 

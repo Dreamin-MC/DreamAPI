@@ -1,6 +1,6 @@
 # HologramService
 
-Navigation: `docs/services/glowing-service.md` | `docs/services/index.md` | `docs/services/item-registry-service.md`
+Navigation: [`docs/services/glowing-service.md`](docs/services/glowing-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/item-registry-service.md`](docs/services/item-registry-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Creates, spawns, persists, and manages holograms.
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/hologram/service/HologramService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/hologram/service/HologramServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/hologram/service/HologramService.java`](api/src/main/java/fr/dreamin/dreamapi/api/hologram/service/HologramService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/hologram/service/HologramServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/hologram/service/HologramServiceImpl.java)
 
 ## Availability
 
@@ -52,5 +52,5 @@ var holo = holograms.create("welcome");
 holograms.spawn(holo, player.getLocation());
 ```
 
-Navigation: `docs/services/glowing-service.md` | `docs/services/index.md` | `docs/services/item-registry-service.md`
+Navigation: [`docs/services/glowing-service.md`](docs/services/glowing-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/item-registry-service.md`](docs/services/item-registry-service.md)
 

@@ -11,9 +11,9 @@ The `api` module contains all public contracts used by plugin developers.
 
 ## Key classes
 
-- `api/src/main/java/fr/dreamin/dreamapi/api/DreamAPI.java`
-- `api/src/main/java/fr/dreamin/dreamapi/api/services/DreamService.java`
-- `api/src/main/java/fr/dreamin/dreamapi/api/services/DreamAutoService.java`
+- [`api/src/main/java/fr/dreamin/dreamapi/api/DreamAPI.java`](api/src/main/java/fr/dreamin/dreamapi/api/DreamAPI.java)
+- [`api/src/main/java/fr/dreamin/dreamapi/api/services/DreamService.java`](api/src/main/java/fr/dreamin/dreamapi/api/services/DreamService.java)
+- [`api/src/main/java/fr/dreamin/dreamapi/api/services/DreamAutoService.java`](api/src/main/java/fr/dreamin/dreamapi/api/services/DreamAutoService.java)
 
 ## Use this module when
 

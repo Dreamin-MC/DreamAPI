@@ -4,9 +4,9 @@ Use this page as the main directory for all DreamAPI services.
 
 ## Fast Links
 
-- Folder guide: `docs/services/README.md`
-- Usage recipes: `docs/examples/service-recipes.md`
-- Runtime internals: `docs/services/service-runtime.md`
+- Folder guide: [`docs/services/README.md`](docs/services/README.md)
+- Usage recipes: [`docs/examples/service-recipes.md`](docs/examples/service-recipes.md)
+- Runtime internals: [`docs/services/service-runtime.md`](docs/services/service-runtime.md)
 
 ## Service Discovery Table
 
@@ -38,10 +38,10 @@ Use this page as the main directory for all DreamAPI services.
 
 ## Category shortcuts
 
-- Visual: `docs/services/animation-service.md`, `docs/services/glowing-service.md`, `docs/services/hologram-service.md`, `docs/services/tablist-service.md`, `docs/services/visual-service.md`, `docs/services/worldborder-service.md`
-- Data/Gameplay: `docs/services/item-registry-service.md`, `docs/services/recipe-registry-service.md`, `docs/services/recipe-category-registry-service.md`, `docs/services/world-service.md`, `docs/services/game-service.md`
-- Utility: `docs/services/lang-service.md`, `docs/services/debug-service.md`, `docs/services/luckperms-service.md`
-- Core/Internal: `docs/services/player-debug-service.md`, `docs/services/team-service.md`, `docs/services/day-cycle-service.md`, `docs/services/service-runtime.md`
+- Visual: [`docs/services/animation-service.md`](docs/services/animation-service.md), [`docs/services/glowing-service.md`](docs/services/glowing-service.md), [`docs/services/hologram-service.md`](docs/services/hologram-service.md), [`docs/services/tablist-service.md`](docs/services/tablist-service.md), [`docs/services/visual-service.md`](docs/services/visual-service.md), [`docs/services/worldborder-service.md`](docs/services/worldborder-service.md)
+- Data/Gameplay: [`docs/services/item-registry-service.md`](docs/services/item-registry-service.md), [`docs/services/recipe-registry-service.md`](docs/services/recipe-registry-service.md), [`docs/services/recipe-category-registry-service.md`](docs/services/recipe-category-registry-service.md), [`docs/services/world-service.md`](docs/services/world-service.md), [`docs/services/game-service.md`](docs/services/game-service.md)
+- Utility: [`docs/services/lang-service.md`](docs/services/lang-service.md), [`docs/services/debug-service.md`](docs/services/debug-service.md), [`docs/services/luckperms-service.md`](docs/services/luckperms-service.md)
+- Core/Internal: [`docs/services/player-debug-service.md`](docs/services/player-debug-service.md), [`docs/services/team-service.md`](docs/services/team-service.md), [`docs/services/day-cycle-service.md`](docs/services/day-cycle-service.md), [`docs/services/service-runtime.md`](docs/services/service-runtime.md)
 
 ## Quick Start Usage
 
@@ -53,7 +53,7 @@ GlowingService glowing = DreamPlugin.getService(GlowingService.class);
 ```
 
 Source:
-- `plugin-base/src/main/java/fr/dreamin/dreamapi/plugin/DreamPlugin.java`
+- [`plugin-base/src/main/java/fr/dreamin/dreamapi/plugin/DreamPlugin.java`](plugin-base/src/main/java/fr/dreamin/dreamapi/plugin/DreamPlugin.java)
 
 
 

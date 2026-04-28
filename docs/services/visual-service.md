@@ -1,6 +1,6 @@
 # VisualService
 
-Navigation: `docs/services/tablist-service.md` | `docs/services/index.md` | `docs/services/world-service.md`
+Navigation: [`docs/services/tablist-service.md`](docs/services/tablist-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/world-service.md`](docs/services/world-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Provides packet-driven client-only visuals (fake entities, fake blocks, per-play
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/nms/visual/service/VisualService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/nms/visual/service/VisualServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/nms/visual/service/VisualService.java`](api/src/main/java/fr/dreamin/dreamapi/api/nms/visual/service/VisualService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/nms/visual/service/VisualServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/nms/visual/service/VisualServiceImpl.java)
 
 ## Availability
 
@@ -54,5 +54,5 @@ visual.showFakeBlock(player.getLocation(), Material.DIAMOND_BLOCK, player);
 visual.setFrozenTime(player, 18000L);
 ```
 
-Navigation: `docs/services/tablist-service.md` | `docs/services/index.md` | `docs/services/world-service.md`
+Navigation: [`docs/services/tablist-service.md`](docs/services/tablist-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/world-service.md`](docs/services/world-service.md)
 

@@ -1,6 +1,6 @@
 # TabListService
 
-Navigation: `docs/services/skin-service.md` | `docs/services/index.md` | `docs/services/visual-service.md`
+Navigation: [`docs/services/skin-service.md`](docs/services/skin-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/visual-service.md`](docs/services/visual-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Controls tab-list visibility and behavior per viewer.
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/nms/tablist/service/TabListService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/nms/tablist/service/TabListServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/nms/tablist/service/TabListService.java`](api/src/main/java/fr/dreamin/dreamapi/api/nms/tablist/service/TabListService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/nms/tablist/service/TabListServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/nms/tablist/service/TabListServiceImpl.java)
 
 ## Availability
 
@@ -54,5 +54,5 @@ tab.setAutoEnabled(true);
 tab.setHidden(player);
 ```
 
-Navigation: `docs/services/skin-service.md` | `docs/services/index.md` | `docs/services/visual-service.md`
+Navigation: [`docs/services/skin-service.md`](docs/services/skin-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/visual-service.md`](docs/services/visual-service.md)
 

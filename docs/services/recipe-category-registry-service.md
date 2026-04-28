@@ -1,6 +1,6 @@
 # RecipeCategoryRegistryService
 
-Navigation: `docs/services/luckperms-service.md` | `docs/services/index.md` | `docs/services/recipe-registry-service.md`
+Navigation: [`docs/services/luckperms-service.md`](docs/services/luckperms-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/recipe-registry-service.md`](docs/services/recipe-registry-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Stores and resolves recipe categories used by recipe features.
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeCategoryRegistryService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/recipe/service/RecipeCategoryRegistryServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeCategoryRegistryService.java`](api/src/main/java/fr/dreamin/dreamapi/api/recipe/service/RecipeCategoryRegistryService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/recipe/service/RecipeCategoryRegistryServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/recipe/service/RecipeCategoryRegistryServiceImpl.java)
 
 ## Availability
 
@@ -33,5 +33,5 @@ RecipeCategoryRegistryService categories = DreamPlugin.getService(RecipeCategory
 var weapons = categories.getCategory("weapons");
 ```
 
-Navigation: `docs/services/luckperms-service.md` | `docs/services/index.md` | `docs/services/recipe-registry-service.md`
+Navigation: [`docs/services/luckperms-service.md`](docs/services/luckperms-service.md) | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/recipe-registry-service.md`](docs/services/recipe-registry-service.md)
 

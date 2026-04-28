@@ -1,6 +1,6 @@
 # AnimationService
 
-Navigation: `-` | `docs/services/index.md` | `docs/services/cuboid-service.md`
+Navigation: `-` | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/cuboid-service.md`](docs/services/cuboid-service.md)
 
 ## Purpose
 
@@ -8,8 +8,8 @@ Creates player cinematics through a fluent builder.
 
 ## Source links
 
-- API: `api/src/main/java/fr/dreamin/dreamapi/api/animation/AnimationService.java`
-- Core: `core/src/main/java/fr/dreamin/dreamapi/core/animation/AnimationServiceImpl.java`
+- API: [`api/src/main/java/fr/dreamin/dreamapi/api/animation/AnimationService.java`](api/src/main/java/fr/dreamin/dreamapi/api/animation/AnimationService.java)
+- Core: [`core/src/main/java/fr/dreamin/dreamapi/core/animation/AnimationServiceImpl.java`](core/src/main/java/fr/dreamin/dreamapi/core/animation/AnimationServiceImpl.java)
 
 ## Availability
 
@@ -49,5 +49,5 @@ var cinematic = animation.cinematic("spawn_intro")
   .build();
 ```
 
-Navigation: `-` | `docs/services/index.md` | `docs/services/cuboid-service.md`
+Navigation: `-` | [`docs/services/index.md`](docs/services/index.md) | [`docs/services/cuboid-service.md`](docs/services/cuboid-service.md)
 

@@ -1,6 +1,6 @@
 # Service Runtime Reference
 
-Navigation: `docs/services/day-cycle-service.md` | `docs/services/index.md` | `-`
+Navigation: [`docs/services/day-cycle-service.md`](docs/services/day-cycle-service.md) | [`docs/services/index.md`](docs/services/index.md) | `-`
 
 ## Purpose
 
@@ -8,9 +8,9 @@ Explains service loading internals (`@DreamAutoService`, injection, lifecycle).
 
 ## Source links
 
-- Annotation: `api/src/main/java/fr/dreamin/dreamapi/api/services/DreamAutoService.java`
-- Lifecycle interface: `api/src/main/java/fr/dreamin/dreamapi/api/services/DreamService.java`
-- Loader: `core/src/main/java/fr/dreamin/dreamapi/core/service/ServiceAnnotationProcessor.java`
+- Annotation: [`api/src/main/java/fr/dreamin/dreamapi/api/services/DreamAutoService.java`](api/src/main/java/fr/dreamin/dreamapi/api/services/DreamAutoService.java)
+- Lifecycle interface: [`api/src/main/java/fr/dreamin/dreamapi/api/services/DreamService.java`](api/src/main/java/fr/dreamin/dreamapi/api/services/DreamService.java)
+- Loader: [`core/src/main/java/fr/dreamin/dreamapi/core/service/ServiceAnnotationProcessor.java`](core/src/main/java/fr/dreamin/dreamapi/core/service/ServiceAnnotationProcessor.java)
 
 ## Main behaviors
 
@@ -41,5 +41,5 @@ ServiceAnnotationProcessor services = DreamPlugin.getServiceManager();
 services.loadServiceFromClass(MyCustomServiceImpl.class);
 ```
 
-Navigation: `docs/services/day-cycle-service.md` | `docs/services/index.md` | `-`
+Navigation: [`docs/services/day-cycle-service.md`](docs/services/day-cycle-service.md) | [`docs/services/index.md`](docs/services/index.md) | `-`
 
