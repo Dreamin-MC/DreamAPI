@@ -38,6 +38,7 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
 
   private final @NotNull Map<String, MiniMessageTranslationStore> translationStore = new HashMap<>();
   private final Map<String, LangFile> langFiles = new HashMap<>();
+  private final Set<Locale> invuiRegisteredLocales = new HashSet<>();
 
   private final @NotNull Map<UUID, Locale> playerLocales = new HashMap<>();
   private BukkitTask langUpdateTask;
@@ -80,15 +81,22 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
       paths.filter(Files::isRegularFile)
         .map(Path::toFile)
         .filter(this::isSupportedLangFile)
-        .forEach(this::load);
+        .forEach(file -> load(file, false));
     } catch (IOException e) {
       throw new RuntimeException("Failed to load lang files in " + folder.getAbsolutePath(), e);
     }
+
+    if (this.enableGUI)
+      syncInvuiTranslations();
 
   }
 
   @Override
   public void load(@NotNull File file) {
+    load(file, true);
+  }
+
+  private void load(@NotNull File file, boolean syncInvui) {
     final LangFile langFile;
 
     try {
@@ -107,7 +115,6 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     final var fileKey = buildFileKey(langFolder, file);
 
     final var store = createTranslator(fileKey, langFile.namespace, langFile.value);
-    final var invuiTranslations = new HashMap<Locale, Map<String, String>>();
 
     if (langFile.defaultLocale != null && !langFile.defaultLocale.isBlank())
       store.defaultLocale(parseLocale(langFile.defaultLocale));
@@ -124,22 +131,15 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
           final var locale = parseLocale(value.locale);
 
           store.register(entry.key, locale, value.value);
-          invuiTranslations
-            .computeIfAbsent(locale, ignored -> new HashMap<>())
-            .put(entry.key, value.value);
         }
       }
     }
 
-    if (this.enableGUI)
-      invuiTranslations.forEach((locale, translations) -> {
-        if (locale == Locale.FRENCH) {
-          Languages.getInstance().addLanguage(locale.FRANCE, translations);
-          Languages.getInstance().addLanguage(locale, translations);
-        }
-      });
-
     this.langFiles.put(fileKey, langFile);
+
+    if (syncInvui && this.enableGUI)
+      syncInvuiTranslations();
+
   }
 
   @Override
@@ -189,6 +189,10 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
   public void enableGUI(boolean value) {
     this.enableGUI = value;
     Languages.getInstance().enableServerSideTranslations(value);
+
+    if (value)
+      syncInvuiTranslations();
+
   }
 
   @Override
@@ -235,6 +239,10 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     }
 
     GlobalTranslator.translator().removeSource(store);
+
+    if (this.enableGUI)
+      syncInvuiTranslations();
+
     return true;
   }
 
@@ -266,6 +274,10 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     this.translationStore.clear();
     this.langFiles.clear();
     this.playerLocales.clear();
+
+    if (this.enableGUI)
+      syncInvuiTranslations();
+
   }
 
   @Override
@@ -352,6 +364,57 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
     }
 
     return Optional.empty();
+  }
+
+  private void syncInvuiTranslations() {
+    final Map<Locale, Map<String, String>> mergedTranslations = new HashMap<>();
+
+    this.langFiles.entrySet().stream()
+      .sorted(Map.Entry.comparingByKey())
+      .forEach(entry -> mergeInvuiTranslations(entry.getValue(), mergedTranslations));
+
+    final Set<Locale> localesToClear = new HashSet<>(this.invuiRegisteredLocales);
+    localesToClear.removeAll(mergedTranslations.keySet());
+
+    localesToClear.forEach(locale -> {
+      Languages.getInstance().addLanguage(locale, Collections.emptyMap());
+      if (Locale.FRENCH.equals(locale)) {
+        Languages.getInstance().addLanguage(Locale.FRANCE, Collections.emptyMap());
+      }
+    });
+
+    mergedTranslations.forEach((locale, translations) -> {
+      Languages.getInstance().addLanguage(locale, translations);
+      if (Locale.FRENCH.equals(locale)) {
+        Languages.getInstance().addLanguage(Locale.FRANCE, translations);
+      }
+    });
+
+    this.invuiRegisteredLocales.clear();
+    this.invuiRegisteredLocales.addAll(mergedTranslations.keySet());
+  }
+
+  private void mergeInvuiTranslations(@NotNull LangFile file, @NotNull Map<Locale, Map<String, String>> mergedTranslations) {
+    if (file.keys == null) {
+      return;
+    }
+
+    for (final var entry : file.keys) {
+      if (entry == null || entry.key == null || entry.key.isBlank() || entry.lang == null) {
+        continue;
+      }
+
+      for (final var value : entry.lang) {
+        if (value == null || value.locale == null || value.locale.isBlank() || value.value == null) {
+          continue;
+        }
+
+        final var locale = parseLocale(value.locale);
+        mergedTranslations
+          .computeIfAbsent(locale, ignored -> new HashMap<>())
+          .putIfAbsent(entry.key, value.value);
+      }
+    }
   }
 
   private @NotNull String getBaseName(@NotNull String fileName) {
@@ -469,6 +532,5 @@ public final class LangServiceImpl implements LangService, DreamService, Listene
 
     updatePlayerInventory(player);
   }
-
 
 }

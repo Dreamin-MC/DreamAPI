@@ -1,5 +1,6 @@
 package fr.dreamin.example.cmd;
 
+import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandDescription;
 import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
@@ -36,6 +37,17 @@ public final class TestCmd {
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
+
+  }
+
+  @CommandDescription("Test command")
+  @CommandMethod("test3 <value>")
+  @CommandPermission("test")
+  private void test3(CommandSender sender, @Argument("value") String value) {
+    if (!(sender instanceof Player player)) return;
+
+    final var v = Languages.getInstance().getFormatString(player.locale(), value);
+    player.sendMessage(Component.translatable(v != null ? v : "NULL"));
   }
 
   @CommandDescription("Test")
