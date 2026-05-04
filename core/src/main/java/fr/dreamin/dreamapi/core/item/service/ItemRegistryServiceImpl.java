@@ -22,6 +22,8 @@ import org.bukkit.event.player.PlayerChangedMainHandEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -202,6 +204,14 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
         return null;
       }
     }
+  }
+
+  private @Nullable RegisteredItem getProjectileRegisteredItem(final @NotNull org.bukkit.entity.Projectile projectile) {
+    final var itemId = projectile.getPersistentDataContainer()
+      .get(ItemKeys.PROJECTILE_ITEM_ID, PersistentDataType.STRING);
+
+    if (itemId == null) return null;
+    return get(itemId);
   }
 
   // ###############################################################
@@ -389,6 +399,40 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
       new ItemContext(player, item, event)
     );
 
+  }
+
+  @EventHandler
+  private void onProjectileLaunch(final @NotNull ProjectileLaunchEvent event) {
+    if (!(event.getEntity().getShooter() instanceof Player player)) return;
+
+    final var item = player.getInventory().getItemInMainHand();
+    final var registered = get(item);
+    if (registered == null) return;
+
+    event.getEntity().getPersistentDataContainer().set(
+      ItemKeys.PROJECTILE_ITEM_ID,
+      PersistentDataType.STRING,
+      registered.id()
+    );
+
+    registered.execute(
+      ItemAction.PROJECTILE_LAUNCH,
+      new ItemContext(player, item, event)
+    );
+  }
+
+  @EventHandler
+  private void onProjectileHit(final @NotNull ProjectileHitEvent event) {
+    if (event.getHitBlock() == null) return;
+    if (!(event.getEntity().getShooter() instanceof Player player)) return;
+
+    final var registered = getProjectileRegisteredItem(event.getEntity());
+    if (registered == null) return;
+
+    registered.execute(
+      ItemAction.PROJECTILE_HIT_GROUND,
+      new ItemContext(player, registered.item().clone(), event)
+    );
   }
 
 }
