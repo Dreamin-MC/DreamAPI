@@ -91,6 +91,18 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
   }
 
   @Override
+  public void unregister(@NotNull ItemDefinition definition) {
+    unregister(definition.getId());
+  }
+
+  @Override
+  public void unregister(@NotNull String id) {
+    final var removed = this.byId.remove(id);
+    if (removed == null)
+      throw new IllegalStateException(String.format("Item with id '%s' is not registered.", id));
+  }
+
+  @Override
   public void addHandler(@NotNull String id, @NotNull ItemAction action, @NotNull ItemHandler handler) {
     final var registered = get(id);
     if (registered == null)

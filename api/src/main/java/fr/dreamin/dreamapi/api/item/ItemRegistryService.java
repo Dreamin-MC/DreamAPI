@@ -12,6 +12,10 @@ public interface ItemRegistryService {
 
   void register(final @NotNull ItemDefinition definition);
 
+  void unregister(final @NotNull ItemDefinition definition);
+
+  void unregister(final @NotNull String id);
+
   void addHandler(final @NotNull String id, final @NotNull ItemAction action, final @NotNull ItemHandler handler);
 
   void addHandler(final @NotNull ItemTag tag, final @NotNull ItemAction action, final @NotNull ItemHandler handler);
