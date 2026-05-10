@@ -11,7 +11,7 @@ import fr.dreamin.dreamapi.core.recipe.ui.fake.SmithingFakeGUI;
 import fr.dreamin.dreamapi.core.recipe.ui.vanilla.CraftingVanillaGUI;
 import fr.dreamin.dreamapi.core.recipe.ui.vanilla.FurnaceVanillaGUI;
 import fr.dreamin.dreamapi.core.recipe.ui.vanilla.SmithingVanillaGUI;
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public final class RecipeListGUI implements GuiInterface {
+public final class RecipeListGUI extends GuiInterface {
 
   private final RecipeCategory category;
   private final RecipeRegistryService craftService = DreamAPI.getAPI().getService(RecipeRegistryService.class);

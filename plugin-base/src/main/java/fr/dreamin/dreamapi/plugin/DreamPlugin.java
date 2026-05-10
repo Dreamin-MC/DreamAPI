@@ -17,6 +17,7 @@ import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.core.ApiProviderImpl;
+import fr.dreamin.dreamapi.core.gui.service.GuiServiceImpl;
 import fr.dreamin.dreamapi.core.hologram.service.HologramServiceImpl;
 import fr.dreamin.dreamapi.core.lang.service.LangServiceImpl;
 import fr.dreamin.dreamapi.core.nms.visual.service.VisualServiceImpl;
@@ -45,6 +46,7 @@ import fr.dreamin.dreamapi.plugin.cmd.admin.broadcast.BroadcastCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.broadcast.BroadcastContext;
 import fr.dreamin.dreamapi.plugin.cmd.admin.debug.DebugCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.glowing.GlowingCmd;
+import fr.dreamin.dreamapi.plugin.cmd.admin.gui.GUICmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.item.ItemRegistryCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.lang.LangCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.nms.tablist.TabListCmd;
@@ -135,6 +137,7 @@ public abstract class DreamPlugin extends JavaPlugin {
     serviceCmd = false,
     langCmd = false,
     tabListCmd = false,
+    guiCmd = false,
     worldBorderCmd = false;
 
   // ##############################################################
@@ -514,6 +517,12 @@ public abstract class DreamPlugin extends JavaPlugin {
       this.annotationParser.parse(new TabListCmd());
     }
 
+    if (this.guiCmd) {
+      if (!serviceManager.isLoaded(GuiServiceImpl.class))
+        serviceManager.loadServiceFromClass(GuiServiceImpl.class);
+      this.annotationParser.parse(new GUICmd());
+    }
+
     if (this.debugCmd) {
       if (!serviceManager.isLoaded(PlayerDebugServiceImpl.class))
         serviceManager.loadServiceFromClass(PlayerDebugServiceImpl.class);
@@ -568,7 +577,8 @@ public abstract class DreamPlugin extends JavaPlugin {
       
       HologramServiceImpl.class,
       LangServiceImpl.class,
-      WorldBorderServiceImpl.class
+      WorldBorderServiceImpl.class,
+      GuiServiceImpl.class
     ),
 
     LoadMode.MINIMAL, Set.of(

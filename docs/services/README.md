@@ -7,6 +7,7 @@ This folder is the fastest way to discover and use DreamAPI services.
 - Service directory table: [`docs/services/index.md`](/docs/services/index.md)
 - Common service patterns: [`docs/examples/service-recipes.md`](/docs/examples/service-recipes.md)
 - Service runtime internals: [`docs/services/service-runtime.md`](/docs/services/service-runtime.md)
+- GUI lifecycle and navigation history: [`docs/services/gui-service.md`](/docs/services/gui-service.md)
 
 ## Reading flow
 
@@ -43,6 +44,7 @@ This folder is the fastest way to discover and use DreamAPI services.
 
 ### Core/internal services
 
+- [`docs/services/gui-service.md`](/docs/services/gui-service.md)
 - [`docs/services/player-debug-service.md`](/docs/services/player-debug-service.md)
 - [`docs/services/team-service.md`](/docs/services/team-service.md)
 - [`docs/services/day-cycle-service.md`](/docs/services/day-cycle-service.md)

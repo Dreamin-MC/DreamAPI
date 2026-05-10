@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.gui.item;
 
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;

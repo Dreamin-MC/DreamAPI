@@ -2,7 +2,7 @@ package fr.dreamin.dreamapi.core.recipe.ui.fake;
 
 import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
 import fr.dreamin.dreamapi.api.recipe.IngredientDefinition;
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.xenondevs.invui.gui.Gui;
 
 @RequiredArgsConstructor
-public final class SmithingFakeGUI implements GuiInterface {
+public final class SmithingFakeGUI extends GuiInterface {
 
   private final CustomRecipe recipe;
 

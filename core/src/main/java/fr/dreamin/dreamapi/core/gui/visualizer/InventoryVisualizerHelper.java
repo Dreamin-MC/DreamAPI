@@ -17,11 +17,9 @@ import java.util.function.Function;
  * Visualizers change how an item is displayed in a slot
  * without modifying the real item stored in the inventory.
  *
- * @since 0.4.0
+ * @since 0.3.3
  */
 public final class InventoryVisualizerHelper {
-
-  private InventoryVisualizerHelper() {}
 
   /**
    * Creates a visualizer that adds enchantment glint to displayed items.
@@ -31,12 +29,7 @@ public final class InventoryVisualizerHelper {
   public static Function<@Nullable ItemStack, @Nullable ItemProvider> glintVisualizer() {
     return stack -> {
       if (stack == null || stack.isEmpty()) return null;
-      var builder = new ItemBuilder(stack);
-      builder.setEnchantGlint(true);
-
-      Bukkit.broadcastMessage("tttt");
-
-      return builder.toGuiItem();
+      return new ItemBuilder(stack).setEnchantGlint(true).toGuiItem();
     };
   }
 
@@ -120,12 +113,9 @@ public final class InventoryVisualizerHelper {
     @NotNull Function<@Nullable ItemStack, Boolean> predicate
   ) {
     return stack -> {
-      if (stack != null && !stack.isEmpty() && predicate.apply(stack)) {
-        var builder = new ItemBuilder(stack);
-        builder.addEnchant(Enchantment.MENDING, 1); // Adds visual glint effect
-        return builder.toGuiItem();
-      }
-      return null; // Keep normal rendering
+      if (stack != null && !stack.isEmpty() && predicate.apply(stack))
+        return new ItemBuilder(stack).setEnchantGlint(true).toGuiItem();
+      return null;
     };
   }
 
@@ -136,19 +126,8 @@ public final class InventoryVisualizerHelper {
    */
   public static Function<@Nullable ItemStack, @Nullable ItemProvider> removeEnchantmentGlint() {
     return stack -> {
-      if (stack != null && !stack.isEmpty() && stack.getItemMeta() != null) {
-        if (!stack.getItemMeta().getEnchants().isEmpty()) {
-          // Clone and strip enchantments for display-only rendering
-          var copy = stack.clone();
-          var meta = copy.getItemMeta();
-          if (meta != null) {
-            meta.getEnchants().keySet().forEach(meta::removeEnchant);
-            copy.setItemMeta(meta);
-            return new ItemBuilder(copy).toGuiItem();
-          }
-        }
-      }
-      return null; // Keep normal rendering
+      if (stack == null || stack.isEmpty()) return null;
+      return new ItemBuilder(stack).setEnchantGlint(false).toGuiItem();
     };
   }
 }

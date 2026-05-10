@@ -25,6 +25,7 @@ Use this page as the main directory for all DreamAPI services.
 | `recipe-category-registry-service.md` | data | recipe category lookups | ALL, DATA |
 | `recipe-registry-service.md` | data/gameplay | register custom recipes with conditions | ALL, DATA |
 | `recipe-viewer-service.md` | ui | recipe preview contract | no default impl |
+| `gui-service.md` | ui/core | GUI lifecycle, window options, and history-based back navigation | ALL |
 | `skin-service.md` | visual | apply/reset skins | manual include |
 | `tablist-service.md` | visual | tab list visibility modes | ALL, VISUAL |
 | `visual-service.md` | visual/nms | fake entities/blocks and frozen time | ALL, VISUAL |
@@ -40,6 +41,7 @@ Use this page as the main directory for all DreamAPI services.
 - Visual: [`docs/services/animation-service.md`](/docs/services/animation-service.md), [`docs/services/glowing-service.md`](/docs/services/glowing-service.md), [`docs/services/hologram-service.md`](/docs/services/hologram-service.md), [`docs/services/tablist-service.md`](/docs/services/tablist-service.md), [`docs/services/visual-service.md`](/docs/services/visual-service.md), [`docs/services/worldborder-service.md`](/docs/services/worldborder-service.md)
 - Data/Gameplay: [`docs/services/item-registry-service.md`](/docs/services/item-registry-service.md), [`docs/services/recipe-registry-service.md`](/docs/services/recipe-registry-service.md), [`docs/services/recipe-category-registry-service.md`](/docs/services/recipe-category-registry-service.md), [`docs/services/world-service.md`](/docs/services/world-service.md), [`docs/services/game-service.md`](/docs/services/game-service.md)
 - Utility: [`docs/services/lang-service.md`](/docs/services/lang-service.md), [`docs/services/debug-service.md`](/docs/services/debug-service.md), [`docs/services/luckperms-service.md`](/docs/services/luckperms-service.md)
+- UI/Core: [`docs/services/gui-service.md`](/docs/services/gui-service.md), [`docs/services/recipe-viewer-service.md`](/docs/services/recipe-viewer-service.md)
 - Core/Internal: [`docs/services/player-debug-service.md`](/docs/services/player-debug-service.md), [`docs/services/team-service.md`](/docs/services/team-service.md), [`docs/services/day-cycle-service.md`](/docs/services/day-cycle-service.md), [`docs/services/service-runtime.md`](/docs/services/service-runtime.md)
 
 ## Quick Start Usage

@@ -19,7 +19,7 @@ import java.util.function.Predicate;
  * - Paged GUIs with Previous/Next navigation
  *
  * @param <T> type of entries to display
- * @since 0.4.0
+ * @since 0.3.3
  */
 public class FilterablePagedGuiBuilder<T> {
 

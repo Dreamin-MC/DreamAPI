@@ -1,23 +1,19 @@
 package fr.dreamin.dreamapi.core.lang.ui;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.item.RegisteredItem;
-import fr.dreamin.dreamapi.api.lang.model.LangFile;
 import fr.dreamin.dreamapi.api.lang.service.LangService;
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import fr.dreamin.dreamapi.core.item.ui.ItemRegistryGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import xyz.xenondevs.invui.Click;
 import xyz.xenondevs.invui.gui.Gui;
@@ -31,7 +27,7 @@ import xyz.xenondevs.invui.window.AnvilWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class LangFilesGUI implements GuiInterface {
+public final class LangFilesGUI extends GuiInterface {
 
   private final @NotNull LangService langService = DreamAPI.getAPI().getService(LangService.class);
 
@@ -113,7 +109,7 @@ public final class LangFilesGUI implements GuiInterface {
         player.playSound(player, "dreamin:click_keyboard", SoundCategory.UI, 1, 1);
       })
       .build();
-    window.open();
+    openWindow(player, window);
   }
 
   // ###############################################################

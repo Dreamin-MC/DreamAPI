@@ -4,7 +4,7 @@ import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeCategoryRegistryService;
 import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public final class RecipeCategoryGUI implements GuiInterface {
+public final class RecipeCategoryGUI extends GuiInterface {
 
   private final RecipeCategoryRegistryService categoryService = DreamAPI.getAPI().getService(RecipeCategoryRegistryService.class);
   private final RecipeRegistryService craftService = DreamAPI.getAPI().getService(RecipeRegistryService.class);

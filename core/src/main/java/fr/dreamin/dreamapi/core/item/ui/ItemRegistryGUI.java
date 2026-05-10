@@ -3,7 +3,7 @@ package fr.dreamin.dreamapi.core.item.ui;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.item.RegisteredItem;
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
@@ -29,7 +29,7 @@ import xyz.xenondevs.invui.window.AnvilWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ItemRegistryGUI implements GuiInterface {
+public final class ItemRegistryGUI extends GuiInterface {
 
   private final @NotNull ItemRegistryService itemRegistryService = DreamAPI.getAPI().getService(ItemRegistryService.class);
 
@@ -112,7 +112,7 @@ public final class ItemRegistryGUI implements GuiInterface {
         player.playSound(player, "dreamin:click_keyboard", SoundCategory.UI, 1, 1);
       })
       .build();
-    window.open();
+    openWindow(player, window);
   }
 
   // ###############################################################

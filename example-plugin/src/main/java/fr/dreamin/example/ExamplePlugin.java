@@ -19,6 +19,7 @@ public final class ExamplePlugin extends DreamPlugin implements Listener {
     setTabListCmd(true);
     setServiceCmd(true);
     setLangCmd(true);
+    setGuiCmd(true);
     setWorldBorderCmd(true);
   }
 

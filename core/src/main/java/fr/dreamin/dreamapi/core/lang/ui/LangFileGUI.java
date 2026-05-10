@@ -4,7 +4,7 @@ import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.lang.model.LangEntry;
 import fr.dreamin.dreamapi.api.lang.model.LangFile;
 import fr.dreamin.dreamapi.api.lang.service.LangService;
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
@@ -29,7 +29,7 @@ import xyz.xenondevs.invui.window.AnvilWindow;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class LangFileGUI implements GuiInterface {
+public final class LangFileGUI extends GuiInterface {
 
   private final @NotNull LangService langService = DreamAPI.getAPI().getService(LangService.class);
 

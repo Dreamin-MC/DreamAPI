@@ -4,7 +4,7 @@ import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.logger.DebugService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
-import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.BackItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import fr.dreamin.dreamapi.core.service.ServiceAnnotationProcessor;
@@ -61,7 +61,7 @@ public class DreamServiceInspector {
     return auto != null ? auto.priority().name() : "N/A";
   }
 
-  private class MainMenuGUI implements GuiInterface {
+  private class MainMenuGUI extends GuiInterface {
 
     // ##############################################################
     // ---------------------- SERVICE METHODS -----------------------
@@ -125,7 +125,7 @@ public class DreamServiceInspector {
   }
 
   @RequiredArgsConstructor
-  private class ServiceDetailGUI implements GuiInterface {
+  private class ServiceDetailGUI extends GuiInterface {
 
     private final @NotNull Class<?> clazz;
     private final @NotNull DreamService service;
