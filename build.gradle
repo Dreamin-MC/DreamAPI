@@ -16,7 +16,7 @@ subprojects {
   apply plugin: "java-library"
 
   group = "fr.dreamin"
-  version = "0.3.1"
+  version = "0.3.2"
   description = "DreamAPI - API modulaire pour Paper 26.1.2"
 
   repositories {
@@ -34,7 +34,7 @@ subprojects {
   def httpClientVersion = "5.3.1"
   def bkCommonLibVersion = "1.21.8-v1-SNAPSHOT"
   def luckPermsVersion = "5.4"
-  def invuiVersion = "2.0.0-RC.2"
+  def invuiVersion = "2.1.0"
   def citizensVersion = "2.0.37-SNAPSHOT"
   def junitVersion = "5.10.0"
   def jomlVersion = "1.10.8"
