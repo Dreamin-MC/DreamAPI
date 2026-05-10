@@ -1,6 +1,9 @@
 package fr.dreamin.dreamapi.core.gui.handler;
 
 import fr.dreamin.dreamapi.core.gui.GuiInterface;
+import fr.dreamin.dreamapi.core.gui.GuiInterfaceHelper;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +38,7 @@ public abstract class AbstractGuiHandler implements GuiInterface {
   public AbstractGuiHandler addBundleSelectHandler(
     @NotNull BiConsumer<Player, BundleSelectEvent> handler
   ) {
-    bundleSelectHandlers.add(handler);
+    this.bundleSelectHandlers.add(handler);
     return this;
   }
 
@@ -48,7 +51,7 @@ public abstract class AbstractGuiHandler implements GuiInterface {
   public AbstractGuiHandler removeBundleSelectHandler(
     @NotNull BiConsumer<Player, BundleSelectEvent> handler
   ) {
-    bundleSelectHandlers.remove(handler);
+    this.bundleSelectHandlers.remove(handler);
     return this;
   }
 
@@ -56,13 +59,13 @@ public abstract class AbstractGuiHandler implements GuiInterface {
    * Returns all registered handlers.
    */
   public List<BiConsumer<Player, BundleSelectEvent>> getBundleSelectHandlers() {
-    return new ArrayList<>(bundleSelectHandlers);
+    return new ArrayList<>(this.bundleSelectHandlers);
   }
 
   @Override
   public void onBundleSelect(Player player, int guiSlot, int bundleSlot) {
     var event = new BundleSelectEvent(player, guiSlot, bundleSlot);
-    for (var handler : bundleSelectHandlers) {
+    for (var handler : this.bundleSelectHandlers) {
       try {
         handler.accept(player, event);
         if (event.cancelled) break;
@@ -90,7 +93,7 @@ public abstract class AbstractGuiHandler implements GuiInterface {
 
   @Override
   public @Nullable Function<@Nullable ItemStack, @Nullable ItemProvider> getCursorVisualizer() {
-    return cursorVisualizer;
+    return this.cursorVisualizer;
   }
 
   // ==================== INVENTORY VISUALIZER ====================
@@ -111,7 +114,12 @@ public abstract class AbstractGuiHandler implements GuiInterface {
 
   @Override
   public @Nullable Function<@Nullable ItemStack, @Nullable ItemProvider> getInventoryVisualizer() {
-    return inventoryVisualizer;
+    return this.inventoryVisualizer;
+  }
+
+  @Override
+  public void open(@NotNull Player player) {
+    GuiInterfaceHelper.openAdvanced(this, player);
   }
 
   // ==================== EVENT CLASS ====================
@@ -119,6 +127,7 @@ public abstract class AbstractGuiHandler implements GuiInterface {
   /**
    * Event triggered when a player selects an item from a bundle.
    */
+  @Getter @Setter
   public static class BundleSelectEvent {
     // The player who performed the selection
     public final Player player;
@@ -139,10 +148,5 @@ public abstract class AbstractGuiHandler implements GuiInterface {
       this.cancelled = true;
     }
 
-    public boolean isCancelled() {
-      return cancelled;
-    }
   }
 }
-
-

@@ -1,11 +1,16 @@
 package fr.dreamin.dreamapi.core.gui;
 
 import fr.dreamin.dreamapi.core.gui.handler.AbstractGuiHandler;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.xenondevs.invui.gui.Gui;
+import xyz.xenondevs.invui.gui.SlotElement;
+import xyz.xenondevs.invui.item.ItemProvider;
 import xyz.xenondevs.invui.window.Window;
+
+import java.util.function.Function;
 
 /**
  * Helper class for opening GUIs with support for InvUI 2.1.0 features.
@@ -31,30 +36,25 @@ public final class GuiInterfaceHelper {
     @NotNull GuiInterface gui,
     @NotNull Player player
   ) {
+    final var upperGui = gui.guiUpper(player);
+
+    if (gui instanceof AbstractGuiHandler handler) {
+      applyInventoryVisualizer(upperGui, handler);
+
+      if (!handler.getBundleSelectHandlers().isEmpty())
+        upperGui.addBundleSelectHandler(handler::onBundleSelect);
+    }
+
     var windowBuilder = Window.builder()
       .setViewer(player)
-      .setUpperGui(gui.guiUpper(player))
+      .setUpperGui(upperGui)
       .setTitle(gui.name(player))
       .setCloseable(gui.closable(player));
 
-    // Apply advanced customizations when using AbstractGuiHandler
     if (gui instanceof AbstractGuiHandler handler) {
-      // ========== CURSOR VISUALIZER ==========
       var cursorViz = handler.getCursorVisualizer();
       if (cursorViz != null) {
         windowBuilder.setCursorVisualizer(cursorViz);
-      }
-
-      // ========== INVENTORY VISUALIZER ==========
-      // Inventory visualizer is applied on InventoryLink slot elements,
-      // and is usually configured where those links are created.
-
-      // ========== BUNDLE SELECT HANDLERS ==========
-      // Attach bundle select handlers to the opened GUI
-      var bundleHandlers = handler.getBundleSelectHandlers();
-      if (!bundleHandlers.isEmpty()) {
-        var upperGui = gui.guiUpper(player);
-        upperGui.addBundleSelectHandler(handler::onBundleSelect);
       }
     }
 
@@ -94,7 +94,7 @@ public final class GuiInterfaceHelper {
   }
 
   /**
-   * Applies inventory visualizer behavior if provided by the handler.
+   * Applies inventory visualizer behavior to all InventoryLink slot elements.
    *
    * @param gui gui instance to configure
    * @param handler handler containing visualizer configuration
@@ -103,11 +103,29 @@ public final class GuiInterfaceHelper {
     @NotNull Gui gui,
     @NotNull AbstractGuiHandler handler
   ) {
-    var visualizer = handler.getInventoryVisualizer();
+    final var visualizer = handler.getInventoryVisualizer();
     if (visualizer == null) return;
 
-    // This depends on how InventoryLink elements are built in each GUI.
-    // Keep this method as integration point for future centralized wiring.
+    final var slotElements = gui.getSlotElements();
+
+    for (int i = 0; i < slotElements.length; i++) {
+      final var slotElement = slotElements[i];
+      if (!(slotElement instanceof SlotElement.InventoryLink link))
+        continue;
+
+      Function<@Nullable ItemStack, @Nullable ItemProvider> mergedVisualizer = stack -> {
+        final var linkVisualizer = link.visualizer();
+        final var linkResult = linkVisualizer.apply(stack);
+        if (linkResult != null)
+          return linkResult;
+        return visualizer.apply(stack);
+      };
+
+      gui.setSlotElement(
+        i,
+        new SlotElement.InventoryLink(link.inventory(), link.slot(), link.backgroundProperty(), mergedVisualizer)
+      );
+    }
   }
 
   /**
@@ -126,7 +144,7 @@ public final class GuiInterfaceHelper {
       this.builder = buildWindow(gui, player);
     }
 
-    public FluentWindowBuilder withTitle(@NotNull Component title) {
+    public FluentWindowBuilder withTitle(@NotNull net.kyori.adventure.text.Component title) {
       this.builder.setTitle(title);
       return this;
     }

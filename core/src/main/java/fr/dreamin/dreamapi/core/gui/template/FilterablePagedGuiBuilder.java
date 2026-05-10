@@ -25,7 +25,7 @@ public class FilterablePagedGuiBuilder<T> {
 
   private String queryString = "";
   private List<T> allItems = new ArrayList<>();
-  private Predicate<T> filterPredicate = item -> true;
+  private Predicate<T> filterPredicate = _ -> true;
   private Function<T, Item> itemDisplay;
   private Consumer<String> onQueryChange;
   private boolean showPagination = true;
@@ -83,9 +83,8 @@ public class FilterablePagedGuiBuilder<T> {
    */
   public FilterablePagedGuiBuilder<T> setQuery(@NotNull String query) {
     this.queryString = query;
-    if (onQueryChange != null) {
-      onQueryChange.accept(query);
-    }
+    if (this.onQueryChange != null)
+      this.onQueryChange.accept(query);
     return this;
   }
 
@@ -105,14 +104,13 @@ public class FilterablePagedGuiBuilder<T> {
    * @return ready-to-use paged GUI
    */
   public PagedGui<Item> build() {
-    if (itemDisplay == null) {
+    if (this.itemDisplay == null)
       throw new IllegalStateException("itemDisplay must be set before building");
-    }
 
     // Apply filtering and map to InvUI items
-    var filtered = allItems.stream()
-      .filter(filterPredicate)
-      .map(itemDisplay)
+    var filtered = this.allItems.stream()
+      .filter(this.filterPredicate)
+      .map(this.itemDisplay)
       .toList();
 
     var builder = PagedGui.itemsBuilder()
@@ -120,7 +118,7 @@ public class FilterablePagedGuiBuilder<T> {
         ". X X X X X X X .",
         ". X X X X X X X .",
         ". X X X X X X X .",
-        (showPagination ? "P . . . . . . . N" : ". . . . . . . . .")
+        (this.showPagination ? "P . . . . . . . N" : ". . . . . . . . .")
       )
       .addIngredient('X', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
       .setContent(filtered);
@@ -134,9 +132,8 @@ public class FilterablePagedGuiBuilder<T> {
    * @return paged GUI that can be refreshed with setContent()
    */
   public PagedGui<Item> buildDynamic() {
-    if (itemDisplay == null) {
+    if (this.itemDisplay == null)
       throw new IllegalStateException("itemDisplay must be set before building");
-    }
 
     return build();
   }
@@ -154,7 +151,7 @@ public class FilterablePagedGuiBuilder<T> {
   ) {
     this.filterPredicate = item -> getter.apply(item)
       .toLowerCase()
-      .contains(queryString.toLowerCase());
+      .contains(this.queryString.toLowerCase());
     return this;
   }
 
@@ -162,8 +159,8 @@ public class FilterablePagedGuiBuilder<T> {
    * Returns currently filtered source items (useful for debug/logging).
    */
   public List<T> getFilteredItems() {
-    return allItems.stream()
-      .filter(filterPredicate)
+    return this.allItems.stream()
+      .filter(this.filterPredicate)
       .toList();
   }
 
