@@ -1,15 +1,16 @@
 package fr.dreamin.dreamapi.core.utils;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 @Setter
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public final class Pair<A, B> {
 
-  private A first;
-  private B second;
+  private @NotNull A component1;
+  private @NotNull B component2;
 
 }
