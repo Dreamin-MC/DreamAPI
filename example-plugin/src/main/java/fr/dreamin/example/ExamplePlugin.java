@@ -9,7 +9,6 @@ public final class ExamplePlugin extends DreamPlugin implements Listener {
 
   @Override
   public void onDreamEnable() {
-
     getLogger().info("DreamAPI good");
 
     setBroadcastCmd(true);
@@ -21,12 +20,10 @@ public final class ExamplePlugin extends DreamPlugin implements Listener {
     setServiceCmd(true);
     setLangCmd(true);
     setWorldBorderCmd(true);
-
   }
 
   @Override
   public void onDreamDisable() {
     getLogger().info("DreamAPI dead");
   }
-
 }
