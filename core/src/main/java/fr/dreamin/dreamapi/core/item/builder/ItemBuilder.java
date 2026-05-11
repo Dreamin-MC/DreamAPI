@@ -690,7 +690,12 @@ public class ItemBuilder {
 
     if (meta == null) return item;
 
-    item.setName(meta.itemName());
+    final var name = meta.itemName();
+
+    if (meta instanceof SkullMeta skullMeta)
+      skullMeta.customName(name.decoration(TextDecoration.ITALIC, false));
+    else
+      item.setName(name);
 
     if (meta.lore() != null && meta.hasLore())
       item.setLore(Objects.requireNonNull(meta.lore()));
