@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.xenondevs.invui.item.BoundItem;
@@ -62,6 +63,18 @@ public final class GuiItems {
       .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() + 1));
   }
 
+  public static BoundItem.Builder NEXT(final @NotNull ItemStack itemStack) {
+    return BoundItem.pagedBuilder()
+      .setItemProvider((player, gui) -> {
+        if (gui.getPage() < gui.getPageCount() - 1)
+          return new ItemBuilder(Material.ARROW)
+            .setName(Component.text("Suivant"))
+            .toGuiItem();
+        return new ItemBuilder(itemStack).toGuiItem();
+      })
+      .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() + 1));
+  }
+
   // ###############################################################
   // ------------------------ PREVIOUS ITEM ------------------------
   // ###############################################################
@@ -104,6 +117,18 @@ public final class GuiItems {
               : Component.text("Suivant")
           ).toGuiItem();
         return new ItemBuilder(material).setHideToolType(material != Material.AIR && hideToolTip).toGuiItem();
+      })
+      .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() - 1));
+  }
+
+  public static BoundItem.Builder PREVIOUS(final @NotNull ItemStack itemStack) {
+    return BoundItem.pagedBuilder()
+      .setItemProvider((player, gui) -> {
+        if (gui.getPage() > 0)
+          return new ItemBuilder(Material.ARROW)
+            .setName(Component.text("Suivant"))
+            .toGuiItem();
+        return new ItemBuilder(itemStack).toGuiItem();
       })
       .addClickHandler((item, gui, click) -> gui.setPage(gui.getPage() - 1));
   }
@@ -158,6 +183,12 @@ public final class GuiItems {
 
   }
 
+  public static BoundItem.Builder BACK(final @NotNull GuiInterface backGUI, final @NotNull ItemStack itemStack) {
+    return BoundItem.builder()
+      .setItemProvider((player, gui) -> new ItemBuilder(itemStack).toGuiItem())
+      .addClickHandler((item, gui, click) -> backGUI.open(click.player()));
+  }
+
   public static BoundItem.Builder BACK(final @NotNull Player player, final @NotNull String translationKey) {
     return BACK(player, Material.OAK_DOOR, translationKey, true);
   }
@@ -180,6 +211,10 @@ public final class GuiItems {
 
   public static BoundItem.Builder BACK(final @NotNull Player player, final @NotNull Material material, final @Nullable String translationKey, final boolean hideToolTip) {
     return BACK(player.getUniqueId(), material, translationKey, hideToolTip);
+  }
+
+  public static BoundItem.Builder BACK(final @NotNull Player player, final @NotNull ItemStack itemStack) {
+    return BACK(player.getUniqueId(), itemStack);
   }
 
   public static BoundItem.Builder BACK(final @NotNull UUID playerId, final @NotNull String translationKey) {
@@ -212,6 +247,19 @@ public final class GuiItems {
         )
         .setHideToolType(material != Material.AIR && hideToolTip)
         .toGuiItem())
+      .addClickHandler((item, gui, click) -> {
+        final var target = Bukkit.getPlayer(playerId);
+        if (target == null) return;
+
+        final var previousGui = getPreviousGui(playerId);
+        if (previousGui != null)
+          previousGui.open(target);
+      });
+  }
+
+  public static BoundItem.Builder BACK(final @NotNull UUID playerId, final @NotNull ItemStack itemStack) {
+    return BoundItem.builder()
+      .setItemProvider((player, gui) -> new ItemBuilder(itemStack).toGuiItem())
       .addClickHandler((item, gui, click) -> {
         final var target = Bukkit.getPlayer(playerId);
         if (target == null) return;

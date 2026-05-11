@@ -1,6 +1,5 @@
 package fr.dreamin.dreamapi.core.item.builder;
 
-
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.common.cache.Cache;
@@ -12,6 +11,7 @@ import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -99,6 +99,31 @@ public class ItemBuilder {
     consumer.accept(metaClass.cast(this.itemMeta));
 
     this.itemMeta = meta;
+  }
+
+  private record MetaNameSnapshot(
+    @Nullable Component itemName,
+    @Nullable Component displayName,
+    @Nullable Component customName
+  ) {}
+
+  private static @NotNull MetaNameSnapshot snapshotMetaNames(final @NotNull ItemMeta meta) {
+    return new MetaNameSnapshot(meta.itemName(), meta.displayName(), meta.customName());
+  }
+
+  private static void restoreMetaNames(final @NotNull ItemMeta meta, final @NotNull MetaNameSnapshot snapshot) {
+    if (snapshot.itemName() != null) meta.itemName(snapshot.itemName());
+    if (snapshot.displayName() != null) meta.displayName(snapshot.displayName());
+    if (snapshot.customName() != null) meta.customName(snapshot.customName());
+  }
+
+  private ItemBuilder setSkullProfile(final @NotNull PlayerProfile profile) {
+    withMeta(SkullMeta.class, meta -> {
+      final var names = snapshotMetaNames(meta);
+      meta.setPlayerProfile(profile);
+      restoreMetaNames(meta, names);
+    });
+    return this;
   }
 
   // ###############################################################
@@ -207,12 +232,6 @@ public class ItemBuilder {
     return setLore(Arrays.asList(lines));
   }
 
-  public ItemBuilder setLegacyLore(final @NotNull String... lines) {
-    withMeta(meta -> meta.setLore(Arrays.asList(lines)));
-    return this;
-  }
-
-
   public ItemBuilder addLore(final @NotNull Component... lines) {
     return addLore(Arrays.asList(lines));
   }
@@ -231,22 +250,17 @@ public class ItemBuilder {
   // ###############################################################
 
   public ItemBuilder setName(final @NotNull Component name) {
-    withMeta(meta -> meta.itemName(name));
-    return this;
-  }
+    withMeta(meta -> {
+      meta.itemName(name);
 
-  public ItemBuilder setDisplayName(final @NotNull Component name) {
-    withMeta(meta -> meta.displayName(name));
+      if (meta instanceof SkullMeta skullMeta)
+        skullMeta.customName(name.decoration(TextDecoration.ITALIC, false));
+    });
     return this;
   }
 
   public ItemBuilder setCustomName(final @NotNull Component name) {
     withMeta(meta -> meta.customName(name));
-    return this;
-  }
-
-  public ItemBuilder setLegacyName(final @NotNull String name) {
-    withMeta(meta -> meta.setDisplayName(name));
     return this;
   }
 
@@ -288,9 +302,7 @@ public class ItemBuilder {
       PROFILE_CACHE.put(key, profile);
     }
 
-    PlayerProfile finalProfile = profile;
-    withMeta(SkullMeta.class, meta -> meta.setPlayerProfile(finalProfile));
-    return this;
+    return setSkullProfile(profile);
   }
 
   public ItemBuilder setHeadFromUuid(final @NotNull UUID uuid) {
@@ -302,14 +314,11 @@ public class ItemBuilder {
       PROFILE_CACHE.put(key, profile);
     }
 
-    PlayerProfile finalProfile = profile;
-    withMeta(SkullMeta.class, meta -> meta.setPlayerProfile(finalProfile));
-    return this;
+    return setSkullProfile(profile);
   }
 
   public ItemBuilder setHeadFromProfile(final @NotNull PlayerProfile profile) {
-    withMeta(SkullMeta.class, meta -> meta.setPlayerProfile(profile));
-    return this;
+    return setSkullProfile(profile);
   }
 
   public ItemBuilder setHeadFromBase64(final @NotNull String base64) {
@@ -321,12 +330,8 @@ public class ItemBuilder {
       PROFILE_CACHE.put(key, profile);
     }
 
-    PlayerProfile finalProfile = profile;
-    withMeta(SkullMeta.class, meta -> {
-      finalProfile.setProperty(new ProfileProperty("textures", base64));
-      meta.setPlayerProfile(finalProfile);
-    });
-    return this;
+    profile.setProperty(new ProfileProperty("textures", base64));
+    return setSkullProfile(profile);
   }
 
   // ###############################################################

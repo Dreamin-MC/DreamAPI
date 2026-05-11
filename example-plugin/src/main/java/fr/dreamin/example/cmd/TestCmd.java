@@ -4,6 +4,7 @@ import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandDescription;
 import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
+import cloud.commandframework.annotations.specifier.Greedy;
 import fr.dreamin.dreamapi.api.cmd.DreamCmd;
 import fr.dreamin.dreamapi.api.item.ItemAction;
 import fr.dreamin.dreamapi.api.item.ItemDefinition;
@@ -14,6 +15,7 @@ import fr.dreamin.dreamapi.api.nms.visual.service.VisualService;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import fr.dreamin.example.ExamplePlugin;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -32,12 +34,15 @@ import java.util.Map;
 public final class TestCmd {
 
   @CommandDescription("Test")
-  @CommandMethod("test1")
+  @CommandMethod("test1 <target>")
   @CommandPermission("test")
-  private void test(CommandSender sender) {
+  private void test(CommandSender sender, @Greedy @Argument("target") String target) {
     if (!(sender instanceof Player player)) return;
 
+    player.getInventory().addItem(
 
+      new ItemBuilder(Material.PLAYER_HEAD).setHeadFromProfile(player.getPlayerProfile()).setName(Component.text(target, NamedTextColor.BLUE)).build()
+    );
   }
 
   @CommandDescription("Test command")
