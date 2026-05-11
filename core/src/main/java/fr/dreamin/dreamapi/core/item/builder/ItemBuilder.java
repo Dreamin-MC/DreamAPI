@@ -692,8 +692,8 @@ public class ItemBuilder {
 
     final var name = meta.itemName();
 
-    if (meta instanceof SkullMeta skullMeta)
-      skullMeta.customName(name.decoration(TextDecoration.ITALIC, false));
+    if (meta instanceof SkullMeta skullMeta && skullMeta.customName() != null)
+      item.setCustomName(skullMeta.customName());
     else
       item.setName(name);
 
