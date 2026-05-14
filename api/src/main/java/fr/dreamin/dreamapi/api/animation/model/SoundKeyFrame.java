@@ -1,0 +1,81 @@
+package fr.dreamin.dreamapi.api.animation.model;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
+import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.SoundCategory;
+import org.jetbrains.annotations.NotNull;
+
+@Getter
+public final class SoundKeyFrame extends KeyFrame {
+
+  private final float volume, pitch;
+  private final @NotNull SoundCategory category;
+
+  // ###############################################################
+  // --------------------- CONSTRUCTOR METHODS ---------------------
+  // ###############################################################
+
+  @JsonCreator
+  public SoundKeyFrame(
+    @JsonProperty("type") final @NotNull Type type,
+    @JsonProperty("value") final @NotNull String value,
+    @JsonProperty("bone")  final @NotNull String boneValue,
+    @JsonProperty("volume") final float volume,
+    @JsonProperty("pitch") final float pitch,
+    @JsonProperty("category") final @NotNull SoundCategory category
+  ) {
+    super(type, value, boneValue);
+    this.volume = volume;
+    this.pitch = pitch;
+    this.category = category;
+  }
+
+  @JsonCreator
+  public SoundKeyFrame(
+    @JsonProperty("type") final @NotNull Type type,
+    @JsonProperty("value") final @NotNull String value,
+    @JsonProperty("volume") final float volume,
+    @JsonProperty("pitch") final float pitch
+  ) {
+    super(type, value, null);
+    this.volume = volume;
+    this.pitch = pitch;
+    this.category = SoundCategory.MASTER;
+  }
+
+  @JsonCreator
+  public SoundKeyFrame(
+    @JsonProperty("type") final @NotNull Type type,
+    @JsonProperty("value") final @NotNull String value,
+    @JsonProperty("bone") final @NotNull String boneValue,
+    @JsonProperty("volume") final float volume,
+    @JsonProperty("pitch") final float pitch
+  ) {
+    super(type, value, boneValue);
+    this.volume = volume;
+    this.pitch = pitch;
+    this.category = SoundCategory.MASTER;
+  }
+
+  // ###############################################################
+  // -------------------------- METHODS ----------------------------
+  // ###############################################################
+
+  @Override
+  public void apply(final @NotNull IAnimationProperty property) {
+    if (getBoneValue() == null) {
+      for (final var player : Bukkit.getOnlinePlayers()) {
+        player.playSound(player, getValue(), getCategory(), getVolume(), getPitch());
+      }
+    }
+    else {
+      final var bone = property.getModel().getBone(getBoneValue()).orElse(null);
+      if (bone == null) return;
+      bone.getLocation().getWorld().playSound(bone.getLocation(), getValue(), getCategory(), getVolume(), getPitch());
+    }
+  }
+
+}

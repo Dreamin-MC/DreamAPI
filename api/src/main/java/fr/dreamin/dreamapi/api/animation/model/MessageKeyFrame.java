@@ -1,0 +1,73 @@
+package fr.dreamin.dreamapi.api.animation.model;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
+import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
+
+@Getter
+public final class MessageKeyFrame extends KeyFrame {
+
+  public enum SendType {
+    CHAT, ACTION_BAR
+  }
+
+  private final @NotNull SendType sendType;
+  private final boolean translatable;
+
+  // ###############################################################
+  // --------------------- CONSTRUCTOR METHODS ---------------------
+  // ###############################################################
+
+  @JsonCreator
+  public MessageKeyFrame(
+    @JsonProperty("type") final @NotNull Type type,
+    @JsonProperty("value") final @NotNull String value,
+    @JsonProperty("sendType") final @NotNull SendType sendType,
+    @JsonProperty("translatable") final boolean translatable
+  ) {
+    super(type, value, null);
+    this.sendType = sendType;
+    this.translatable = translatable;
+  }
+
+  @JsonCreator
+  public MessageKeyFrame(
+    @JsonProperty("type") final @NotNull Type type,
+    @JsonProperty("value") final @NotNull String value,
+    @JsonProperty("translatable") final boolean translatable
+  ) {
+    super(type, value, null);
+    this.sendType = SendType.CHAT;
+    this.translatable = translatable;
+  }
+
+  @JsonCreator
+  public MessageKeyFrame(
+    @JsonProperty("type") final @NotNull Type type,
+    @JsonProperty("value") final @NotNull String value
+  ) {
+    super(type, value, null);
+    this.sendType = SendType.CHAT;
+    this.translatable = false;
+  }
+
+  // ###############################################################
+  // -------------------------- METHODS ----------------------------
+  // ###############################################################
+
+  @Override
+  public void apply(@NotNull IAnimationProperty property) {
+    final var component = this.isTranslatable() ? Component.translatable(getValue()) : Component.text(getValue());
+
+    switch (this.sendType) {
+      case CHAT -> Bukkit.broadcast(component);
+      case ACTION_BAR -> Bukkit.getOnlinePlayers().forEach(player -> player.sendActionBar(component));
+    }
+
+  }
+
+}
