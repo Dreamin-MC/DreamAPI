@@ -3,6 +3,7 @@ package fr.dreamin.dreamapi.core.cuboid.event;
 import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import lombok.Getter;
 import lombok.ToString;
+import org.bukkit.Location;
 import org.bukkit.entity.Mannequin;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +17,13 @@ public final class CuboidMannequinEnterEvent extends CuboidEntityEnterEvent {
   // ----------------------- PUBLIC METHODS ------------------------
   // ###############################################################
 
-  public CuboidMannequinEnterEvent(final @NotNull Mannequin mannequin, final @NotNull Cuboid cuboid) {
-    super(mannequin, cuboid);
+  public CuboidMannequinEnterEvent(
+    final @NotNull Mannequin mannequin,
+    final @NotNull Cuboid cuboid,
+    final @NotNull Location from,
+    final @NotNull Location to
+  ) {
+    super(mannequin, cuboid, from, to);
     this.mannequin = mannequin;
   }
 

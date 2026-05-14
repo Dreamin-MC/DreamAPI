@@ -9,6 +9,7 @@ import fr.dreamin.dreamapi.api.cuboid.Cuboid;
 import fr.dreamin.dreamapi.core.cuboid.event.*;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
@@ -99,6 +100,7 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     var player = event.getPlayer();
     var from = event.getFrom();
     var to = event.getTo();
+
     if ((from.getBlockX() == to.getBlockX() &&
         from.getBlockY() == to.getBlockY() &&
         from.getBlockZ() == to.getBlockZ()))
@@ -111,9 +113,9 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
       boolean isIn = cuboid.isLocationIn(to);
 
       if (!wasIn && isIn)
-        enter(player, cuboid, event, currentCuboids);
+        enter(player, cuboid, from, to, event, currentCuboids);
       else if (wasIn && !isIn)
-        leave(player, cuboid, event, currentCuboids);
+        leave(player, cuboid, from, to, event, currentCuboids);
     }
   }
 
@@ -122,6 +124,7 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     var player = event.getPlayer();
     var from = event.getFrom();
     var to = event.getTo();
+
     if ((from.getBlockX() == to.getBlockX() &&
       from.getBlockY() == to.getBlockY() &&
       from.getBlockZ() == to.getBlockZ()))
@@ -134,9 +137,9 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
       boolean isIn = cuboid.isLocationIn(to);
 
       if (!wasIn && isIn)
-        enter(player, cuboid, event, currentCuboids);
+        enter(player, cuboid, from, to, event, currentCuboids);
       else if (wasIn && !isIn)
-        leave(player, cuboid, event, currentCuboids);
+        leave(player, cuboid, from, to, event, currentCuboids);
     }
   }
 
@@ -145,6 +148,7 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     var entity = event.getEntity();
     var from = event.getFrom();
     var to = event.getTo();
+
     if ((from.getBlockX() == to.getBlockX() &&
       from.getBlockY() == to.getBlockY() &&
       from.getBlockZ() == to.getBlockZ()))
@@ -157,9 +161,9 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
       boolean isIn = cuboid.isLocationIn(to);
 
       if (!wasIn && isIn)
-        enter(entity, cuboid, event, currentCuboids);
+        enter(entity, cuboid, from, to, event, currentCuboids);
       else if (wasIn && !isIn)
-        leave(entity, cuboid, event, currentCuboids);
+        leave(entity, cuboid, from, to, event, currentCuboids);
     }
   }
 
@@ -168,6 +172,8 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
     var entity = event.getEntity();
     var from = event.getFrom();
     var to = event.getTo();
+    if (to == null) return;
+
     if ((from.getBlockX() == to.getBlockX() &&
       from.getBlockY() == to.getBlockY() &&
       from.getBlockZ() == to.getBlockZ()))
@@ -180,9 +186,9 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
       boolean isIn = cuboid.isLocationIn(to);
 
       if (!wasIn && isIn)
-        enter(entity, cuboid, event, currentCuboids);
+        enter(entity, cuboid, from, to, event, currentCuboids);
       else if (wasIn && !isIn)
-        leave(entity, cuboid, event, currentCuboids);
+        leave(entity, cuboid, from, to, event, currentCuboids);
     }
   }
 
@@ -204,10 +210,12 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
   private void enter(
     final @NotNull Entity entity,
     final @NotNull Cuboid cuboid,
+    final @NotNull Location from,
+    final @NotNull Location to,
     final @NotNull Cancellable event,
     final @NotNull Set<Cuboid> currentCuboids
   ) {
-    var enterEvent = getCuboidEnterEvent(entity, cuboid);
+    var enterEvent = getCuboidEnterEvent(entity, cuboid, from, to);
     if (DreamAPI.getAPI().callEvent(enterEvent).isCancelled())
       event.setCancelled(true);
     else
@@ -228,32 +236,44 @@ public final class CuboidServiceImpl implements CuboidService, DreamService, Lis
   private void leave(
     final @NotNull Entity entity,
     final @NotNull Cuboid cuboid,
+    final @NotNull Location from,
+    final @NotNull Location to,
     final @NotNull Cancellable event,
     final @NotNull Set<Cuboid> currentCuboids
   ) {
-    var leaveEvent = getCuboidLeaveEvent(entity, cuboid);
+    var leaveEvent = getCuboidLeaveEvent(entity, cuboid, from, to);
     if (DreamAPI.getAPI().callEvent(leaveEvent).isCancelled())
       event.setCancelled(true);
     else
       currentCuboids.remove(cuboid);
   }
 
-  private CuboidEntityEnterEvent getCuboidEnterEvent(final @NotNull Entity entity, final @NotNull Cuboid cuboid) {
+  private CuboidEntityEnterEvent getCuboidEnterEvent(
+    final @NotNull Entity entity,
+    final @NotNull Cuboid cuboid,
+    final @NotNull Location from,
+    final @NotNull Location to
+  ) {
     if (entity instanceof Player player)
-      return new CuboidPlayerEnterEvent(player, cuboid);
+      return new CuboidPlayerEnterEvent(player, cuboid, from, to);
     else if (entity instanceof Mannequin mannequin)
-      return new CuboidMannequinEnterEvent(mannequin, cuboid);
+      return new CuboidMannequinEnterEvent(mannequin, cuboid, from, to);
     else
-      return new CuboidEntityEnterEvent(entity, cuboid);
+      return new CuboidEntityEnterEvent(entity, cuboid, from, to);
   }
 
-  private CuboidEntityLeaveEvent getCuboidLeaveEvent(final @NotNull Entity entity, final @NotNull Cuboid cuboid) {
+  private CuboidEntityLeaveEvent getCuboidLeaveEvent(
+    final @NotNull Entity entity,
+    final @NotNull Cuboid cuboid,
+    final @NotNull Location from,
+    final @NotNull Location to
+  ) {
     if (entity instanceof Player player)
-      return new CuboidPlayerLeaveEvent(player, cuboid);
+      return new CuboidPlayerLeaveEvent(player, cuboid, from, to);
     else if (entity instanceof Mannequin mannequin)
-      return new CuboidMannequinLeaveEvent(mannequin, cuboid);
+      return new CuboidMannequinLeaveEvent(mannequin, cuboid, from, to);
     else
-      return new CuboidEntityLeaveEvent(entity, cuboid);
+      return new CuboidEntityLeaveEvent(entity, cuboid, from, to);
   }
 
 }
