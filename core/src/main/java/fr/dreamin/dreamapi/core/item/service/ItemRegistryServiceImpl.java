@@ -435,15 +435,28 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
 
   @EventHandler
   private void onProjectileHit(final @NotNull ProjectileHitEvent event) {
-    if (event.getHitBlock() == null) return;
     if (!(event.getEntity().getShooter() instanceof Player player)) return;
 
     final var registered = getProjectileRegisteredItem(event.getEntity());
     if (registered == null) return;
 
+    final var item = registered.item().clone();
+
+    if (event.getHitBlock() != null) {
+      registered.execute(
+        ItemAction.PROJECTILE_HIT_GROUND,
+        new ItemContext(player, item, event)
+      );
+    } else if (event.getHitEntity() != null) {
+      registered.execute(
+        ItemAction.PROJECTILE_HIT_ENTITY,
+        new ItemContext(player, item, event)
+      );
+    }
+
     registered.execute(
-      ItemAction.PROJECTILE_HIT_GROUND,
-      new ItemContext(player, registered.item().clone(), event)
+      ItemAction.PROJECTILE_HIT,
+      new ItemContext(player, item, event)
     );
   }
 
