@@ -30,10 +30,15 @@ public final class TitleKeyFrame extends KeyFrame {
   ) {
     super(type, value, null);
     this.subtitle = subtitle;
-    this.time = Title.Times.times(Duration.ofMillis(fades[0]), Duration.ofMillis(fades[1]), Duration.ofMillis(fades[2]));
+
+    if (fades != null && fades.length >= 3) {
+      this.time = Title.Times.times(Duration.ofMillis(fades[0]), Duration.ofMillis(fades[1]), Duration.ofMillis(fades[2]));
+      return;
+    }
+
+    this.time = Title.DEFAULT_TIMES;
   }
 
-  @JsonCreator
   public TitleKeyFrame(
     @JsonProperty("type") final @NotNull Type type,
     @JsonProperty("value") final @NotNull String value,

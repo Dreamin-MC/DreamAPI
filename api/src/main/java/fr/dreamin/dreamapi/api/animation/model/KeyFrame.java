@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = TitleKeyFrame.class, name = "TITLE"),
   @JsonSubTypes.Type(value = MessageKeyFrame.class, name = "MESSAGE"),

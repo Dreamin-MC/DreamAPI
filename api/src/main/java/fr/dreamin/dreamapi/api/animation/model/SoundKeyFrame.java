@@ -22,41 +22,39 @@ public final class SoundKeyFrame extends KeyFrame {
   public SoundKeyFrame(
     @JsonProperty("type") final @NotNull Type type,
     @JsonProperty("value") final @NotNull String value,
-    @JsonProperty("bone")  final @NotNull String boneValue,
-    @JsonProperty("volume") final float volume,
-    @JsonProperty("pitch") final float pitch,
-    @JsonProperty("category") final @NotNull SoundCategory category
+    @JsonProperty("bone")  final String boneValue,
+    @JsonProperty("volume") final Float volume,
+    @JsonProperty("pitch") final Float pitch,
+    @JsonProperty("category") final SoundCategory category
   ) {
     super(type, value, boneValue);
-    this.volume = volume;
-    this.pitch = pitch;
-    this.category = category;
+    this.volume = volume == null ? 1.0f : volume;
+    this.pitch = pitch == null ? 1.0f : pitch;
+    this.category = category == null ? SoundCategory.MASTER : category;
   }
 
-  @JsonCreator
   public SoundKeyFrame(
     @JsonProperty("type") final @NotNull Type type,
     @JsonProperty("value") final @NotNull String value,
-    @JsonProperty("volume") final float volume,
-    @JsonProperty("pitch") final float pitch
+    @JsonProperty("volume") final Float volume,
+    @JsonProperty("pitch") final Float pitch
   ) {
     super(type, value, null);
-    this.volume = volume;
-    this.pitch = pitch;
+    this.volume = volume == null ? 1.0f : volume;
+    this.pitch = pitch == null ? 1.0f : pitch;
     this.category = SoundCategory.MASTER;
   }
 
-  @JsonCreator
   public SoundKeyFrame(
     @JsonProperty("type") final @NotNull Type type,
     @JsonProperty("value") final @NotNull String value,
     @JsonProperty("bone") final @NotNull String boneValue,
-    @JsonProperty("volume") final float volume,
-    @JsonProperty("pitch") final float pitch
+    @JsonProperty("volume") final Float volume,
+    @JsonProperty("pitch") final Float pitch
   ) {
     super(type, value, boneValue);
-    this.volume = volume;
-    this.pitch = pitch;
+    this.volume = volume == null ? 1.0f : volume;
+    this.pitch = pitch == null ? 1.0f : pitch;
     this.category = SoundCategory.MASTER;
   }
 

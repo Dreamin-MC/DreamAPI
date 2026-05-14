@@ -26,26 +26,14 @@ public final class MessageKeyFrame extends KeyFrame {
   public MessageKeyFrame(
     @JsonProperty("type") final @NotNull Type type,
     @JsonProperty("value") final @NotNull String value,
-    @JsonProperty("sendType") final @NotNull SendType sendType,
-    @JsonProperty("translatable") final boolean translatable
+    @JsonProperty("sendType") final SendType sendType,
+    @JsonProperty("translatable") final Boolean translatable
   ) {
     super(type, value, null);
-    this.sendType = sendType;
-    this.translatable = translatable;
+    this.sendType = sendType == null ? SendType.CHAT : sendType;
+    this.translatable = translatable != null && translatable;
   }
 
-  @JsonCreator
-  public MessageKeyFrame(
-    @JsonProperty("type") final @NotNull Type type,
-    @JsonProperty("value") final @NotNull String value,
-    @JsonProperty("translatable") final boolean translatable
-  ) {
-    super(type, value, null);
-    this.sendType = SendType.CHAT;
-    this.translatable = translatable;
-  }
-
-  @JsonCreator
   public MessageKeyFrame(
     @JsonProperty("type") final @NotNull Type type,
     @JsonProperty("value") final @NotNull String value

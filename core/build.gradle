@@ -25,6 +25,8 @@ dependencies {
   compileOnly("io.netty:netty-all:$nettyVersion")
 
   compileOnly("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
+  testCompileOnly("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
+  testRuntimeOnly("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
 
   testCompileOnly("io.papermc.paper:paper-api:$paperVersion")
   testRuntimeOnly("io.papermc.paper:paper-api:$paperVersion")

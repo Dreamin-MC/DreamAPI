@@ -27,19 +27,18 @@ public final class ParticleKeyFrame extends KeyFrame {
     @JsonProperty("value") final @NotNull String value,
     @JsonProperty("bone")  final @NotNull String boneValue,
     @JsonProperty("count") final int count,
-    @JsonProperty("offsets") final @NotNull Double[] offsets,
+    @JsonProperty("offsets") final Double[] offsets,
     @JsonProperty("speed") final double speed,
     @JsonProperty("force") final boolean force
   ) {
     super(type, value, boneValue);
     this.particle = Particle.valueOf(value);
     this.count = count;
-    this.offsets = offsets;
+    this.offsets = (offsets != null && offsets.length >= 3) ? offsets : new Double[]{0.0, 0.0, 0.0};
     this.speed = speed;
     this.force = force;
   }
 
-  @JsonCreator
   public ParticleKeyFrame(
     @JsonProperty("type") final @NotNull Type type,
     @JsonProperty("value") final @NotNull String value,

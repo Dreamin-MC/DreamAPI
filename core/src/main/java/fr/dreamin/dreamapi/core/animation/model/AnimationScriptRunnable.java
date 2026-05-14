@@ -12,12 +12,20 @@ import org.jetbrains.annotations.NotNull;
 
 
 @Getter
-@RequiredArgsConstructor
 public final class AnimationScriptRunnable extends BukkitRunnable {
 
   private final @NotNull IAnimationProperty property;
   private boolean started;
   private boolean stopped;
+
+  // ###############################################################
+  // --------------------- CONSTRUCTOR METHODS ---------------------
+  // ###############################################################
+
+  public AnimationScriptRunnable(final @NotNull IAnimationProperty property) {
+    this.property = property;
+    runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 1L);
+  }
 
   // ###############################################################
   // -------------------------- METHODS ----------------------------
@@ -58,7 +66,11 @@ public final class AnimationScriptRunnable extends BukkitRunnable {
         final var keyFrames = animationService.deserializeKeyFrames(script.script());
         animationService.applyKeyFrames(this.property, keyFrames);
       } catch (final IllegalArgumentException exception) {
-        DreamAPI.getAPI().getLogger().warning("Failed to parse animation script: " + exception.getMessage());
+        final var errorMsg = "Failed to parse animation script: " + exception.getMessage();
+        DreamAPI.getAPI().getLogger().warning(errorMsg);
+        if (exception.getCause() != null) {
+          DreamAPI.getAPI().getLogger().warning("Cause: " + exception.getCause().getMessage());
+        }
       }
     }
 

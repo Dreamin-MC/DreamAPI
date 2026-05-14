@@ -1,14 +1,9 @@
 package fr.dreamin.dreamapi.core.animation.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.animation.model.KeyFrame;
-import fr.dreamin.dreamapi.api.animation.model.MessageKeyFrame;
-import fr.dreamin.dreamapi.api.animation.model.ParticleKeyFrame;
-import fr.dreamin.dreamapi.api.animation.model.SoundKeyFrame;
-import fr.dreamin.dreamapi.api.animation.model.TitleKeyFrame;
 import fr.dreamin.dreamapi.api.animation.service.AnimationService;
 import fr.dreamin.dreamapi.api.config.Configurations;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
@@ -48,15 +43,25 @@ public final class AnimationServiceImpl implements DreamService, AnimationServic
 
 			if (root.isArray()) {
 				final var keyFrames = new ArrayList<KeyFrame>();
-				for (final var node : root) {
-					keyFrames.add(deserializeKeyFrame(node));
+				for (int i = 0; i < root.size(); i++) {
+					try {
+						final var node = root.get(i);
+						keyFrames.add(deserializeKeyFrame(node));
+					} catch (final Exception e) {
+						DreamAPI.getAPI().getLogger().warning("Failed to parse keyframe at index " + i + ": " + e.getMessage());
+						throw e;
+					}
 				}
 				return List.copyOf(keyFrames);
 			}
 
 			return List.of(deserializeKeyFrame(root));
 		} catch (final Exception exception) {
-			throw new IllegalArgumentException("Unable to parse animation keyframes", exception);
+			// Log the problematic JSON for debugging
+			final var preview = script.substring(0, Math.min(200, script.length()));
+			final var errorMsg = "Unable to parse animation keyframes\nJSON Preview: " + preview + (script.length() > 200 ? "..." : "");
+			DreamAPI.getAPI().getLogger().warning(errorMsg);
+			throw new IllegalArgumentException(exception.getMessage(), exception);
 		}
   }
 
@@ -90,17 +95,21 @@ public final class AnimationServiceImpl implements DreamService, AnimationServic
 		return this.runningRunnables.get(property);
   }
 
-  private @NotNull KeyFrame deserializeKeyFrame(@NotNull JsonNode node) throws JsonProcessingException {
+  private @NotNull KeyFrame deserializeKeyFrame(@NotNull JsonNode node) {
 		final var typeNode = node.get("type");
-		if (typeNode == null || typeNode.isNull())
-			throw new IllegalArgumentException("Animation keyframe is missing the 'type' property");
+		if (typeNode == null || typeNode.isNull()) {
+			throw new IllegalArgumentException("Animation keyframe is missing the 'type' property. JSON: " + node.toString());
+		}
 
-		return switch (KeyFrame.Type.valueOf(typeNode.asText())) {
-			case TITLE -> Configurations.MAPPER.treeToValue(node, TitleKeyFrame.class);
-			case MESSAGE -> Configurations.MAPPER.treeToValue(node, MessageKeyFrame.class);
-			case SOUND -> Configurations.MAPPER.treeToValue(node, SoundKeyFrame.class);
-			case PARTICLE -> Configurations.MAPPER.treeToValue(node, ParticleKeyFrame.class);
-		};
+		final var typeName = typeNode.asText();
+		try {
+			// Jackson gerera automatiquement la polymorphie via @JsonTypeInfo
+			return Configurations.MAPPER.treeToValue(node, KeyFrame.class);
+		} catch (final Exception e) {
+			final var msg = "Failed to deserialize keyframe of type '" + typeName + "'";
+			DreamAPI.getAPI().getLogger().warning(msg + ": " + e.getMessage());
+			throw new IllegalArgumentException(msg + ": " + e.getMessage(), e);
+		}
   }
 
 

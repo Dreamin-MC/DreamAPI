@@ -11,6 +11,7 @@ import fr.dreamin.dreamapi.api.annotations.EnableServices;
 import fr.dreamin.dreamapi.api.item.ItemTag;
 import fr.dreamin.dreamapi.api.item.RegisteredItem;
 import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
+import fr.dreamin.dreamapi.core.animation.service.AnimationServiceImpl;
 import fr.dreamin.dreamapi.core.cmd.scanner.CmdAnnotationProcessor;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
@@ -564,6 +565,8 @@ public abstract class DreamPlugin extends JavaPlugin {
 
       ItemRegistryServiceImpl.class,
 
+      AnimationServiceImpl.class,
+
       WorldServiceImpl.class,
       DayCycleServiceImpl.class,
       TeamServiceImpl.class,
@@ -601,7 +604,8 @@ public abstract class DreamPlugin extends JavaPlugin {
       VisualServiceImpl.class,
       TabListServiceImpl.class,
       GlowingServiceImpl.class,
-      CuboidServiceImpl.class
+      CuboidServiceImpl.class,
+      AnimationServiceImpl.class
     ),
 
     LoadMode.DEBUG, Set.of(
