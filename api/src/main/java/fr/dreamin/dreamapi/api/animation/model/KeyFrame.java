@@ -6,8 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @Getter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
@@ -15,12 +18,13 @@ import org.jetbrains.annotations.Nullable;
   @JsonSubTypes.Type(value = TitleKeyFrame.class, name = "TITLE"),
   @JsonSubTypes.Type(value = MessageKeyFrame.class, name = "MESSAGE"),
   @JsonSubTypes.Type(value = SoundKeyFrame.class, name = "SOUND"),
-  @JsonSubTypes.Type(value = ParticleKeyFrame.class, name = "PARTICLE")
+  @JsonSubTypes.Type(value = ParticleKeyFrame.class, name = "PARTICLE"),
+  @JsonSubTypes.Type(value = CameraKeyFrame.class, name = "CAMERA")
 })
 public abstract class KeyFrame {
 
   public enum Type {
-    TITLE, MESSAGE, SOUND, PARTICLE
+    TITLE, MESSAGE, SOUND, PARTICLE, CAMERA
   }
 
   private final @NotNull Type type;
@@ -46,6 +50,6 @@ public abstract class KeyFrame {
   // -------------------------- METHODS ----------------------------
   // ###############################################################
 
-  public abstract void apply(final @NotNull IAnimationProperty property);
+  public abstract void apply(final @NotNull IAnimationProperty property, final @NotNull List<? extends Player> players);
 
 }

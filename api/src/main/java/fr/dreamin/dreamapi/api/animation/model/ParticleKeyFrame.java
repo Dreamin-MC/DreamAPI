@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import lombok.Getter;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 @Getter
 public final class ParticleKeyFrame extends KeyFrame {
@@ -60,7 +63,7 @@ public final class ParticleKeyFrame extends KeyFrame {
   // ###############################################################
 
   @Override
-  public void apply(@NotNull IAnimationProperty property) {
+  public void apply(@NotNull IAnimationProperty property, final @NotNull List<? extends Player> players) {
     final var bone = property.getModel().getBone(getBoneValue()).orElse(null);
     if (bone == null) return;
 
@@ -68,6 +71,7 @@ public final class ParticleKeyFrame extends KeyFrame {
       .count(this.count)
       .offset(this.offsets[0], this.offsets[1], this.offsets[2])
       .extra(this.speed)
+      .receivers((List<Player>) players)
       .location(bone.getLocation())
       .force(this.force);
 

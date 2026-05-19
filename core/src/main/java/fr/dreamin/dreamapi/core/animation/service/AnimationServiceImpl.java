@@ -3,23 +3,32 @@ package fr.dreamin.dreamapi.core.animation.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.animation.model.CameraKeyFrame;
 import fr.dreamin.dreamapi.api.animation.model.KeyFrame;
 import fr.dreamin.dreamapi.api.animation.service.AnimationService;
 import fr.dreamin.dreamapi.api.config.Configurations;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @DreamAutoService(AnimationService.class)
 public final class AnimationServiceImpl implements DreamService, AnimationService {
 
   private final @NotNull Map<IAnimationProperty, BukkitRunnable> runningRunnables = new HashMap<>();
+
+	private final @NotNull Map<UUID, ItemStack[]> inventory = new HashMap<>();
+	private final @NotNull Map<UUID, Location> lastLocation = new HashMap<>();
+	private final @NotNull Map<UUID, Boolean> cancelMove = new HashMap<>();
+	private final @NotNull Map<UUID, GameMode> lastGameMode = new HashMap<>();
 
   @Override
   public void onClose() {
@@ -66,10 +75,14 @@ public final class AnimationServiceImpl implements DreamService, AnimationServic
   }
 
   @Override
-  public void applyKeyFrames(@NotNull IAnimationProperty property, @NotNull List<KeyFrame> keyFrames) {
+  public void applyKeyFrames(@NotNull IAnimationProperty property, @NotNull List<KeyFrame> keyFrames, @NotNull List<? extends Player> players) {
 		for (final var keyFrame : keyFrames) {
 			try {
-				keyFrame.apply(property);
+				keyFrame.apply(property, players);
+
+				if (keyFrame instanceof CameraKeyFrame cameraKeyFrame)
+					applyCamFrame(cameraKeyFrame, players);
+
 			} catch (final RuntimeException exception) {
 				DreamAPI.getAPI().getLogger().warning("Failed to apply animation keyframe " + keyFrame.getClass().getSimpleName() + ": " + exception.getMessage());
 			}
@@ -95,6 +108,10 @@ public final class AnimationServiceImpl implements DreamService, AnimationServic
 		return this.runningRunnables.get(property);
   }
 
+	// ###############################################################
+	// ----------------------- PRIVATE METHODS -----------------------
+	// ###############################################################
+
   private @NotNull KeyFrame deserializeKeyFrame(@NotNull JsonNode node) {
 		final var typeNode = node.get("type");
 		if (typeNode == null || typeNode.isNull()) {
@@ -112,5 +129,58 @@ public final class AnimationServiceImpl implements DreamService, AnimationServic
 		}
   }
 
+	private void applyCamFrame(@NotNull CameraKeyFrame keyFrame, @NotNull List<? extends Player> players) {
+
+		for (final var player : players) {
+			final var uuid = player.getUniqueId();
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.CANCEL_MOVE))
+				this.cancelMove.put(uuid, true);
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.RESTORE_MOVE))
+				this.cancelMove.put(uuid, false);
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.SAVE_LOCATION))
+				this.lastLocation.put(uuid, player.getLocation());
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.RESTORE_LOCATION)) {
+				final var location = this.lastLocation.get(uuid);
+				if (location != null)
+					player.teleport(location);
+			}
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.SAVE_GAME_MODE))
+				this.lastGameMode.put(uuid, player.getGameMode());
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.RESTORE_GAME_MODE)) {
+				final var gameMode = this.lastGameMode.get(uuid);
+				if (gameMode != null)
+					player.setGameMode(gameMode);
+			}
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.SAVE_INVENTORY))
+				this.inventory.put(uuid, player.getInventory().getContents());
+
+			if (keyFrame.hasTags(CameraKeyFrame.CameraTag.RESTORE_INVENTORY)) {
+				final var content =  this.inventory.get(uuid);
+				if (content != null)
+					player.getInventory().setContents(content);
+			}
+
+		}
+
+	}
+
+	// ###############################################################
+	// ---------------------- LISTENER METHODS -----------------------
+	// ###############################################################
+
+	@EventHandler
+	private void onMove(final @NotNull PlayerMoveEvent event) {
+		final var uuid = event.getPlayer().getUniqueId();
+
+		if (this.cancelMove.containsKey(uuid))
+			event.setCancelled(true);
+	}
 
 }

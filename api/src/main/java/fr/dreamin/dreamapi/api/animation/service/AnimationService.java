@@ -2,6 +2,7 @@ package fr.dreamin.dreamapi.api.animation.service;
 
 import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import fr.dreamin.dreamapi.api.animation.model.KeyFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,7 @@ public interface AnimationService {
 
   @NotNull List<KeyFrame> deserializeKeyFrames(@NotNull String script);
 
-  void applyKeyFrames(@NotNull IAnimationProperty property, @NotNull List<KeyFrame> keyFrames);
+  void applyKeyFrames(@NotNull IAnimationProperty property, @NotNull List<KeyFrame> keyFrames, @NotNull List<? extends Player> players);
 
   void registerRunnable(@NotNull IAnimationProperty property, @NotNull BukkitRunnable runnable);
 

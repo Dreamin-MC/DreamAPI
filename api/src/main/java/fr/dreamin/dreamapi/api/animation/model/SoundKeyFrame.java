@@ -6,7 +6,10 @@ import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 @Getter
 public final class SoundKeyFrame extends KeyFrame {
@@ -63,16 +66,18 @@ public final class SoundKeyFrame extends KeyFrame {
   // ###############################################################
 
   @Override
-  public void apply(final @NotNull IAnimationProperty property) {
+  public void apply(final @NotNull IAnimationProperty property, final @NotNull List<? extends Player> players) {
     if (getBoneValue() == null) {
-      for (final var player : Bukkit.getOnlinePlayers()) {
+      for (final var player : players)
         player.playSound(player, getValue(), getCategory(), getVolume(), getPitch());
-      }
     }
     else {
       final var bone = property.getModel().getBone(getBoneValue()).orElse(null);
       if (bone == null) return;
-      bone.getLocation().getWorld().playSound(bone.getLocation(), getValue(), getCategory(), getVolume(), getPitch());
+
+      for (final var player : players)
+        player.playSound(bone.getLocation(), getValue(), getCategory(), getVolume(), getPitch());
+
     }
   }
 

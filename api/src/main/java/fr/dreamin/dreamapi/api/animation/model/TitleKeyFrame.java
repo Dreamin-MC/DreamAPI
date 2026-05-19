@@ -7,9 +7,11 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.List;
 
 @Getter
 public final class TitleKeyFrame extends KeyFrame {
@@ -54,16 +56,14 @@ public final class TitleKeyFrame extends KeyFrame {
   // ###############################################################
 
   @Override
-  public void apply(@NotNull IAnimationProperty property) {
-    for (final var player : Bukkit.getOnlinePlayers()) {
-
+  public void apply(@NotNull IAnimationProperty property, final @NotNull List<? extends Player> players) {
+    for (final var player : players)
       player.showTitle(Title.title(
         Component.translatable(getValue()),
         Component.translatable(getSubtitle()),
         this.time
       ));
-    }
-  }
 
+  }
 
 }

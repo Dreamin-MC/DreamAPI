@@ -7,14 +7,21 @@ import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import fr.dreamin.dreamapi.api.animation.service.AnimationService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 
 @Getter
-public final class AnimationScriptRunnable extends BukkitRunnable {
+public final class AnimationScriptRunnable extends BukkitRunnable implements Listener {
 
   private final @NotNull IAnimationProperty property;
+  private final @NotNull List<? extends Player> players;
+
   private boolean started;
   private boolean stopped;
 
@@ -23,7 +30,13 @@ public final class AnimationScriptRunnable extends BukkitRunnable {
   // ###############################################################
 
   public AnimationScriptRunnable(final @NotNull IAnimationProperty property) {
+    this(property, Bukkit.getOnlinePlayers().stream().toList());
+  }
+
+  public AnimationScriptRunnable(final @NotNull IAnimationProperty property, final @NotNull List<? extends Player> players) {
     this.property = property;
+    this.players = players;
+
     runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 1L);
   }
 
@@ -41,7 +54,7 @@ public final class AnimationScriptRunnable extends BukkitRunnable {
 
     if (this.property.isFinished()) {
       stop(animationService, AnimationStopEvent.Reason.FINISHED);
-      super.cancel();
+      cancel();
       return;
     }
 
@@ -49,7 +62,7 @@ public final class AnimationScriptRunnable extends BukkitRunnable {
       final var startEvent = DreamAPI.getAPI().callEvent(new AnimationStartEvent(this.property));
       if (startEvent.isCancelled()) {
         this.stopped = true;
-        super.cancel();
+        cancel();
         return;
       }
 
@@ -64,7 +77,7 @@ public final class AnimationScriptRunnable extends BukkitRunnable {
     for (final var script : scriptFrames) {
       try {
         final var keyFrames = animationService.deserializeKeyFrames(script.script());
-        animationService.applyKeyFrames(this.property, keyFrames);
+        animationService.applyKeyFrames(this.property, keyFrames, this.players);
       } catch (final IllegalArgumentException exception) {
         final var errorMsg = "Failed to parse animation script: " + exception.getMessage();
         DreamAPI.getAPI().getLogger().warning(errorMsg);
