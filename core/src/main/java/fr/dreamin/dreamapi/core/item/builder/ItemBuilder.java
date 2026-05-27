@@ -173,6 +173,50 @@ public class ItemBuilder {
     return this;
   }
 
+  public ItemBuilder removeCustomModelData(final @NotNull String... value) {
+    withMeta(meta -> {
+      final var customComponent = meta.getCustomModelDataComponent();
+      final var existing = new ArrayList<>(customComponent.getStrings());
+      existing.removeAll(Arrays.asList(value));
+      customComponent.setStrings(existing);
+      meta.setCustomModelDataComponent(customComponent);
+    });
+    return this;
+  }
+
+  public ItemBuilder removeCustomModelData(final @NotNull Float... value) {
+    withMeta(meta -> {
+      final var customComponent = meta.getCustomModelDataComponent();
+      final var existing = new ArrayList<>(customComponent.getFloats());
+      existing.removeAll(Arrays.asList(value));
+      customComponent.setFloats(existing);
+      meta.setCustomModelDataComponent(customComponent);
+    });
+    return this;
+  }
+
+  public ItemBuilder removeCustomModelData(final @NotNull Boolean... value) {
+    withMeta(meta -> {
+      final var customComponent = meta.getCustomModelDataComponent();
+      final var existing = new ArrayList<>(customComponent.getFlags());
+      existing.removeAll(Arrays.asList(value));
+      customComponent.setFlags(existing);
+      meta.setCustomModelDataComponent(customComponent);
+    });
+    return this;
+  }
+
+  public ItemBuilder removeCustomModelData(final @NotNull Color... value) {
+    withMeta(meta -> {
+      final var customComponent = meta.getCustomModelDataComponent();
+      final var existing = new ArrayList<>(customComponent.getColors());
+      existing.removeAll(Arrays.asList(value));
+      customComponent.setColors(existing);
+      meta.setCustomModelDataComponent(customComponent);
+    });
+    return this;
+  }
+
   public ItemBuilder setType(final @NotNull Material type) {
     this.is = is.withType(type);
     return this;
