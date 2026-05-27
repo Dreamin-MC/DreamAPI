@@ -1,6 +1,8 @@
 package fr.dreamin.dreamapi.core.item.service;
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
+import fr.dreamin.dreamapi.api.gui.event.GuiWindowCloseEvent;
+import fr.dreamin.dreamapi.api.gui.event.GuiWindowOpenEvent;
 import fr.dreamin.dreamapi.api.item.*;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
@@ -379,6 +381,42 @@ public final class ItemRegistryServiceImpl implements ItemRegistryService, Dream
         new ItemContext(player, newItem, event)
       );
 
+  }
+
+  @EventHandler
+  private void onGuiOpen(final @NotNull GuiWindowOpenEvent event) {
+    final var player = event.getPlayer();
+
+    var item = player.getInventory().getItemInMainHand();
+    if (item.getType().isAir()) player.getInventory().getItemInOffHand();
+
+    if (item.getType().isAir()) return;
+
+    final var registered = get(item);
+    if (registered == null) return;
+
+    registered.execute(
+      ItemAction.OPEN_GUI,
+      new ItemContext(player, item, event)
+    );
+  }
+
+  @EventHandler
+  private void onGuiClose(final @NotNull GuiWindowCloseEvent event) {
+    final var player = event.getPlayer();
+
+    var item = player.getInventory().getItemInMainHand();
+    if (item.getType().isAir()) player.getInventory().getItemInOffHand();
+
+    if (item.getType().isAir()) return;
+
+    final var registered = get(item);
+    if (registered == null) return;
+
+    registered.execute(
+      ItemAction.CLOSE_GUI,
+      new ItemContext(player, item, event)
+    );
   }
 
   @EventHandler

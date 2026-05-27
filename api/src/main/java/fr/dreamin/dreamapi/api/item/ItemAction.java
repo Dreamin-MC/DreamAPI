@@ -39,6 +39,9 @@ public enum ItemAction {
   INTERACT_MODEL_ENGINE,
   ATTACK_MODEL_ENGINE,
 
+  OPEN_GUI,
+  CLOSE_GUI,
+
   EAT,
   CONSUME,
   CHAT_SEND;
