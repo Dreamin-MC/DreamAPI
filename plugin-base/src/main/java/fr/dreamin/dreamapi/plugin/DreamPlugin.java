@@ -49,6 +49,7 @@ import fr.dreamin.dreamapi.plugin.cmd.admin.glowing.GlowingCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.gui.GUICmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.item.ItemRegistryCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.lang.LangCmd;
+import fr.dreamin.dreamapi.plugin.cmd.admin.navigate.NavigateCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.nms.tablist.TabListCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.nms.visual.VisualCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.service.ServiceCmd;
@@ -549,6 +550,8 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     if (this.serviceCmd)
       this.annotationParser.parse(new ServiceCmd(this, serviceManager, this.serviceInspector));
+
+    this.annotationParser.parse(new NavigateCmd());
 
   }
 
