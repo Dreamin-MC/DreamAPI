@@ -21,6 +21,7 @@ import fr.dreamin.dreamapi.core.gui.service.GuiServiceImpl;
 import fr.dreamin.dreamapi.core.hologram.service.HologramServiceImpl;
 import fr.dreamin.dreamapi.core.lang.service.LangServiceImpl;
 import fr.dreamin.dreamapi.core.nms.visual.service.VisualServiceImpl;
+import fr.dreamin.dreamapi.core.navigate.service.NavigateServiceImpl;
 import fr.dreamin.dreamapi.core.nms.tablist.service.TabListServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeCategoryRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
@@ -582,7 +583,8 @@ public abstract class DreamPlugin extends JavaPlugin {
       HologramServiceImpl.class,
       LangServiceImpl.class,
       WorldBorderServiceImpl.class,
-      GuiServiceImpl.class
+      GuiServiceImpl.class,
+      NavigateServiceImpl.class
     ),
 
     LoadMode.MINIMAL, Set.of(
