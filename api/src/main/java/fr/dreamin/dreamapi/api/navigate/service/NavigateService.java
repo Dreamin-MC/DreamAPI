@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Nullable;
 
 public interface NavigateService extends DreamService {
 
@@ -59,39 +60,45 @@ public interface NavigateService extends DreamService {
   // ###############################################################
 
   /** Starts a recurring navigation that displays default red dust particles. */
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
-                                           boolean safeMode, double recalcDistance);
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance);
 
   /** Same, restricted to specific floor materials. */
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
-                                           boolean safeMode, double recalcDistance,
-                                           @NotNull Set<Material> allowedMaterials);
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Set<Material> allowedMaterials);
 
   /** Starts navigation with custom dust particle color. */
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
-                                           boolean safeMode, double recalcDistance,
-                                           @NotNull Particle.DustOptions dustOptions);
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Particle.DustOptions dustOptions);
 
   /** Custom dust + restricted floor materials. */
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
-                                           boolean safeMode, double recalcDistance,
-                                           @NotNull Set<Material> allowedMaterials,
-                                           @NotNull Particle.DustOptions dustOptions);
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Set<Material> allowedMaterials,
+                                            @NotNull Particle.DustOptions dustOptions);
 
   /**
    * Starts navigation in callback mode — no automatic particle display.
    * {@code onRecalc} is called on the main thread each time the path is recalculated,
    * with the new path as argument. Useful for custom waypoint rendering, titles, etc.
    */
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
-                                           boolean safeMode, double recalcDistance,
-                                           @NotNull Consumer<List<Location>> onRecalc);
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Consumer<List<Location>> onRecalc);
 
   /** Callback mode + restricted floor materials. */
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
-                                           boolean safeMode, double recalcDistance,
-                                           @NotNull Set<Material> allowedMaterials,
-                                           @NotNull Consumer<List<Location>> onRecalc);
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Set<Material> allowedMaterials,
+                                            @NotNull Consumer<List<Location>> onRecalc);
+
+  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode,
+                                           double recalcDistance, @NotNull Particle particle);
+
+  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode,
+                                           double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Particle particle);
 
   /** Stops all active navigations for this player. */
   void stopNavigation(@NotNull Player player);
@@ -123,13 +130,13 @@ public interface NavigateService extends DreamService {
    *
    * @param speed Movement speed in blocks per tick (e.g. 0.2 for a slow walk).
    */
-  @NotNull EntityMovementTask moveEntityTo(@NotNull Entity entity, @NotNull Location end,
-                                           boolean safeMode, double speed);
+  @Nullable EntityMovementTask moveEntityTo(@NotNull Entity entity, @NotNull Location end,
+                                            boolean safeMode, double speed);
 
   /** Same, restricted to specific floor materials. */
-  @NotNull EntityMovementTask moveEntityTo(@NotNull Entity entity, @NotNull Location end,
-                                           boolean safeMode, double speed,
-                                           @NotNull Set<Material> allowedMaterials);
+  @Nullable EntityMovementTask moveEntityTo(@NotNull Entity entity, @NotNull Location end,
+                                            boolean safeMode, double speed,
+                                            @NotNull Set<Material> allowedMaterials);
 
   /** Stops the movement task for this entity, if any. */
   void stopEntityMovement(@NotNull Entity entity);

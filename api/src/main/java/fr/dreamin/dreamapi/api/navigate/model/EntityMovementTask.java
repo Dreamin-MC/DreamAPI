@@ -11,6 +11,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementStopEvent;
+import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementFinishEvent;
+import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementRecalcEvent;
+import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementWaypointReachEvent;
+
 /**
  * A recurring Bukkit task that moves an entity along an A*-computed path
  * by teleporting it incrementally toward each waypoint.
@@ -38,6 +43,21 @@ public final class EntityMovementTask extends BukkitRunnable {
   private int currentPathIndex = 0;
 
   private boolean recalculating = false;
+  private boolean finished = false;
+
+  // ###############################################################
+  // -------------------------- CANCEL -----------------------------
+  // ###############################################################
+
+  @Override
+  public void cancel() {
+    super.cancel();
+    if (this.finished)
+      new EntityMovementFinishEvent(this).callEvent();
+    else
+      new EntityMovementStopEvent(this).callEvent();
+
+  }
 
   // ###############################################################
   // --------------------- CONSTRUCTOR METHODS ---------------------
@@ -71,6 +91,7 @@ public final class EntityMovementTask extends BukkitRunnable {
 
     // Arrived at destination
     if (entityLoc.distanceSquared(this.targetLocation) < ARRIVAL_DISTANCE_SQ) {
+      this.finished = true;
       cancel();
       return;
     }
@@ -98,6 +119,7 @@ public final class EntityMovementTask extends BukkitRunnable {
     while (this.currentPathIndex < this.currentPath.size()) {
       final var center = this.currentPath.get(this.currentPathIndex).clone().add(0.5, 0, 0.5);
       if (entityLoc.distanceSquared(center) >= WAYPOINT_REACH_DISTANCE_SQ) break;
+      new EntityMovementWaypointReachEvent(this, this.currentPath.get(this.currentPathIndex), this.currentPathIndex).callEvent();
       this.currentPathIndex++;
     }
 
@@ -139,6 +161,7 @@ public final class EntityMovementTask extends BukkitRunnable {
         if (!newPath.isEmpty()) {
           this.currentPath = newPath;
           this.currentPathIndex = 0;
+          new EntityMovementRecalcEvent(this, List.copyOf(newPath)).callEvent();
         }
         this.recalculating = false;
       });

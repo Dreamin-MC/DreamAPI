@@ -1,6 +1,8 @@
 package fr.dreamin.dreamapi.core.navigate.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementStartEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStartEvent;
 import fr.dreamin.dreamapi.api.navigate.model.AStartPathFinder;
 import fr.dreamin.dreamapi.api.navigate.model.EntityMovementTask;
 import fr.dreamin.dreamapi.api.navigate.model.PathFindingTask;
@@ -92,51 +94,72 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   // ###############################################################
 
   @Override
-  public @NotNull PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
-                                                  final boolean safeMode, final double recalcDistance) {
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance) {
     return startNavigation(player, end, safeMode, recalcDistance, Set.of(), DEFAULT_DUST);
   }
 
   @Override
-  public @NotNull PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
-                                                  final boolean safeMode, final double recalcDistance,
-                                                  final @NotNull Set<Material> allowedMaterials) {
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Set<Material> allowedMaterials) {
     return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, DEFAULT_DUST);
   }
 
   @Override
-  public @NotNull PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
-                                                  final boolean safeMode, final double recalcDistance,
-                                                  final @NotNull Particle.DustOptions dustOptions) {
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Particle.DustOptions dustOptions) {
     return startNavigation(player, end, safeMode, recalcDistance, Set.of(), dustOptions);
   }
 
   @Override
-  public @NotNull PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
-                                                  final boolean safeMode, final double recalcDistance,
-                                                  final @NotNull Set<Material> allowedMaterials,
-                                                  final @NotNull Particle.DustOptions dustOptions) {
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Set<Material> allowedMaterials,
+                                                   final @NotNull Particle.DustOptions dustOptions) {
     final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, recalcDistance, dustOptions);
+    
+    if (!new PathFindingStartEvent(task).callEvent())
+      return null;
+    
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 10L);
     this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
     return task;
   }
 
   @Override
-  public @NotNull PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
-                                                  final boolean safeMode, final double recalcDistance,
-                                                  final @NotNull Consumer<List<Location>> onRecalc) {
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Consumer<List<Location>> onRecalc) {
     return startNavigation(player, end, safeMode, recalcDistance, Set.of(), onRecalc);
   }
 
   @Override
-  public @NotNull PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
-                                                  final boolean safeMode, final double recalcDistance,
-                                                  final @NotNull Set<Material> allowedMaterials,
-                                                  final @NotNull Consumer<List<Location>> onRecalc) {
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Set<Material> allowedMaterials,
+                                                   final @NotNull Consumer<List<Location>> onRecalc) {
     final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, recalcDistance, onRecalc);
+    
+    if (!new PathFindingStartEvent(task).callEvent())
+      return null;
+    
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 10L);
     this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
+    return task;
+  }
+
+  @Override
+  public @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Particle particle) {
+    return startNavigation(player, end, safeMode, recalcDistance, Set.of(), particle);
+  }
+
+  @Override
+  public @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Particle particle) {
+    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, recalcDistance, particle);
+    task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 10L);
+    this.playerNavigations.computeIfAbsent(player.getUniqueId(), _ -> new HashSet<>()).add(task);
     return task;
   }
 
@@ -197,17 +220,21 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   // ###############################################################
 
   @Override
-  public @NotNull EntityMovementTask moveEntityTo(final @NotNull Entity entity, final @NotNull Location end,
-                                                  final boolean safeMode, final double speed) {
+  public @Nullable EntityMovementTask moveEntityTo(final @NotNull Entity entity, final @NotNull Location end,
+                                                   final boolean safeMode, final double speed) {
     return moveEntityTo(entity, end, safeMode, speed, Set.of());
   }
 
   @Override
-  public @NotNull EntityMovementTask moveEntityTo(final @NotNull Entity entity, final @NotNull Location end,
-                                                  final boolean safeMode, final double speed,
-                                                  final @NotNull Set<Material> allowedMaterials) {
+  public @Nullable EntityMovementTask moveEntityTo(final @NotNull Entity entity, final @NotNull Location end,
+                                                   final boolean safeMode, final double speed,
+                                                   final @NotNull Set<Material> allowedMaterials) {
     stopEntityMovement(entity);
     final var task = new EntityMovementTask(entity, end, safeMode, allowedMaterials, speed);
+
+    if (!new EntityMovementStartEvent(task).callEvent())
+      return null;
+    
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 2L);
     this.entityMovements.put(entity.getUniqueId(), task);
     return task;
