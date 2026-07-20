@@ -1,6 +1,6 @@
 # DreamAPI
 
-[![Version](https://img.shields.io/badge/version-0.4.4-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
+[![Version](https://img.shields.io/badge/version-0.4.6-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
 [![JitPack](https://jitpack.io/v/Dreamin-MC/DreamAPI.svg)](https://jitpack.io/#Dreamin-MC/DreamAPI)
 [![Java](https://img.shields.io/badge/java-25-orange.svg)](https://www.oracle.com/java/)
 [![Paper](https://img.shields.io/badge/paper-26.1.2-green.svg)](https://papermc.io/)
@@ -108,7 +108,7 @@ Full directory: [`docs/services/index.md`](/docs/services/index.md)
 <dependency>
   <groupId>com.github.Dreamin-MC</groupId>
   <artifactId>DreamAPI</artifactId>
-  <version>0.4.4</version>
+  <version>0.4.6</version>
 </dependency>
 ```
 
@@ -119,7 +119,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly("com.github.Dreamin-MC:DreamAPI:0.4.4")
+  compileOnly("com.github.Dreamin-MC:DreamAPI:0.4.6")
 }
 ```
 
@@ -130,7 +130,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly "com.github.Dreamin-MC:DreamAPI:0.4.4"
+  compileOnly "com.github.Dreamin-MC:DreamAPI:0.4.6"
 }
 ```
 
@@ -150,7 +150,7 @@ DreamAPI is the shared technical base used by Dreamin modules and plugins.
 
 | Status | Current Version | Target Runtime |
 |--------|-----------------|----------------|
-| Active development | `v0.4.4` | Java 25 + Paper `26.1.2.build.+` |
+| Active development | `v0.4.6` | Java 25 + Paper `26.1.2.build.+` |
 
 | Version Line | Runtime Notes |
 |--------------|---------------|

@@ -73,31 +73,35 @@ public final class NavigateCmd {
     if (!(sender instanceof Player player)) return;
 
     final var service = DreamAPI.getAPI().getService(NavigateService.class);
-    final var taskOpt = service.getNavigationTask(player);
+    final var tasks = service.getNavigationTasks(player);
 
-    if (taskOpt.isEmpty()) {
+    if (tasks.isEmpty()) {
       player.sendMessage(Component.text("No active navigation task.", NamedTextColor.RED));
       return;
     }
 
-    final var task = taskOpt.get();
-    final var path = task.getCurrentPath();
-    final var target = task.getTargetLocation();
-    final var distToTarget = (int) player.getLocation().distance(target);
-    final var pathSize = path != null ? path.size() : 0;
-    final var pathIndex = task.getCurrentPathIndex();
-    final var remaining = pathSize - pathIndex;
-    final var recalculating = task.isRecalculating();
+    player.sendMessage(Component.text("─── Navigation Info (%s active) ───".formatted(tasks.size()), NamedTextColor.GOLD));
 
-    player.sendMessage(Component.text("─── Navigation Info ───", NamedTextColor.GOLD));
-    player.sendMessage(Component.text("Target      : X:%s Y:%s Z:%s".formatted(
-      target.getBlockX(), target.getBlockY(), target.getBlockZ()), NamedTextColor.AQUA));
-    player.sendMessage(Component.text("Distance    : %s blocks".formatted(distToTarget), NamedTextColor.AQUA));
-    player.sendMessage(Component.text("Path size   : %s waypoints".formatted(pathSize), NamedTextColor.AQUA));
-    player.sendMessage(Component.text("Path index  : %s / %s (remaining: %s)".formatted(pathIndex, pathSize, remaining), NamedTextColor.AQUA));
-    player.sendMessage(Component.text("Recalculating: %s".formatted(recalculating), recalculating ? NamedTextColor.YELLOW : NamedTextColor.GREEN));
-    player.sendMessage(Component.text("RecalcDistance: %s blocks".formatted(task.getRecalcMinDistance()), NamedTextColor.AQUA));
-    player.sendMessage(Component.text("Mode        : %s".formatted(task.getDustOptions() != null ? "Particle display" : "Callback"), NamedTextColor.AQUA));
+    int i = 1;
+    for (final var task : tasks) {
+      final var path = task.getCurrentPath();
+      final var target = task.getTargetLocation();
+      final var distToTarget = (int) player.getLocation().distance(target);
+      final var pathSize = path != null ? path.size() : 0;
+      final var pathIndex = task.getCurrentPathIndex();
+      final var remaining = pathSize - pathIndex;
+      final var recalculating = task.isRecalculating();
+
+      player.sendMessage(Component.text("Task #%s".formatted(i++), NamedTextColor.GREEN));
+      player.sendMessage(Component.text("  Target      : X:%s Y:%s Z:%s".formatted(
+        target.getBlockX(), target.getBlockY(), target.getBlockZ()), NamedTextColor.AQUA));
+      player.sendMessage(Component.text("  Distance    : %s blocks".formatted(distToTarget), NamedTextColor.AQUA));
+      player.sendMessage(Component.text("  Path size   : %s waypoints".formatted(pathSize), NamedTextColor.AQUA));
+      player.sendMessage(Component.text("  Path index  : %s / %s (remaining: %s)".formatted(pathIndex, pathSize, remaining), NamedTextColor.AQUA));
+      player.sendMessage(Component.text("  Recalculating: %s".formatted(recalculating), recalculating ? NamedTextColor.YELLOW : NamedTextColor.GREEN));
+      player.sendMessage(Component.text("  RecalcDistance: %s blocks".formatted(task.getRecalcMinDistance()), NamedTextColor.AQUA));
+      player.sendMessage(Component.text("  Mode        : %s".formatted(task.getDustOptions() != null ? "Particle display" : "Callback"), NamedTextColor.AQUA));
+    }
   }
 
   // ###############################################################
