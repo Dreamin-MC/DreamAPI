@@ -96,6 +96,9 @@ public interface NavigateService extends DreamService {
   /** Stops all active navigations for this player. */
   void stopNavigation(@NotNull Player player);
 
+  /** Stops a specific navigation task and removes it from the active list. */
+  void stopNavigation(@NotNull PathFindingTask task);
+
   /** Stops all active player navigations (e.g. on plugin shutdown). */
   void stopAllNavigations();
 
@@ -130,6 +133,9 @@ public interface NavigateService extends DreamService {
 
   /** Stops the movement task for this entity, if any. */
   void stopEntityMovement(@NotNull Entity entity);
+
+  /** Stops a specific movement task. */
+  void stopEntityMovement(@NotNull EntityMovementTask task);
 
   /** Returns {@code true} if the entity has an active movement task. */
   boolean isEntityMoving(@NotNull Entity entity);

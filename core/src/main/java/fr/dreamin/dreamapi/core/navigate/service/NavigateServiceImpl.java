@@ -151,6 +151,18 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   }
 
   @Override
+  public void stopNavigation(final @NotNull PathFindingTask task) {
+    if (!task.isCancelled()) task.cancel();
+    final var playerUUID = task.getPlayer().getUniqueId();
+    final var tasks = this.playerNavigations.get(playerUUID);
+    if (tasks != null) {
+      tasks.remove(task);
+      if (tasks.isEmpty())
+        this.playerNavigations.remove(playerUUID);
+    }
+  }
+
+  @Override
   public void stopAllNavigations() {
     this.playerNavigations.values().forEach(tasks -> tasks.forEach(task -> {
       if (!task.isCancelled()) task.cancel();
@@ -205,6 +217,15 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   public void stopEntityMovement(final @NotNull Entity entity) {
     final var task = this.entityMovements.remove(entity.getUniqueId());
     if (task != null && !task.isCancelled()) task.cancel();
+  }
+
+  @Override
+  public void stopEntityMovement(final @NotNull EntityMovementTask task) {
+    if (!task.isCancelled()) task.cancel();
+    final var currentTask = this.entityMovements.get(task.getEntity().getUniqueId());
+    if (currentTask == task) {
+      this.entityMovements.remove(task.getEntity().getUniqueId());
+    }
   }
 
   @Override
