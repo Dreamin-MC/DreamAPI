@@ -39,6 +39,11 @@ public interface NavigateService extends DreamService {
   @NotNull BukkitTask findPathAsync(@NotNull Location start, @NotNull Location end, boolean safeMode,
                                     @NotNull Set<Material> allowedMaterials, @NotNull Consumer<List<Location>> callback);
 
+  /** Same, with ignored materials that the algorithm can path through freely. */
+  @NotNull BukkitTask findPathAsync(@NotNull Location start, @NotNull Location end, boolean safeMode,
+                                    @NotNull Set<Material> allowedMaterials, @NotNull Set<Material> ignoredMaterials,
+                                    @NotNull Consumer<List<Location>> callback);
+
   // ###############################################################
   // ----------------------- DISPLAY PATH --------------------------
   // ###############################################################
@@ -68,6 +73,12 @@ public interface NavigateService extends DreamService {
                                             boolean safeMode, double recalcDistance,
                                             @NotNull Set<Material> allowedMaterials);
 
+  /** Same, with ignored materials that the algorithm can path through freely. */
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Set<Material> allowedMaterials,
+                                            @NotNull Set<Material> ignoredMaterials);
+
   /** Starts navigation with custom dust particle color. */
   @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
                                             boolean safeMode, double recalcDistance,
@@ -77,6 +88,13 @@ public interface NavigateService extends DreamService {
   @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
                                             boolean safeMode, double recalcDistance,
                                             @NotNull Set<Material> allowedMaterials,
+                                            @NotNull Particle.DustOptions dustOptions);
+
+  /** Custom dust + restricted floor materials + ignored materials. */
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Set<Material> allowedMaterials,
+                                            @NotNull Set<Material> ignoredMaterials,
                                             @NotNull Particle.DustOptions dustOptions);
 
   /**
@@ -94,11 +112,22 @@ public interface NavigateService extends DreamService {
                                             @NotNull Set<Material> allowedMaterials,
                                             @NotNull Consumer<List<Location>> onRecalc);
 
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode,
-                                           double recalcDistance, @NotNull Particle particle);
+  /** Callback mode + restricted floor materials + ignored materials. */
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end,
+                                            boolean safeMode, double recalcDistance,
+                                            @NotNull Set<Material> allowedMaterials,
+                                            @NotNull Set<Material> ignoredMaterials,
+                                            @NotNull Consumer<List<Location>> onRecalc);
 
-  @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode,
-                                           double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Particle particle);
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode,
+                                            double recalcDistance, @NotNull Particle particle);
+
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode,
+                                            double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Particle particle);
+
+  @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode,
+                                            double recalcDistance, @NotNull Set<Material> allowedMaterials, 
+                                            @NotNull Set<Material> ignoredMaterials, @NotNull Particle particle);
 
   /** Stops all active navigations for this player. */
   void stopNavigation(@NotNull Player player);
@@ -137,6 +166,12 @@ public interface NavigateService extends DreamService {
   @Nullable EntityMovementTask moveEntityTo(@NotNull Entity entity, @NotNull Location end,
                                             boolean safeMode, double speed,
                                             @NotNull Set<Material> allowedMaterials);
+
+  /** Same, restricted to specific floor materials and ignored materials. */
+  @Nullable EntityMovementTask moveEntityTo(@NotNull Entity entity, @NotNull Location end,
+                                            boolean safeMode, double speed,
+                                            @NotNull Set<Material> allowedMaterials,
+                                            @NotNull Set<Material> ignoredMaterials);
 
   /** Stops the movement task for this entity, if any. */
   void stopEntityMovement(@NotNull Entity entity);

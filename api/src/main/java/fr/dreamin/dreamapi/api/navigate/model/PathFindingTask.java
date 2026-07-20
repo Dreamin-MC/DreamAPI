@@ -78,10 +78,10 @@ public final class PathFindingTask extends BukkitRunnable {
    */
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
-                         final double recalcMinDistance) {
+                         final @NotNull Set<Material> ignoredMaterials, final double recalcMinDistance) {
     this.player = player;
     this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials);
+    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
     this.dustOptions = DEFAULT_DUST;
@@ -95,10 +95,11 @@ public final class PathFindingTask extends BukkitRunnable {
    */
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
+                         final @NotNull Set<Material> ignoredMaterials,
                          final double recalcMinDistance, final @NotNull Particle.DustOptions dustOptions) {
     this.player = player;
     this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials);
+    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
     this.dustOptions = dustOptions;
@@ -108,10 +109,11 @@ public final class PathFindingTask extends BukkitRunnable {
 
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMod, final @NotNull Set<Material> allowedMaterials,
+                         final @NotNull Set<Material> ignoredMaterials,
                          final double recalcMinDistance, final @NotNull Particle particle) {
     this.player = player;
     this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMod, allowedMaterials);
+    this.pathFinder = new AStartPathFinder(safeMod, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
     this.dustOptions = null;
@@ -125,10 +127,11 @@ public final class PathFindingTask extends BukkitRunnable {
    */
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
+                         final @NotNull Set<Material> ignoredMaterials,
                          final double recalcMinDistance, final @NotNull Consumer<List<Location>> onRecalc) {
     this.player = player;
     this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials);
+    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
     this.dustOptions = null;

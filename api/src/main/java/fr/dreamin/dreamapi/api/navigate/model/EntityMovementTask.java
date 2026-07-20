@@ -69,10 +69,11 @@ public final class EntityMovementTask extends BukkitRunnable {
    */
   public EntityMovementTask(final @NotNull Entity entity, final @NotNull Location targetLocation,
                             final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
+                            final @NotNull Set<Material> ignoredMaterials,
                             final double speed) {
     this.entity = entity;
     this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials);
+    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.speed = speed;
   }
 

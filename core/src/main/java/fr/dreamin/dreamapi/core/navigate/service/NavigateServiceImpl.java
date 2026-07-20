@@ -59,10 +59,18 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   public @NotNull BukkitTask findPathAsync(final @NotNull Location start, final @NotNull Location end,
                                            final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
                                            final @NotNull Consumer<List<Location>> callback) {
+    return findPathAsync(start, end, safeMode, allowedMaterials, Set.of(), callback);
+  }
+
+  @Override
+  public @NotNull BukkitTask findPathAsync(final @NotNull Location start, final @NotNull Location end,
+                                           final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
+                                           final @NotNull Set<Material> ignoredMaterials,
+                                           final @NotNull Consumer<List<Location>> callback) {
     // Capture block locations on main thread before going async (Bukkit API is not thread-safe)
     final var startBlock = start.getBlock().getLocation();
     final var endBlock = end.getBlock().getLocation();
-    final var finder = new AStartPathFinder(safeMode, allowedMaterials);
+    final var finder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
 
     return Bukkit.getScheduler().runTaskAsynchronously(DreamAPI.getAPI().plugin(), () -> {
       final var path = finder.findPath(startBlock, endBlock);
@@ -103,14 +111,22 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
                                                    final boolean safeMode, final double recalcDistance,
                                                    final @NotNull Set<Material> allowedMaterials) {
-    return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, DEFAULT_DUST);
+    return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, Set.of(), DEFAULT_DUST);
+  }
+
+  @Override
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Set<Material> allowedMaterials,
+                                                   final @NotNull Set<Material> ignoredMaterials) {
+    return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, ignoredMaterials, DEFAULT_DUST);
   }
 
   @Override
   public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
                                                    final boolean safeMode, final double recalcDistance,
                                                    final @NotNull Particle.DustOptions dustOptions) {
-    return startNavigation(player, end, safeMode, recalcDistance, Set.of(), dustOptions);
+    return startNavigation(player, end, safeMode, recalcDistance, Set.of(), Set.of(), dustOptions);
   }
 
   @Override
@@ -118,7 +134,16 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
                                                    final boolean safeMode, final double recalcDistance,
                                                    final @NotNull Set<Material> allowedMaterials,
                                                    final @NotNull Particle.DustOptions dustOptions) {
-    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, recalcDistance, dustOptions);
+    return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, Set.of(), dustOptions);
+  }
+
+  @Override
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Set<Material> allowedMaterials,
+                                                   final @NotNull Set<Material> ignoredMaterials,
+                                                   final @NotNull Particle.DustOptions dustOptions) {
+    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, dustOptions);
     
     if (!new PathFindingStartEvent(task).callEvent())
       return null;
@@ -132,7 +157,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
                                                    final boolean safeMode, final double recalcDistance,
                                                    final @NotNull Consumer<List<Location>> onRecalc) {
-    return startNavigation(player, end, safeMode, recalcDistance, Set.of(), onRecalc);
+    return startNavigation(player, end, safeMode, recalcDistance, Set.of(), Set.of(), onRecalc);
   }
 
   @Override
@@ -140,7 +165,16 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
                                                    final boolean safeMode, final double recalcDistance,
                                                    final @NotNull Set<Material> allowedMaterials,
                                                    final @NotNull Consumer<List<Location>> onRecalc) {
-    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, recalcDistance, onRecalc);
+    return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, Set.of(), onRecalc);
+  }
+
+  @Override
+  public @Nullable PathFindingTask startNavigation(final @NotNull Player player, final @NotNull Location end,
+                                                   final boolean safeMode, final double recalcDistance,
+                                                   final @NotNull Set<Material> allowedMaterials,
+                                                   final @NotNull Set<Material> ignoredMaterials,
+                                                   final @NotNull Consumer<List<Location>> onRecalc) {
+    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, onRecalc);
     
     if (!new PathFindingStartEvent(task).callEvent())
       return null;
@@ -152,14 +186,23 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
 
   @Override
   public @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Particle particle) {
-    return startNavigation(player, end, safeMode, recalcDistance, Set.of(), particle);
+    return startNavigation(player, end, safeMode, recalcDistance, Set.of(), Set.of(), particle);
   }
 
   @Override
   public @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Particle particle) {
-    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, recalcDistance, particle);
+    return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, Set.of(), particle);
+  }
+
+  @Override
+  public @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Set<Material> ignoredMaterials, @NotNull Particle particle) {
+    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, particle);
+    
+    if (!new PathFindingStartEvent(task).callEvent())
+      return null;
+      
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 10L);
-    this.playerNavigations.computeIfAbsent(player.getUniqueId(), _ -> new HashSet<>()).add(task);
+    this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
     return task;
   }
 
@@ -229,8 +272,16 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   public @Nullable EntityMovementTask moveEntityTo(final @NotNull Entity entity, final @NotNull Location end,
                                                    final boolean safeMode, final double speed,
                                                    final @NotNull Set<Material> allowedMaterials) {
+    return moveEntityTo(entity, end, safeMode, speed, allowedMaterials, Set.of());
+  }
+
+  @Override
+  public @Nullable EntityMovementTask moveEntityTo(final @NotNull Entity entity, final @NotNull Location end,
+                                                   final boolean safeMode, final double speed,
+                                                   final @NotNull Set<Material> allowedMaterials,
+                                                   final @NotNull Set<Material> ignoredMaterials) {
     stopEntityMovement(entity);
-    final var task = new EntityMovementTask(entity, end, safeMode, allowedMaterials, speed);
+    final var task = new EntityMovementTask(entity, end, safeMode, allowedMaterials, ignoredMaterials, speed);
 
     if (!new EntityMovementStartEvent(task).callEvent())
       return null;

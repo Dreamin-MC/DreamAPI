@@ -11,12 +11,17 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class NavigateCmd {
 
@@ -24,8 +29,22 @@ public final class NavigateCmd {
   // -------------------- PLAYER NAVIGATION ------------------------
   // ###############################################################
 
+  private Set<Material> parseMaterials(String str) {
+    if (str == null || str.isEmpty() || str.equalsIgnoreCase("none")) return Set.of();
+    return Arrays.stream(str.split(","))
+      .map(s -> {
+        try {
+          return org.bukkit.Material.valueOf(s.toUpperCase());
+        } catch (Exception e) {
+          return null;
+        }
+      })
+      .filter(Objects::nonNull)
+      .collect(Collectors.toSet());
+  }
+
   @CommandDescription("Start navigating to a location with auto particle display")
-  @CommandMethod("navigation start <x> <y> <z> <safeMode> [recalcDistance]")
+  @CommandMethod("navigation start <x> <y> <z> <safeMode> [recalcDistance] [ignoredMaterials]")
   @CommandPermission("dreamin.cmd.navigation.start")
   private void navigationStart(
     final @NotNull CommandSender sender,
@@ -33,16 +52,18 @@ public final class NavigateCmd {
     @Argument(value = "y") int y,
     @Argument(value = "z") int z,
     @Argument(value = "safeMode") boolean safeMode,
-    @Argument(value = "recalcDistance") Double recalcDistance
+    @Argument(value = "recalcDistance") Double recalcDistance,
+    @Argument(value = "ignoredMaterials") String ignoredMaterialsStr
   ) {
     if (!(sender instanceof Player player)) return;
 
     final double distance = (recalcDistance != null && recalcDistance > 0) ? recalcDistance : 3.0;
     final var targetLocation = new Location(player.getWorld(), x, y, z);
+    final var ignored = parseMaterials(ignoredMaterialsStr);
 
-    DreamAPI.getAPI().getService(NavigateService.class).startNavigation(player, targetLocation, safeMode, distance);
-    player.sendMessage(Component.text("▶ Navigation started → X:%s Y:%s Z:%s | safeMode:%s | recalc:%s blocks"
-      .formatted(x, y, z, safeMode, distance), NamedTextColor.GREEN));
+    DreamAPI.getAPI().getService(NavigateService.class).startNavigation(player, targetLocation, safeMode, distance, Set.of(), ignored);
+    player.sendMessage(Component.text("▶ Navigation started → X:%s Y:%s Z:%s | safeMode:%s | recalc:%s blocks | ignored:%s"
+      .formatted(x, y, z, safeMode, distance, ignored.size()), NamedTextColor.GREEN));
   }
 
   @CommandDescription("Stop the current navigation")
@@ -107,23 +128,25 @@ public final class NavigateCmd {
   // ###############################################################
 
   @CommandDescription("Compute path once and display it (no recurring task)")
-  @CommandMethod("navigation path <x> <y> <z> <safeMode>")
+  @CommandMethod("navigation path <x> <y> <z> <safeMode> [ignoredMaterials]")
   @CommandPermission("dreamin.cmd.navigation.start")
   private void navigationPath(
     final @NotNull CommandSender sender,
     @Argument(value = "x") int x,
     @Argument(value = "y") int y,
     @Argument(value = "z") int z,
-    @Argument(value = "safeMode") boolean safeMode
+    @Argument(value = "safeMode") boolean safeMode,
+    @Argument(value = "ignoredMaterials") String ignoredMaterialsStr
   ) {
     if (!(sender instanceof Player player)) return;
 
     final var targetLocation = new Location(player.getWorld(), x, y, z);
     final var service = DreamAPI.getAPI().getService(NavigateService.class);
+    final var ignored = parseMaterials(ignoredMaterialsStr);
 
     player.sendMessage(Component.text("⏳ Computing path...", NamedTextColor.YELLOW));
 
-    service.findPathAsync(player.getLocation(), targetLocation, safeMode, path -> {
+    service.findPathAsync(player.getLocation(), targetLocation, safeMode, Set.of(), ignored, path -> {
       if (path.isEmpty()) {
         player.sendMessage(Component.text("✗ No path found to X:%s Y:%s Z:%s".formatted(x, y, z), NamedTextColor.RED));
         return;
@@ -149,7 +172,7 @@ public final class NavigateCmd {
   // ###############################################################
 
   @CommandDescription("Move the nearest entity to a location using A* pathfinding")
-  @CommandMethod("navigation entity move <x> <y> <z> <safeMode> <speed>")
+  @CommandMethod("navigation entity move <x> <y> <z> <safeMode> <speed> [ignoredMaterials]")
   @CommandPermission("dreamin.cmd.navigation.start")
   private void navigationEntityMove(
     final @NotNull CommandSender sender,
@@ -157,7 +180,8 @@ public final class NavigateCmd {
     @Argument(value = "y") int y,
     @Argument(value = "z") int z,
     @Argument(value = "safeMode") boolean safeMode,
-    @Argument(value = "speed") double speed
+    @Argument(value = "speed") double speed,
+    @Argument(value = "ignoredMaterials") String ignoredMaterialsStr
   ) {
     if (!(sender instanceof Player player)) return;
 
@@ -173,11 +197,12 @@ public final class NavigateCmd {
     final var entity = nearby.get();
     final var target = new Location(player.getWorld(), x, y, z);
     final var service = DreamAPI.getAPI().getService(NavigateService.class);
+    final var ignored = parseMaterials(ignoredMaterialsStr);
 
-    service.moveEntityTo(entity, target, safeMode, Math.max(0.05, speed));
-    player.sendMessage(Component.text("▶ Moving %s [%s] → X:%s Y:%s Z:%s | speed:%s"
+    service.moveEntityTo(entity, target, safeMode, Math.max(0.05, speed), Set.of(), ignored);
+    player.sendMessage(Component.text("▶ Moving %s [%s] → X:%s Y:%s Z:%s | speed:%s | ignored:%s"
       .formatted(entity.getType().name(), entity.getUniqueId().toString().substring(0, 8),
-        x, y, z, speed), NamedTextColor.GREEN));
+        x, y, z, speed, ignored.size()), NamedTextColor.GREEN));
   }
 
   @CommandDescription("Stop the movement of the nearest entity")

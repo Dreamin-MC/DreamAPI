@@ -21,14 +21,16 @@ public final class AStartPathFinder {
   private final boolean safeMode;
 
   private final Set<Material> allowedMaterials;
+  private final Set<Material> ignoredMaterials;
 
   // ###############################################################
   // --------------------- CONSTRUCTOR METHODS ---------------------
   // ###############################################################
 
-  public AStartPathFinder(final boolean safeMode, final @NotNull Set<Material> allowedMaterials) {
+  public AStartPathFinder(final boolean safeMode, final @NotNull Set<Material> allowedMaterials, final @NotNull Set<Material> ignoredMaterials) {
     this.safeMode = safeMode;
     this.allowedMaterials = allowedMaterials;
+    this.ignoredMaterials = ignoredMaterials;
     PASSABLE_MATERIALS.addAll(MaterialSetTag.BUTTONS.getValues());
     PASSABLE_MATERIALS.addAll(MaterialSetTag.FLOWERS.getValues());
     PASSABLE_MATERIALS.addAll(MaterialSetTag.FLOWER_POTS.getValues());
@@ -60,7 +62,7 @@ public final class AStartPathFinder {
       }
     }
 
-    final var openSet = new PriorityQueue<Node>(Comparator.comparingDouble(Node::getFCost));
+    final var openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getFCost));
     final var allNodes = new HashMap<Location, Node>();
     final var closedSet = new HashSet<Location>();
 
@@ -85,7 +87,7 @@ public final class AStartPathFinder {
         return fullPath;
       }
 
-      for (final var neighborLoc : getNeighbors(currentNode.getLocation())) {
+      for (final var neighborLoc : getNeighbors(currentNode.getLocation(), end)) {
         if (closedSet.contains(neighborLoc))
           continue;
 
@@ -118,6 +120,10 @@ public final class AStartPathFinder {
   // ###############################################################
   // ----------------------- PRIVATE METHODS -----------------------
   // ###############################################################
+
+  private boolean isPassable(final Material mat) {
+    return PASSABLE_MATERIALS.contains(mat) || (this.ignoredMaterials != null && this.ignoredMaterials.contains(mat));
+  }
 
   private double getDistance(final @NotNull Location loc1, final @NotNull Location loc2) {
     return loc1.distance(loc2);
@@ -176,7 +182,7 @@ public final class AStartPathFinder {
     final var blockAbove = loc.clone().add(0, 1, 0).getBlock();
     final var blockBelow = loc.clone().add(0, -1, 0).getBlock();
 
-    if (!PASSABLE_MATERIALS.contains(block.getType()) || !PASSABLE_MATERIALS.contains(blockAbove.getType()))
+    if (!isPassable(block.getType()) || !isPassable(blockAbove.getType()))
       return false;
 
     if (isDiagonalMove(loc, previousLoc) && !isDiagonalPassable(previousLoc, loc))
@@ -209,7 +215,7 @@ public final class AStartPathFinder {
         final var checkBlock = checkLoc.getBlock();
         if (checkBlock.getType().isSolid())
           return true;
-        if (!PASSABLE_MATERIALS.contains(checkBlock.getType()))
+        if (!isPassable(checkBlock.getType()))
           return false;
       }
       return false;
@@ -218,7 +224,7 @@ public final class AStartPathFinder {
 
   }
 
-  private List<Location> getNeighbors(Location loc) {
+  private List<Location> getNeighbors(Location loc, Location end) {
     List<Location> neighbors = new ArrayList<>();
     int x = loc.getBlockX();
     int y = loc.getBlockY();
@@ -228,7 +234,7 @@ public final class AStartPathFinder {
         for (int dz = -1; dz <= 1; dz++) {
           if (dx != 0 || dy != 0 || dz != 0) {
             Location neighborLoc = new Location(loc.getWorld(), (x + dx), (y + dy), (z + dz));
-            if (isWalkable(neighborLoc, loc))
+            if (isWalkable(neighborLoc, loc, end))
               neighbors.add(neighborLoc);
           }
         }
@@ -237,46 +243,57 @@ public final class AStartPathFinder {
     return neighbors;
   }
 
-  private boolean isWalkable(Location loc, Location previousLoc) {
+  private boolean isWalkable(Location loc, Location previousLoc, Location end) {
     final var block = loc.getBlock();
     final var blockAbove = loc.clone().add(0.0D, 1.0D, 0.0D).getBlock();
-    final var blockBelow = loc.clone().add(0.0D, -1.0D, 0.0D).getBlock();
+    
     if (MaterialSetTag.CLIMBABLE.getValues().contains(block.getType()))
       return true;
-    if (isDiagonalMove(loc, previousLoc) &&
-      !isDiagonalPassable(previousLoc, loc))
+      
+    if (isDiagonalMove(loc, previousLoc) && !isDiagonalPassable(previousLoc, loc))
       return false;
-    if (this.allowedMaterials != null && !this.allowedMaterials.isEmpty() &&
-      !this.allowedMaterials.contains(blockBelow.getType()))
+      
+    if (!isPassable(block.getType()) || !isPassable(blockAbove.getType()))
       return false;
-    if (!PASSABLE_MATERIALS.contains(block.getType()) || !PASSABLE_MATERIALS.contains(blockAbove.getType()))
-      return false;
-    if (loc.getBlockY() == previousLoc.getBlockY())
-      return (blockBelow.getType().isSolid() || blockBelow
-        .getType() == Material.WATER || blockBelow
-        .getType() == Material.LAVA);
+
+    boolean isDest = (loc.getBlockX() == end.getBlockX() && loc.getBlockY() == end.getBlockY() && loc.getBlockZ() == end.getBlockZ());
+
+    if (loc.getBlockY() == previousLoc.getBlockY()) {
+      final var blockBelow = loc.clone().add(0.0D, -1.0D, 0.0D).getBlock();
+      if (!blockBelow.getType().isSolid() && blockBelow.getType() != Material.WATER && blockBelow.getType() != Material.LAVA)
+        return false;
+      if (!isDest && this.allowedMaterials != null && !this.allowedMaterials.isEmpty() && !this.allowedMaterials.contains(blockBelow.getType()))
+        return false;
+      return true;
+    }
+    
     if (loc.getBlockY() > previousLoc.getBlockY()) {
       final var yDiff = loc.getBlockY() - previousLoc.getBlockY();
       if (yDiff != 1)
         return false;
-      return blockBelow.getType().isSolid();
+      final var blockBelow = loc.clone().add(0.0D, -1.0D, 0.0D).getBlock();
+      if (!blockBelow.getType().isSolid())
+        return false;
+      if (!isDest && this.allowedMaterials != null && !this.allowedMaterials.isEmpty() && !this.allowedMaterials.contains(blockBelow.getType()))
+        return false;
+      return true;
     }
+    
     if (loc.getBlockY() < previousLoc.getBlockY()) {
       final var yDiff = previousLoc.getBlockY() - loc.getBlockY();
-      if (this.safeMode) {
-        if (yDiff > 3)
-          return false;
-        final var landingCheck = loc.clone().add(0.0D, -1.0D, 0.0D);
-        return (landingCheck.getBlock().getType().isSolid() || landingCheck
-          .clone().add(0.0D, -1.0D, 0.0D).getBlock().getType().isSolid());
-      }
+      if (this.safeMode && yDiff > 3)
+        return false;
+        
       final var checkLoc = loc.clone();
       while (checkLoc.getBlockY() > 0) {
         checkLoc.add(0.0D, -1.0D, 0.0D);
         final var checkBlock = checkLoc.getBlock();
-        if (checkBlock.getType().isSolid())
+        if (checkBlock.getType().isSolid()) {
+          if (!isDest && this.allowedMaterials != null && !this.allowedMaterials.isEmpty() && !this.allowedMaterials.contains(checkBlock.getType()))
+            return false;
           return true;
-        if (!PASSABLE_MATERIALS.contains(checkBlock.getType()))
+        }
+        if (!isPassable(checkBlock.getType()))
           return false;
       }
       return false;
@@ -298,10 +315,8 @@ public final class AStartPathFinder {
     final var block1Above = corner1.clone().add(0.0D, 1.0D, 0.0D).getBlock();
     final var block2 = corner2.getBlock();
     final var block2Above = corner2.clone().add(0.0D, 1.0D, 0.0D).getBlock();
-    return (PASSABLE_MATERIALS.contains(block1.getType()) && PASSABLE_MATERIALS
-      .contains(block1Above.getType()) && PASSABLE_MATERIALS
-      .contains(block2.getType()) && PASSABLE_MATERIALS
-      .contains(block2Above.getType()));
+    return (isPassable(block1.getType()) && isPassable(block1Above.getType()) && 
+            isPassable(block2.getType()) && isPassable(block2Above.getType()));
   }
 
   // ###############################################################
