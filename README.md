@@ -229,4 +229,4 @@ See `LICENSE`.
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Dreamin-MC/DreamAPI/issues)
-- **Discord**: [Dreamin Discord](https://discord.gg/dreamin)
+- **Discord**: [Dreamin Discord](https://discord.dreamin.fr)
