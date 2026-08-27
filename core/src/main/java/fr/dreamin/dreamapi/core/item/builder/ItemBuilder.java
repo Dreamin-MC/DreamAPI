@@ -281,8 +281,9 @@ public class ItemBuilder {
   }
 
   public ItemBuilder addLore(final @NotNull List<Component> lines) {
-    if (this.itemMeta == null || this.itemMeta.lore() == null) return this;
-    final var lore = new ArrayList<>(this.itemMeta.lore());
+    if (this.itemMeta == null) return this;
+    final var currentLore = this.itemMeta.lore();
+    final var lore = currentLore != null ? new ArrayList<>(currentLore) : new ArrayList<Component>();
 
     lore.addAll(lines);
     withMeta(meta -> meta.lore(lore));
@@ -296,6 +297,7 @@ public class ItemBuilder {
   public ItemBuilder setName(final @NotNull Component name) {
     withMeta(meta -> {
       meta.itemName(name);
+      meta.displayName(name);
 
       if (meta instanceof SkullMeta skullMeta)
         skullMeta.customName(name.decoration(TextDecoration.ITALIC, false));
@@ -304,7 +306,10 @@ public class ItemBuilder {
   }
 
   public ItemBuilder setCustomName(final @NotNull Component name) {
-    withMeta(meta -> meta.customName(name));
+    withMeta(meta -> {
+      meta.customName(name);
+      meta.displayName(name);
+    });
     return this;
   }
 
@@ -734,11 +739,11 @@ public class ItemBuilder {
 
     if (meta == null) return item;
 
-    final var name = meta.itemName();
+    final var name = meta.displayName() != null ? meta.displayName() : (meta.customName() != null ? meta.customName() : meta.itemName());
 
     if (meta instanceof SkullMeta skullMeta && skullMeta.customName() != null)
       item.setCustomName(skullMeta.customName());
-    else
+    else if (name != null)
       item.setName(name);
 
     if (meta.lore() != null && meta.hasLore())
