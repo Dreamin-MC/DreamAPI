@@ -3,6 +3,8 @@ package fr.dreamin.dreamapi.core.service;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;
+import fr.dreamin.dreamapi.api.dependency.RequiresDependency;
+import fr.dreamin.dreamapi.core.dependency.DependencyLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -61,8 +63,9 @@ public final class ServiceAnnotationProcessor implements Listener {
 
     // Step 1: Retrieve all annotated classes
     final var annotated = this.annotatedClasses.stream()
-    .filter(c -> c.isAnnotationPresent(DreamAutoService.class))
-    .collect(Collectors.toSet());
+      .filter(c -> c.isAnnotationPresent(DreamAutoService.class))
+      .filter(this::canLoadServiceClass)
+      .collect(Collectors.toSet());
 
     // Step 2: Build dependency graph
     final var graph = new HashMap<Class<?>, List<Class<?>>>();
@@ -116,6 +119,8 @@ public final class ServiceAnnotationProcessor implements Listener {
    */
   public void loadServiceFromClass(final @NotNull Class<?> implClass) {
     final var log = this.plugin.getLogger();
+    if (!canLoadServiceClass(implClass))
+      return;
 
     try {
       instantiateAndRegisterService(implClass);
@@ -435,6 +440,8 @@ public final class ServiceAnnotationProcessor implements Listener {
       final var auto = clazz.getAnnotation(DreamAutoService.class);
       if  (auto == null)
         continue;
+      if (!DependencyLoader.canLoad(clazz))
+        continue;
 
       if (serviceType.isAssignableFrom(clazz))
         return clazz;
@@ -495,6 +502,21 @@ public final class ServiceAnnotationProcessor implements Listener {
    */
   private void setStatus(DreamService service, DreamService.ServiceStatus status) {
     service.__setStatus(status);
+  }
+
+  private boolean canLoadServiceClass(final @NotNull Class<?> clazz) {
+    if (DependencyLoader.canLoad(clazz))
+      return true;
+
+    final var dependency = clazz.getAnnotation(RequiresDependency.class);
+    if (dependency != null)
+      this.plugin.getLogger().info(String.format(
+        "[DreamService] Skipping service %s: missing dependency '%s'.",
+        clazz.getSimpleName(),
+        dependency.value()
+      ));
+
+    return false;
   }
 
   // ###############################################################

@@ -1,6 +1,7 @@
 package fr.dreamin.dreamapi.core.luckperms;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.dependency.RequiresDependency;
 import fr.dreamin.dreamapi.api.luckperms.LuckPermsService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
@@ -33,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @DreamAutoService(value = LuckPermsService.class, dependencies = {TeamServiceImpl.class})
+@RequiresDependency("LuckPerms")
 public final class LuckPermsServiceImpl implements LuckPermsService, DreamService, Listener {
 
   private static final Key RANK_FONT = Key.key("dreamin", "rank");
