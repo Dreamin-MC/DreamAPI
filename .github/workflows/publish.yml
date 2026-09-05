@@ -1,0 +1,89 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Validate & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract versions and validate changelog
+        id: extract_version
+        run: |
+          TAG="${{ github.ref_name }}"
+          # Remove leading 'v' if present (e.g., v0.5.3 -> 0.5.3, 0.5.3 -> 0.5.3)
+          CLEAN_VERSION="${TAG#v}"
+          echo "VERSION=${CLEAN_VERSION}" >> $GITHUB_ENV
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          
+          echo "Detected Tag Version : ${CLEAN_VERSION}"
+
+          # Strict Changelog Validation
+          if [ -f "changelog/${CLEAN_VERSION}.md" ]; then
+            CHANGELOG="changelog/${CLEAN_VERSION}.md"
+          elif [ -f "changelog/${TAG}.md" ]; then
+            CHANGELOG="changelog/${TAG}.md"
+          else
+            echo "::error::❌ Release aborted: No changelog found for version '${CLEAN_VERSION}'!"
+            echo "::error::Expected file: changelog/${CLEAN_VERSION}.md"
+            echo "::error::Please create the changelog file before pushing the tag."
+            exit 1
+          fi
+
+          echo "Found valid changelog: ${CHANGELOG}"
+          echo "CHANGELOG_FILE=${CHANGELOG}" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: DreamAPI ${{ env.VERSION }}
+          body_path: ${{ env.CHANGELOG_FILE }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update README.md versions
+        run: |
+          # 1. Update version badge in README.md
+          sed -i -E "s/version-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?/version-${{ env.VERSION }}/" README.md
+          
+          # 2. Update Maven/Gradle code snippets in README.md
+          sed -i -E "s/(<version>)[^<]+(<\/version>)/\1${{ env.VERSION }}\2/" README.md
+          sed -i -E "s/(com\.github\.Dreamin-MC:DreamAPI:)[^\"'\)]+/\1${{ env.VERSION }}/" README.md
+          sed -i -E "s/(compileOnly ['\"]com\.github\.Dreamin-MC:DreamAPI:)[^'\"]+(['\"])/\1${{ env.VERSION }}\2/" README.md
+
+          if ! git diff --quiet README.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "chore(release): bump version to ${{ env.VERSION }} in README [skip ci]"
+            git push origin main
+          else
+            echo "No version changes in README.md to commit."
+          fi
+
+      - name: Rollback / Delete remote tag on failure
+        if: failure() || cancelled()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Workflow failed or was cancelled. Deleting remote tag '${{ env.TAG }}' to prevent inconsistent release state..."
+          curl -s -X DELETE \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.TAG }}" || true
+          echo "Remote tag '${{ env.TAG }}' deleted from GitHub."
