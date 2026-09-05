@@ -10,25 +10,16 @@ import fr.dreamin.dreamapi.api.item.ItemAction;
 import fr.dreamin.dreamapi.api.item.ItemDefinition;
 import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.item.ItemTag;
-import fr.dreamin.dreamapi.api.lang.utils.LangUtils;
-import fr.dreamin.dreamapi.api.nms.visual.service.VisualService;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import fr.dreamin.example.ExamplePlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.i18n.Languages;
-import xyz.xenondevs.invui.item.Item;
-import xyz.xenondevs.invui.window.Window;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.Objects;
 
 @DreamCmd
 public final class TestCmd {
@@ -89,7 +80,7 @@ public final class TestCmd {
           .build()
       );
 
-    player.getInventory().addItem(itemRegistry.get("test").item());
+    player.getInventory().addItem(Objects.requireNonNull(itemRegistry.get("test")).item());
 
   }
 

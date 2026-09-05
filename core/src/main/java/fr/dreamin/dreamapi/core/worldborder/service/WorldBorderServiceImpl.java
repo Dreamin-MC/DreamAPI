@@ -5,7 +5,6 @@ import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.worldborder.model.*;
-import fr.dreamin.dreamapi.api.worldborder.model.WorldBorderDataTagType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -297,7 +296,7 @@ public final class WorldBorderServiceImpl implements WorldBorderService, DreamSe
     final double maxHealth = getMaxHealth(player);
     if (maxHealth <= 0d) return;
 
-    final double remainingHealth = Math.max(0d, Math.min(healthValue, maxHealth));
+    final double remainingHealth = Math.clamp(healthValue, 0d, maxHealth);
     final double ratio = 1d - (remainingHealth / maxHealth);
 
     final var border = getWorldBorder(player);

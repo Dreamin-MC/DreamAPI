@@ -1,9 +1,7 @@
 package fr.dreamin.dreamapi.core.recipe.impl;
 
 import fr.dreamin.dreamapi.api.recipe.*;
-import fr.dreamin.dreamapi.api.recipe.IngredientDefinition;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeCondition;
-import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
@@ -81,12 +79,12 @@ public final class CustomRecipeImpl implements CustomRecipe {
   }
 
   @Override
-  public @Nullable List<List<IngredientDefinition>> getShape() {
+  public @NotNull List<List<IngredientDefinition>> getShape() {
     return Collections.unmodifiableList(this.shaped);
   }
 
   @Override
-  public @Nullable List<IngredientDefinition> getIngredients() {
+  public @NotNull List<IngredientDefinition> getIngredients() {
     return Collections.unmodifiableList(this.shapeless);
   }
 

@@ -1,7 +1,6 @@
 package fr.dreamin.dreamapi.api.recipe;
 
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeCondition;
-import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -21,8 +20,8 @@ public interface CustomRecipe {
   @NotNull Set<RecipeTag> getTags();
 
   // ----- CRAFTING -----
-  @Nullable List<List<IngredientDefinition>> getShape();
-  @Nullable List<IngredientDefinition> getIngredients();
+  @NotNull List<List<IngredientDefinition>> getShape();
+  @NotNull List<IngredientDefinition> getIngredients();
 
   // ----- RESULT -----
   @NotNull ItemStack getResult();

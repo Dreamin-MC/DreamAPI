@@ -22,7 +22,6 @@ import fr.dreamin.dreamapi.core.hologram.service.HologramServiceImpl;
 import fr.dreamin.dreamapi.core.lang.service.LangServiceImpl;
 import fr.dreamin.dreamapi.core.nms.visual.service.VisualServiceImpl;
 import fr.dreamin.dreamapi.core.navigate.service.NavigateServiceImpl;
-import fr.dreamin.dreamapi.core.nms.tablist.service.TabListServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeCategoryRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.recipe.service.RecipeRegistryServiceImpl;
 import fr.dreamin.dreamapi.core.worldborder.service.WorldBorderServiceImpl;
@@ -51,7 +50,6 @@ import fr.dreamin.dreamapi.plugin.cmd.admin.gui.GUICmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.item.ItemRegistryCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.lang.LangCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.navigate.NavigateCmd;
-import fr.dreamin.dreamapi.plugin.cmd.admin.nms.tablist.TabListCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.nms.visual.VisualCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.service.ServiceCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.worldborder.WorldBorderCmd;
@@ -137,7 +135,6 @@ public abstract class DreamPlugin extends JavaPlugin {
     debugCmd = false,
     serviceCmd = false,
     langCmd = false,
-    tabListCmd = false,
     guiCmd = false,
     worldBorderCmd = false;
 
@@ -517,12 +514,6 @@ public abstract class DreamPlugin extends JavaPlugin {
       this.annotationParser.parse(new VisualCmd());
     }
 
-    if (this.tabListCmd) {
-      if (!serviceManager.isLoaded(TabListServiceImpl.class))
-        serviceManager.loadServiceFromClass(TabListServiceImpl.class);
-      this.annotationParser.parse(new TabListCmd());
-    }
-
     if (this.guiCmd) {
       if (!serviceManager.isLoaded(GuiServiceImpl.class))
         serviceManager.loadServiceFromClass(GuiServiceImpl.class);
@@ -580,7 +571,6 @@ public abstract class DreamPlugin extends JavaPlugin {
       TeamServiceImpl.class,
 
       VisualServiceImpl.class,
-      TabListServiceImpl.class,
       GlowingServiceImpl.class,
       CuboidServiceImpl.class,
       
@@ -611,7 +601,6 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     LoadMode.VISUAL, Set.of(
       VisualServiceImpl.class,
-      TabListServiceImpl.class,
       GlowingServiceImpl.class,
       CuboidServiceImpl.class,
       AnimationServiceImpl.class

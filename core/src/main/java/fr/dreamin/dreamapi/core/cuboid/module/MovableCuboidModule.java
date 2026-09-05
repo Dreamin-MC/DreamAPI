@@ -8,14 +8,10 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import fr.dreamin.dreamapi.api.config.Configurations;
 import fr.dreamin.dreamapi.api.cuboid.MovableCuboid;
-import fr.dreamin.dreamapi.core.bukkit.module.BukkitLocationModule;
 import org.bukkit.Location;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Jackson module for serializing and deserializing MovableCuboid objects.

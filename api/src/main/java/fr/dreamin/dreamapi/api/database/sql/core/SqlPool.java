@@ -1,7 +1,6 @@
 package fr.dreamin.dreamapi.api.database.sql.core;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

@@ -12,6 +12,7 @@ import fr.dreamin.dreamapi.core.recipe.data.SmithingData;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public final class CustomRecipeSerializer extends JsonSerializer<CustomRecipe> {
 
@@ -35,14 +36,14 @@ public final class CustomRecipeSerializer extends JsonSerializer<CustomRecipe> {
       case SHAPED -> out.put("shape", r.getShape());
       case SHAPELESS -> out.put("ingredients", r.getIngredients());
       case FURNACE -> out.put("furnace", new FurnaceData(
-        r.getFurnaceInput(),
+        Objects.requireNonNull(r.getFurnaceInput()),
         r.getFurnaceExperience(),
         r.getFurnaceCookTime()
       ));
       case SMITHING -> out.put("smithing", new SmithingData(
-        r.getSmithingTemplate(),
-        r.getSmithingBase(),
-        r.getSmithingAddition()
+        Objects.requireNonNull(r.getSmithingTemplate()),
+        Objects.requireNonNull(r.getSmithingBase()),
+        Objects.requireNonNull(r.getSmithingAddition())
       ));
     }
 

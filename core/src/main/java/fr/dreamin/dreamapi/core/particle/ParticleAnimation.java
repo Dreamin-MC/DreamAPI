@@ -1,7 +1,6 @@
 package fr.dreamin.dreamapi.core.particle;
 
 import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
-import fr.dreamin.dreamapi.core.interpolation.Interpolation;
 import fr.dreamin.dreamapi.core.time.TickTask;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -57,7 +56,7 @@ public final class ParticleAnimation extends TickTask<ParticleAnimation> {
     // Le path est déjà configuré avec son propre easing.
     this.frames = path.generateFrames(duration);
     // Si pas de path, on s'assure d'avoir au moins une frame à la location par défaut
-    if (path == ParticlePath.none() && this.frames.isEmpty()) {
+    if (path.equals(ParticlePath.none()) && this.frames.isEmpty()) {
       this.frames = List.of(new Location(null, 0, 0, 0));
     }
   }
@@ -91,7 +90,7 @@ public final class ParticleAnimation extends TickTask<ParticleAnimation> {
 
       if (progressiveDraw) {
         List<Vector> shapePoints = shape.sample();
-        int pointsToDraw = shapePoints.size();
+        int pointsToDraw;
 
         int currentCycleIndex = index;
         if (reverse && loop && (current() / duration) % 2 != 0)
@@ -153,10 +152,6 @@ public final class ParticleAnimation extends TickTask<ParticleAnimation> {
   }
 
 
-  /**
-   * Starts the animation at the current location of the path.
-   * If the path is ParticlePath.none(), the animation will be static.
-   */
   /**
    * Starts the animation.
    * <p>

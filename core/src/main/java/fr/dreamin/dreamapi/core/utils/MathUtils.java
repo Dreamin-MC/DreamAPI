@@ -2,9 +2,7 @@ package fr.dreamin.dreamapi.core.utils;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Pose;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;

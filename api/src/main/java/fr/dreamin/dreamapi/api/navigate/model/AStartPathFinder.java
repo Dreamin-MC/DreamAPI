@@ -1,7 +1,6 @@
 package fr.dreamin.dreamapi.api.navigate.model;
 
 import com.destroystokyo.paper.MaterialSetTag;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
@@ -330,7 +329,7 @@ public final class AStartPathFinder {
     var angle = getYaw(from, to);
 
     if (angle < 90.0)
-      angle += 360.0;
+      angle += 360.0F;
 
     if (angle >= 337.5 || angle < 22.5)
       return "South";

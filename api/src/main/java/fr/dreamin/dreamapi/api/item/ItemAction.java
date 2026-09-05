@@ -44,5 +44,5 @@ public enum ItemAction {
 
   EAT,
   CONSUME,
-  CHAT_SEND;
+  CHAT_SEND
 }

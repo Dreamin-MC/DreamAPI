@@ -1,6 +1,5 @@
 package fr.dreamin.dreamapi.core.hologram.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.dreamin.dreamapi.api.config.Configurations;
 import fr.dreamin.dreamapi.api.hologram.animation.AnimationEngine;
 import fr.dreamin.dreamapi.api.hologram.event.HologramSaveEvent;
@@ -16,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;

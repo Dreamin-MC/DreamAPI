@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Objects;
 
 public final class RecipeStorageService {
 
@@ -88,7 +89,7 @@ public final class RecipeStorageService {
 
     int count = 0;
 
-    for (final var f : folder.listFiles((dir, name) -> name.endsWith(".json"))) {
+    for (final var f : Objects.requireNonNull(folder.listFiles((dir, name) -> name.endsWith(".json")))) {
       try {
         final var recipe = Configurations.MAPPER.readValue(f, CustomRecipe.class);
         callback.handle(recipe);

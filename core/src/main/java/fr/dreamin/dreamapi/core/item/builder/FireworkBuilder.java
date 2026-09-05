@@ -65,7 +65,7 @@ public final class FireworkBuilder extends ItemBuilder {
     final var meta = (FireworkMeta) getItemMeta();
 
     if (this.power != 1) meta.setPower(power);
-    meta.clearEffects();;
+    meta.clearEffects();
     meta.addEffects(effects);
 
     return super.build();

@@ -6,12 +6,9 @@ import fr.dreamin.dreamapi.api.item.ItemDefinitionSupplier;
 import fr.dreamin.dreamapi.api.item.ItemTag;
 import fr.dreamin.dreamapi.api.item.annotations.DreamItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
-import fr.dreamin.dreamapi.core.item.handler.ItemHandlers;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-
-import java.util.List;
 
 @DreamItem()
 @RequiredArgsConstructor

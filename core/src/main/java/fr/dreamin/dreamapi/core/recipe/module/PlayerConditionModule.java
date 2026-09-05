@@ -8,7 +8,6 @@ import fr.dreamin.dreamapi.api.recipe.condition.RecipeCondition;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeConditionContext;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeConditionRegistry;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeConditionResult;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

@@ -2,7 +2,6 @@ package fr.dreamin.dreamapi.core.item;
 
 import fr.dreamin.dreamapi.api.item.*;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

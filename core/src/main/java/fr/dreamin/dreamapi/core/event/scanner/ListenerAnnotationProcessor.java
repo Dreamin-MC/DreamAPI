@@ -3,7 +3,6 @@ package fr.dreamin.dreamapi.core.event.scanner;
 import fr.dreamin.dreamapi.api.event.annotation.DreamEvent;
 import fr.dreamin.dreamapi.core.service.ServiceAnnotationProcessor;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

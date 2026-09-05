@@ -22,7 +22,7 @@ public final class TimeConverter {
       seconds = (cooldown - seconds) % 60;
 
       if (seconds < 10) return minutes + " minute"+ ((minutes > 1) ? "s" : "") + " et 0" + seconds + " seconde" + ((seconds > 1) ? "s" : "");
-      else return minutes + " minute"+ ((minutes > 1) ? "s" : "") + " et " + seconds + " seconde" + ((seconds > 1) ? "s" : "");
+      else return minutes + " minute"+ (minutes > 1 ? "s" : "") + " et " + seconds + " seconde" + "s";
     } else {
       seconds = (cooldown - seconds);
       return seconds + " seconde" + ((seconds > 1) ? "s" : "");
@@ -49,7 +49,6 @@ public final class TimeConverter {
       if (minutes > 60) {
         var hours = minutes / 60;
         minutes = minutes % 60;
-        seconds = seconds % 60;
 
         return hours + "h" + (minutes > 9 ? minutes + "m" :  "0" + minutes + "m") + (seconds > 9 ? seconds + "s" :  "0" + seconds + "s");
       }

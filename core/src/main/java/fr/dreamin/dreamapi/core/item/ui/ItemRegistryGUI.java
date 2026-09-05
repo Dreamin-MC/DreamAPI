@@ -28,6 +28,7 @@ import xyz.xenondevs.invui.window.AnvilWindow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class ItemRegistryGUI extends GuiInterface {
 
@@ -131,7 +132,7 @@ public final class ItemRegistryGUI extends GuiInterface {
 
     if (meta.hasDisplayName()) {
       final var name = PlainTextComponentSerializer.plainText()
-        .serialize(meta.displayName())
+        .serialize(Objects.requireNonNull(meta.displayName()))
         .toLowerCase();
 
       if (name.contains(query)) return true;

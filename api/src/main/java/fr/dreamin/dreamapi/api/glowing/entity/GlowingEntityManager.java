@@ -1,5 +1,6 @@
 package fr.dreamin.dreamapi.api.glowing.entity;
 
+import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.nms.packet.MetadataInterceptor;
 import fr.dreamin.dreamapi.api.nms.packet.PacketConstants;
 import fr.dreamin.dreamapi.api.nms.packet.PacketReflection;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 @Getter
 public final class GlowingEntityManager {
@@ -72,8 +74,7 @@ public final class GlowingEntityManager {
       playerData.entities.put(entityId, glowData);
 
       applyGlowingFlags(viewer, entityId, otherFlags);
-      if (color != null)
-        applyTeamColor(viewer, entityIdentifier, color, options, playerData);
+      applyTeamColor(viewer, entityIdentifier, color, options, playerData);
 
     } else {
       // Update existing glowing effect
@@ -82,18 +83,13 @@ public final class GlowingEntityManager {
 
       if (!colorChanged && !optionsChanged) return;
 
-      if (color == null && glowData.getColor() != null) {
-        removeTeamColor(viewer, entityIdentifier, glowData.getColor(), playerData);
-        glowData.setColor(null);
-      } else if (color != null) {
-        if (colorChanged || optionsChanged) {
-          if (glowData.getColor() != null && !glowData.getColor().equals(color))
-            removeTeamColor(viewer, entityIdentifier, glowData.getColor(), playerData);
+      if (color != null) {
+        if (glowData.getColor() != null && !glowData.getColor().equals(color))
+          removeTeamColor(viewer, entityIdentifier, glowData.getColor(), playerData);
 
-          glowData.setColor(color);
-          glowData.setOptions(options);
-          applyTeamColor(viewer, entityIdentifier, color, options, playerData);
-        }
+        glowData.setColor(color);
+        glowData.setOptions(options);
+        applyTeamColor(viewer, entityIdentifier, color, options, playerData);
       }
     }
   }
@@ -148,7 +144,7 @@ public final class GlowingEntityManager {
       try {
         removePacketInterceptor(data);
       } catch (Exception e) {
-        e.printStackTrace();
+        DreamAPI.getAPI().plugin().getLogger().log(Level.WARNING, "Failed to remove packet interceptor", e);
       }
     });
     this.playerDataMap.clear();
@@ -226,7 +222,7 @@ public final class GlowingEntityManager {
   // ###############################################################
 
   @Getter
-  private final class PlayerGlowingData {
+  private static final class PlayerGlowingData {
     private final @NotNull Player viewer;
     private final Map<Integer, EntityGlowData> entities = new ConcurrentHashMap<>();
     private final EnumSet<ChatColor> sentColors = EnumSet.noneOf(ChatColor.class);

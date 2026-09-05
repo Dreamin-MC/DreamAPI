@@ -58,7 +58,7 @@ public final class GlowingServiceImpl implements GlowingService, DreamService, L
   /** Reverse index: entityId -> viewers who see it glowing. */
   private final Map<UUID, Set<UUID>> viewersByEntity = new ConcurrentHashMap<>();
   /** Reverse index: blockKey -> viewers who see it glowing. */
-  private final Map<BlockKey, Set<UUID>> viewersByBlock = new ConcurrentHashMap<>();;
+  private final Map<BlockKey, Set<UUID>> viewersByBlock = new ConcurrentHashMap<>();
 
   /**
    * Scheduled auto-unset for ENTITY per (viewer, entityId).
@@ -276,7 +276,6 @@ public final class GlowingServiceImpl implements GlowingService, DreamService, L
     }
 
     for (final var viewer : viewers) {
-      if (viewer == null) continue;
       final var viewerState = this.byViewer.get(viewer.getUniqueId());
       if (viewerState != null) viewerState.blocks.remove(block);
 
@@ -467,7 +466,7 @@ public final class GlowingServiceImpl implements GlowingService, DreamService, L
   @Override
   public @Nullable Block glowBlockInCrosshair(final @NotNull Player viewer, final int maxDistance, final @NotNull ChatColor color, final long duration) {
     final var block = viewer.getTargetBlockExact(maxDistance);
-    if (block != null && isBlockValid(block)) {
+    if (isBlockValid(block)) {
       glowBlock(block, color, duration, viewer);
       return block;
     }

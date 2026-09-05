@@ -1,6 +1,5 @@
 package fr.dreamin.dreamapi.api.navigate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;

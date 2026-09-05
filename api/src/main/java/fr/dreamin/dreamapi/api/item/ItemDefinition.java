@@ -64,7 +64,7 @@ public class ItemDefinition {
         id,
         built,
         tags == null ? Set.of() : Set.copyOf(tags),
-        handlers == null ? Map.of() : deepCopy(handlers)
+        deepCopy(handlers)
       );
     }
 

@@ -42,8 +42,8 @@ public final class ParticleChainMorph extends TickTask<ParticleChainMorph> {
   private final ParticleShape.ParticleOptions options;
   private final List<Integer> morphDurations;
 
+  private final List<List<Vector>> morphFrames;
 
-  private List<List<Vector>> morphFrames;
   private List<Location> pathFrames;
   private int index = 0;
   private boolean isReversed = false;
@@ -71,7 +71,7 @@ public final class ParticleChainMorph extends TickTask<ParticleChainMorph> {
     // Le path est déjà configuré avec son propre easing.
     this.pathFrames = path.generateFrames(duration);
     // Si pas de path, on s'assure d'avoir au moins une frame à la location par défaut
-    if (path == ParticlePath.none() && this.pathFrames.isEmpty()) {
+    if (path.equals(ParticlePath.none()) && this.pathFrames.isEmpty()) {
       this.pathFrames = List.of(new Location(null, 0, 0, 0));
     }
   }

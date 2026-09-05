@@ -19,7 +19,7 @@ import java.util.Optional;
 public final class DreamHologram implements Hologram {
 
   private final @NotNull String id;
-  private @NotNull HologramConfig config;
+  private final @NotNull HologramConfig config;
   private @Nullable Location location;
   private final @NotNull List<HologramLine> lines;
   private boolean spawned = false;

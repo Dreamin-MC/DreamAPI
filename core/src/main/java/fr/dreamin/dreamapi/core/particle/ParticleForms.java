@@ -198,7 +198,7 @@ public final class ParticleForms {
         for (int i = 0; i < points; i++) {
           double theta = 2 * Math.PI * i / points;
           for (int j = 0; j < points / 4; j++) {
-            double phi = 2 * Math.PI * j / (points / 4);
+            double phi = 2 * Math.PI * j / ((double) points / 4);
             double x = (radius + thickness * Math.cos(phi)) * Math.cos(theta);
             double y = thickness * Math.sin(phi);
             double z = (radius + thickness * Math.cos(phi)) * Math.sin(theta);
@@ -216,7 +216,7 @@ public final class ParticleForms {
         for (var i = 0; i < points; i++) {
           final var theta = 2 * Math.PI * i / points;
           for (var j = 0; j < points / 4; j++) {
-            final var phi = 2 * Math.PI * j / (points / 4);
+            final var phi = 2 * Math.PI * j / ((double) points / 4);
             final var x = (radius + thickness * Math.cos(phi)) * Math.cos(theta);
             final var y = thickness * Math.sin(phi);
             final var z = (radius + thickness * Math.cos(phi)) * Math.sin(theta);

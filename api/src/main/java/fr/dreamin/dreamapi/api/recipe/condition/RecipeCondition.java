@@ -1,6 +1,5 @@
 package fr.dreamin.dreamapi.api.recipe.condition;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
@@ -51,15 +50,14 @@ public interface RecipeCondition {
     }
 
     public static RecipeCondition wearing(final @NotNull Material mat) {
-      return ctx -> (ctx.player().getInventory().getHelmet() != null && ctx.player().getInventory().getHelmet().getType() == mat) ? RecipeConditionResult.allow() : RecipeConditionResult.deny();
+      return ctx -> (ctx.player().getInventory().getHelmet().getType() == mat) ? RecipeConditionResult.allow() : RecipeConditionResult.deny();
     }
 
     public static RecipeCondition wearing(final @NotNull ItemStack item) {
-      return ctx -> (ctx.player().getInventory().getHelmet() != null && ctx.player().getInventory().getHelmet().isSimilar(item)) ? RecipeConditionResult.allow() : RecipeConditionResult.deny();
+      return ctx -> (ctx.player().getInventory().getHelmet().isSimilar(item)) ? RecipeConditionResult.allow() : RecipeConditionResult.deny();
     }
 
     public static RecipeCondition prediacte(final @NotNull Predicate<Player> predicate) {
-
       return ctx -> (predicate.test(ctx.player())) ? RecipeConditionResult.allow() : RecipeConditionResult.deny();
     }
 

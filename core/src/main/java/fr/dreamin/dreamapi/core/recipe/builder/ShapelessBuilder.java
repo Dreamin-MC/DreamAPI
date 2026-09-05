@@ -6,7 +6,6 @@ import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.recipe.*;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeCondition;
 import fr.dreamin.dreamapi.core.recipe.impl.CustomRecipeImpl;
-import fr.dreamin.dreamapi.api.recipe.IngredientDefinition;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

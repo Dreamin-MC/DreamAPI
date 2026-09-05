@@ -1,13 +1,11 @@
 package fr.dreamin.dreamapi.core.logger;
 
-import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.logger.*;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.core.logger.writer.BroadcastDebugWriter;
 import fr.dreamin.dreamapi.core.logger.writer.ConsoleDebugWriter;
 import fr.dreamin.dreamapi.core.logger.writer.DailyFileDebugWriter;
-import fr.dreamin.dreamapi.core.logger.writer.PlayerDebugWriter;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 

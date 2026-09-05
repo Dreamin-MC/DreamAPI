@@ -6,7 +6,6 @@ import fr.dreamin.dreamapi.api.animation.event.AnimationStopEvent;
 import com.ticxo.modelengine.api.animation.property.IAnimationProperty;
 import fr.dreamin.dreamapi.api.animation.service.AnimationService;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;

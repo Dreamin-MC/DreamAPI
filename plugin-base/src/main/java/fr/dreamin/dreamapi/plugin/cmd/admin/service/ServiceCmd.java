@@ -77,17 +77,20 @@ public final class ServiceCmd {
     if (service == null)
       sender.sendMessage(Component.text(String.format("Service %s not found.", name), NamedTextColor.RED));
 
-    Component msg = Component.text("--------------------------------", NamedTextColor.GOLD)
-      .appendNewline()
-      .append(Component.text(String.format("Service Info: %s", name), NamedTextColor.GOLD))
-      .appendNewline()
-      .append(Component.text(String.format("Status: %s", service.getStatus()), NamedTextColor.GOLD))
-      .appendNewline()
-      .append(Component.text(String.format("CanReload: %s", service.canReload()), NamedTextColor.GOLD))
-      .appendNewline()
-      .append(Component.text(String.format("Depends: %s", getDepsText(service)), NamedTextColor.GOLD))
-      .appendNewline()
-      .append(Component.text("--------------------------------", NamedTextColor.GOLD));
+    Component msg = Component.empty();
+    if (service != null) {
+      msg = Component.text("--------------------------------", NamedTextColor.GOLD)
+        .appendNewline()
+        .append(Component.text(String.format("Service Info: %s", name), NamedTextColor.GOLD))
+        .appendNewline()
+        .append(Component.text(String.format("Status: %s", service.getStatus()), NamedTextColor.GOLD))
+        .appendNewline()
+        .append(Component.text(String.format("CanReload: %s", service.canReload()), NamedTextColor.GOLD))
+        .appendNewline()
+        .append(Component.text(String.format("Depends: %s", getDepsText(service)), NamedTextColor.GOLD))
+        .appendNewline()
+        .append(Component.text("--------------------------------", NamedTextColor.GOLD));
+    }
 
     sender.sendMessage(msg);
   }

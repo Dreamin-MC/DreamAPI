@@ -168,6 +168,7 @@ public class ItemBuilder {
       final var customComponent = meta.getCustomModelDataComponent();
       final var existing = new ArrayList<>(customComponent.getColors());
       existing.addAll(Arrays.asList(value));
+      customComponent.setColors(existing);
       meta.setCustomModelDataComponent(customComponent);
     });
     return this;
@@ -623,7 +624,7 @@ public class ItemBuilder {
   public ItemBuilder addAttribute(final @NotNull Attribute attribute, final double value, final @NotNull AttributeModifier.Operation operation, final @NotNull EquipmentSlotGroup slot) {
     withMeta(meta -> {
       AttributeModifier modifier = new AttributeModifier(
-        NamespacedKey.fromString(attribute.getKey().getKey() + "_" + value, DreamAPI.getAPI().plugin()),
+        Objects.requireNonNull(NamespacedKey.fromString(attribute.getKey().getKey() + "_" + value, DreamAPI.getAPI().plugin())),
         value, operation, slot);
       meta.addAttributeModifier(attribute, modifier);
     });
@@ -686,7 +687,7 @@ public class ItemBuilder {
   // ----------------------- PERSISTENT DATA -----------------------
   // ###############################################################
 
-  public <T, Z> ItemBuilder addPersistentData(final @Nullable NamespacedKey key, final @NotNull PersistentDataType<T, Z> type, final @NotNull Z value) {
+  public <T, Z> ItemBuilder addPersistentData(final @NotNull NamespacedKey key, final @NotNull PersistentDataType<T, Z> type, final @NotNull Z value) {
     withMeta(meta -> meta.getPersistentDataContainer().set(key, type, value));
     return this;
   }
@@ -742,7 +743,7 @@ public class ItemBuilder {
     final var name = meta.displayName() != null ? meta.displayName() : (meta.customName() != null ? meta.customName() : meta.itemName());
 
     if (meta instanceof SkullMeta skullMeta && skullMeta.customName() != null)
-      item.setCustomName(skullMeta.customName());
+      item.setCustomName(Objects.requireNonNull(skullMeta.customName()));
     else if (name != null)
       item.setName(name);
 

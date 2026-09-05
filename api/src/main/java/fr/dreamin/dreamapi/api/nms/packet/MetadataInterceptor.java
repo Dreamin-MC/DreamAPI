@@ -32,7 +32,7 @@ public final class MetadataInterceptor extends ChannelDuplexHandler {
       }
 
       final var items = PacketReflection.getMetadataItems(msg);
-      if (items == null || items.isEmpty()) {
+      if (items.isEmpty()) {
         super.write(ctx, msg, promise);
         return;
       }

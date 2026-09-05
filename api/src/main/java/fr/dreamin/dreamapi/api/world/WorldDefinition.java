@@ -96,7 +96,7 @@ public final class WorldDefinition {
   }
 
   public static final class Builder {
-    private @NotNull String label;
+    private final @NotNull String label;
     private @NotNull World.Environment environment = World.Environment.NORMAL;
     private @NotNull WorldType type = WorldType.NORMAL;
     private @Nullable Long seed = null;

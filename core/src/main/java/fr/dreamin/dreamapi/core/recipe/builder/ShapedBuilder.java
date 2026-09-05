@@ -6,7 +6,6 @@ import fr.dreamin.dreamapi.api.item.ItemRegistryService;
 import fr.dreamin.dreamapi.api.recipe.*;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeCondition;
 import fr.dreamin.dreamapi.core.recipe.impl.CustomRecipeImpl;
-import fr.dreamin.dreamapi.api.recipe.IngredientDefinition;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -126,8 +125,8 @@ public final class ShapedBuilder {
     if (this.rows.isEmpty())
       throw new IllegalStateException("Shaped recipe requires at least one row");
 
-    final var expectedLength = this.rows.get(0).length();
-    for (String row : rows) {
+    final var expectedLength = this.rows.getFirst().length();
+    for (final var row : rows) {
       if (row.length() != expectedLength)
         throw new IllegalStateException("All rows must have same length in shaped recipe '" + key + "'");
     }
@@ -137,7 +136,7 @@ public final class ShapedBuilder {
     for (final var row : this.rows) {
       final var defRow = new ArrayList<IngredientDefinition>();
 
-      for (char c : row.toCharArray()) {
+      for (final var c : row.toCharArray()) {
 
         if (c == ' ') {
           defRow.add(null);

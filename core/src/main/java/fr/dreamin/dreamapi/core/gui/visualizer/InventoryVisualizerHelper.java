@@ -1,9 +1,7 @@
 package fr.dreamin.dreamapi.core.gui.visualizer;
 
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

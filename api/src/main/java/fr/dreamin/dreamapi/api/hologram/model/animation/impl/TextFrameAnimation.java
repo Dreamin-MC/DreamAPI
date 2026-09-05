@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Singular;
 import lombok.extern.jackson.Jacksonized;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.TextDisplay;
 import org.jetbrains.annotations.NotNull;

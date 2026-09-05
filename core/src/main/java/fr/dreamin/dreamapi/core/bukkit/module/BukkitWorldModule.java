@@ -7,9 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.io.IOException;

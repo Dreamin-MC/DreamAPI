@@ -64,7 +64,7 @@ public final class LangFileGUI extends GuiInterface {
     return Gui.builder()
       .setStructure(3, 1, "X D #")
       .addIngredient('X', new ItemBuilder(Material.PAPER)
-        .setName(Component.text(search != null ? search : ""))
+        .setName(Component.text(search))
         .setHideToolType(true)
         .toGuiItem())
       .addIngredient('#', new AbstractItem() {

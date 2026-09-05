@@ -185,12 +185,12 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   }
 
   @Override
-  public @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Particle particle) {
+  public @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Particle particle) {
     return startNavigation(player, end, safeMode, recalcDistance, Set.of(), Set.of(), particle);
   }
 
   @Override
-  public @NotNull PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Particle particle) {
+  public @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Particle particle) {
     return startNavigation(player, end, safeMode, recalcDistance, allowedMaterials, Set.of(), particle);
   }
 

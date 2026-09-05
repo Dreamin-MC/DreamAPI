@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
 import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
-import fr.dreamin.dreamapi.core.interpolation.Interpolation;
 import fr.dreamin.dreamapi.core.bukkit.module.BukkitLocationModule;
 import fr.dreamin.dreamapi.core.particle.ParticlePath;
 import org.bukkit.Location;

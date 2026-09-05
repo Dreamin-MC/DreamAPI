@@ -24,7 +24,7 @@ public class ParticleShapes {
       }
 
       @Override
-      public void render(final @NotNull Location base, final @Nullable ParticleShape.ParticleOptions options) {
+      public void render(final @NotNull Location base, final @NotNull ParticleShape.ParticleOptions options) {
         spawn(Particle.DUST, base, options); // default redstone for color support
       }
     };
