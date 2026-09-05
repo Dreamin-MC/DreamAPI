@@ -57,7 +57,6 @@ import fr.dreamin.dreamapi.plugin.cmd.admin.service.ServiceCmd;
 import fr.dreamin.dreamapi.plugin.cmd.admin.worldborder.WorldBorderCmd;
 import lombok.Getter;
 import lombok.Setter;
-import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
@@ -453,15 +452,20 @@ public abstract class DreamPlugin extends JavaPlugin {
   }
 
   /**
+   * Checks if LuckPerms is installed, available on the classloader, and registered as a service.
    *
-   * @return
+   * @return true if LuckPerms service is available, false otherwise
    */
   private boolean isLuckPermsAvailable() {
-    if (Bukkit.getPluginManager().getPlugin("LuckPerms") == null)
-      return false;
+    try {
+      final Class<?> lpClass = Class.forName("net.luckperms.api.LuckPerms", false, getClass().getClassLoader());
+      if (Bukkit.getPluginManager().getPlugin("LuckPerms") == null)
+        return false;
 
-    var service = Bukkit.getServicesManager().load(LuckPerms.class);
-    return service != null;
+      return Bukkit.getServicesManager().getRegistration((Class) lpClass) != null;
+    } catch (Throwable ignored) {
+      return false;
+    }
   }
 
   /**
