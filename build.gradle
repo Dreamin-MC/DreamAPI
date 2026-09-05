@@ -27,7 +27,8 @@ subprojects {
     maven { url = "https://maven.citizensnpcs.co/repo"}
   }
 
-  def paperVersion = "26.1.2.build.+"
+  def mcVersion = "26.1.2"
+  def paperVersion = mcVersion + ".build.+"
   def lombokVersion = "1.18.44"
   def jetbrainsAnnotationsVersion = "24.1.0"
   def jacksonVersion = "2.19.1"
