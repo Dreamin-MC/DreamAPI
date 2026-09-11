@@ -1,20 +1,18 @@
 package fr.dreamin.dreamapi.api.navigate.model;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStopEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingFinishEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingRecalcEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingWaypointReachEvent;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-
-import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStopEvent;
-import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingFinishEvent;
-import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingRecalcEvent;
-import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingWaypointReachEvent;
 
 /**
  * A recurring Bukkit task that handles active player navigation.
@@ -24,14 +22,13 @@ import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingWaypointReachEve
  * <p>This task is managed by {@code NavigateService} — do not start/cancel it manually.</p>
  */
 @Getter
-public final class PathFindingTask extends BukkitRunnable {
+public final class PathFindingTask extends AbstractNavigateTask {
 
   private static final Particle.DustOptions DEFAULT_DUST = new Particle.DustOptions(Color.fromRGB(220, 20, 60), 1);
 
   private final Player player;
-  private final Location targetLocation;
-  private final AStartPathFinder pathFinder;
   private final double recalcMinDistance;
+  private final double displayRadius;
 
   /** Non-null in display mode: the particle dust to render along the path. */
   @Nullable private final Particle.DustOptions dustOptions;
@@ -41,18 +38,7 @@ public final class PathFindingTask extends BukkitRunnable {
   /** Non-null in callback mode: called on the main thread after each successful recalculation. */
   @Nullable private final Consumer<List<Location>> onRecalc;
 
-  /** The latest computed path. May be null before the first computation completes. */
-  private List<Location> currentPath;
-
-  /**
-   * Index of the closest waypoint to the player in {@link #currentPath}.
-   * Particles and movement are rendered from this index onward (remaining path only).
-   */
-  private int currentPathIndex = 0;
-
   private Location lastCalcLocation;
-  private boolean recalculating = false;
-  private boolean finished = false;
 
   // ###############################################################
   // -------------------------- CANCEL -----------------------------
@@ -65,7 +51,6 @@ public final class PathFindingTask extends BukkitRunnable {
       new PathFindingFinishEvent(this).callEvent();
     else
       new PathFindingStopEvent(this).callEvent();
-
   }
 
   // ###############################################################
@@ -78,12 +63,12 @@ public final class PathFindingTask extends BukkitRunnable {
    */
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
-                         final @NotNull Set<Material> ignoredMaterials, final double recalcMinDistance) {
+                         final @NotNull Set<Material> ignoredMaterials, final double recalcMinDistance, final double displayRadius) {
+    super(targetLocation, new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials));
     this.player = player;
-    this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
+    this.displayRadius = displayRadius;
     this.dustOptions = DEFAULT_DUST;
     this.particle = null;
     this.onRecalc = null;
@@ -96,12 +81,12 @@ public final class PathFindingTask extends BukkitRunnable {
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
                          final @NotNull Set<Material> ignoredMaterials,
-                         final double recalcMinDistance, final @NotNull Particle.DustOptions dustOptions) {
+                         final double recalcMinDistance, final double displayRadius, final @NotNull Particle.DustOptions dustOptions) {
+    super(targetLocation, new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials));
     this.player = player;
-    this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
+    this.displayRadius = displayRadius;
     this.dustOptions = dustOptions;
     this.particle = null;
     this.onRecalc = null;
@@ -110,12 +95,12 @@ public final class PathFindingTask extends BukkitRunnable {
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMod, final @NotNull Set<Material> allowedMaterials,
                          final @NotNull Set<Material> ignoredMaterials,
-                         final double recalcMinDistance, final @NotNull Particle particle) {
+                         final double recalcMinDistance, final double displayRadius, final @NotNull Particle particle) {
+    super(targetLocation, new AStartPathFinder(safeMod, allowedMaterials, ignoredMaterials));
     this.player = player;
-    this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMod, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
+    this.displayRadius = displayRadius;
     this.dustOptions = null;
     this.particle = particle;
     this.onRecalc = null;
@@ -128,12 +113,12 @@ public final class PathFindingTask extends BukkitRunnable {
   public PathFindingTask(final @NotNull Player player, final @NotNull Location targetLocation,
                          final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
                          final @NotNull Set<Material> ignoredMaterials,
-                         final double recalcMinDistance, final @NotNull Consumer<List<Location>> onRecalc) {
+                         final double recalcMinDistance, final double displayRadius, final @NotNull Consumer<List<Location>> onRecalc) {
+    super(targetLocation, new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials));
     this.player = player;
-    this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.lastCalcLocation = player.getLocation().clone();
     this.recalcMinDistance = recalcMinDistance;
+    this.displayRadius = displayRadius;
     this.dustOptions = null;
     this.particle = null;
     this.onRecalc = onRecalc;
@@ -215,7 +200,8 @@ public final class PathFindingTask extends BukkitRunnable {
       if (dist < minDist) {
         minDist = dist;
         bestIndex = i;
-      } else if (dist > minDist + 9) {
+      }
+      else if (dist > minDist + 9) {
         // Stop scanning once distance starts growing significantly (3 blocks ahead)
         break;
       }
@@ -231,12 +217,20 @@ public final class PathFindingTask extends BukkitRunnable {
   private void displayPathParticles() {
     if (this.currentPath == null || this.currentPath.isEmpty()) return;
 
+    final var playerLoc = this.player.getLocation();
+    final var displayRadiusSq = this.displayRadius > 0 ? this.displayRadius * this.displayRadius : Double.MAX_VALUE;
+
     for (int i = this.currentPathIndex; i < this.currentPath.size(); i++) {
+      final var loc = this.currentPath.get(i);
+      
+      if (this.displayRadius > 0 && loc.distanceSquared(playerLoc) > displayRadiusSq)
+        continue;
+
       if (this.dustOptions != null)
-        this.player.spawnParticle(Particle.DUST, this.currentPath.get(i).clone().add(0.5, 0.5, 0.5),
+        this.player.spawnParticle(Particle.DUST, loc.clone().add(0.5, 0.5, 0.5),
         3, 0, 0, 0, 0, this.dustOptions);
       else if (this.particle != null)
-        this.player.spawnParticle(this.particle, this.currentPath.get(i).clone().add(0.5, 0.5, 0.5),
+        this.player.spawnParticle(this.particle, loc.clone().add(0.5, 0.5, 0.5),
           3, 0, 0, 0, 0);
     }
   }

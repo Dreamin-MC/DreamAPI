@@ -6,15 +6,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementStopEvent;
-import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementFinishEvent;
-import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementRecalcEvent;
-import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementWaypointReachEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStopEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingFinishEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingRecalcEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingWaypointReachEvent;
 
 /**
  * A recurring Bukkit task that moves an entity along an A*-computed path
@@ -23,27 +22,13 @@ import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementWaypointReach
  * <p>This task is managed by {@code NavigateService} — do not start/cancel it manually.</p>
  */
 @Getter
-public final class EntityMovementTask extends BukkitRunnable {
+public final class EntityMovementTask extends AbstractNavigateTask {
 
   private static final double WAYPOINT_REACH_DISTANCE_SQ = 0.6 * 0.6;
   private static final double ARRIVAL_DISTANCE_SQ = 1.5 * 1.5;
 
   private final Entity entity;
-  private final Location targetLocation;
-  private final AStartPathFinder pathFinder;
   private final double speed;
-
-  /** The latest computed path. May be null before the first computation completes. */
-  private List<Location> currentPath;
-
-  /**
-   * Index of the current target waypoint in {@link #currentPath}.
-   * Reflects how far along the path the entity currently is.
-   */
-  private int currentPathIndex = 0;
-
-  private boolean recalculating = false;
-  private boolean finished = false;
 
   // ###############################################################
   // -------------------------- CANCEL -----------------------------
@@ -53,10 +38,9 @@ public final class EntityMovementTask extends BukkitRunnable {
   public void cancel() {
     super.cancel();
     if (this.finished)
-      new EntityMovementFinishEvent(this).callEvent();
+      new PathFindingFinishEvent(this).callEvent();
     else
-      new EntityMovementStopEvent(this).callEvent();
-
+      new PathFindingStopEvent(this).callEvent();
   }
 
   // ###############################################################
@@ -71,9 +55,8 @@ public final class EntityMovementTask extends BukkitRunnable {
                             final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
                             final @NotNull Set<Material> ignoredMaterials,
                             final double speed) {
+    super(targetLocation, new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials));
     this.entity = entity;
-    this.targetLocation = targetLocation;
-    this.pathFinder = new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials);
     this.speed = speed;
   }
 
@@ -113,14 +96,15 @@ public final class EntityMovementTask extends BukkitRunnable {
   // ----------------------- PRIVATE METHODS -----------------------
   // ###############################################################
 
+  // Advance waypoint index while the entity is within reach of the current waypoint CENTER
+  // (block corner + 0.5 on X/Z). Using the center is critical — without it, the entity
+  // never advances past its own starting block (dist ≈ 0 to the center → early return).
   private void moveAlongPath(final @NotNull Location entityLoc) {
-    // Advance waypoint index while the entity is within reach of the current waypoint CENTER
-    // (block corner + 0.5 on X/Z). Using the center is critical — without it, the entity
-    // never advances past its own starting block (dist ≈ 0 to the center → early return).
+    if (this.currentPath == null || this.currentPath.isEmpty()) return;
     while (this.currentPathIndex < this.currentPath.size()) {
       final var center = this.currentPath.get(this.currentPathIndex).clone().add(0.5, 0, 0.5);
       if (entityLoc.distanceSquared(center) >= WAYPOINT_REACH_DISTANCE_SQ) break;
-      new EntityMovementWaypointReachEvent(this, this.currentPath.get(this.currentPathIndex), this.currentPathIndex).callEvent();
+      new PathFindingWaypointReachEvent(this, this.currentPath.get(this.currentPathIndex), this.currentPathIndex).callEvent();
       this.currentPathIndex++;
     }
 
@@ -162,7 +146,7 @@ public final class EntityMovementTask extends BukkitRunnable {
         if (!newPath.isEmpty()) {
           this.currentPath = newPath;
           this.currentPathIndex = 0;
-          new EntityMovementRecalcEvent(this, List.copyOf(newPath)).callEvent();
+          new PathFindingRecalcEvent(this, List.copyOf(newPath)).callEvent();
         }
         this.recalculating = false;
       });

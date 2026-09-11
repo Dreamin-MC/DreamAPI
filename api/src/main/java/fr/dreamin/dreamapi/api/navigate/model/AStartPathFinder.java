@@ -80,8 +80,27 @@ public final class AStartPathFinder {
 
       if (currentNode.getLocation().getBlockX() == end.getBlockX() && currentNode.getLocation().getBlockY()  == end.getBlockY() && currentNode.getLocation().getBlockZ() == end.getBlockZ()) {
         final var mainPath = reconstructPath(currentNode);
-        final var fullPath = new ArrayList<>(prePath);
-        fullPath.addAll(mainPath);
+        final var fullPath = new ArrayList<Location>();
+        for (final var loc : prePath) fullPath.add(loc.clone());
+        
+        if (!fullPath.isEmpty() && !mainPath.isEmpty() && fullPath.get(fullPath.size() - 1).equals(mainPath.get(0))) {
+          fullPath.remove(fullPath.size() - 1);
+        }
+        
+        for (final var loc : mainPath) fullPath.add(loc.clone());
+
+        for (int i = 0; i < fullPath.size(); i++) {
+          final var loc = fullPath.get(i);
+          if (i < fullPath.size() - 1) {
+            final var nextLoc = fullPath.get(i + 1);
+            loc.setYaw(getYaw(loc, nextLoc));
+            loc.setPitch(0F);
+          } else if (i > 0) {
+            final var prevLoc = fullPath.get(i - 1);
+            loc.setYaw(prevLoc.getYaw());
+            loc.setPitch(0F);
+          }
+        }
 
         return fullPath;
       }
@@ -109,7 +128,7 @@ public final class AStartPathFinder {
     final var path = new ArrayList<Location>();
     var currentNode = endNode;
     while (currentNode != null) {
-      path.add(currentNode.getLocation());
+      path.add(currentNode.getLocation().clone());
       currentNode = currentNode.getParent();
     }
     Collections.reverse(path);

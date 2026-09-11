@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.navigate.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.navigate.event.entity.EntityMovementStartEvent;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStartEvent;
 import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStartEvent;
 import fr.dreamin.dreamapi.api.navigate.model.AStartPathFinder;
 import fr.dreamin.dreamapi.api.navigate.model.EntityMovementTask;
@@ -143,7 +143,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
                                                    final @NotNull Set<Material> allowedMaterials,
                                                    final @NotNull Set<Material> ignoredMaterials,
                                                    final @NotNull Particle.DustOptions dustOptions) {
-    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, dustOptions);
+    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, -1, dustOptions);
     
     if (!new PathFindingStartEvent(task).callEvent())
       return null;
@@ -174,7 +174,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
                                                    final @NotNull Set<Material> allowedMaterials,
                                                    final @NotNull Set<Material> ignoredMaterials,
                                                    final @NotNull Consumer<List<Location>> onRecalc) {
-    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, onRecalc);
+    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, -1, onRecalc);
     
     if (!new PathFindingStartEvent(task).callEvent())
       return null;
@@ -196,7 +196,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
 
   @Override
   public @Nullable PathFindingTask startNavigation(@NotNull Player player, @NotNull Location end, boolean safeMode, double recalcDistance, @NotNull Set<Material> allowedMaterials, @NotNull Set<Material> ignoredMaterials, @NotNull Particle particle) {
-    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, particle);
+    final var task = new PathFindingTask(player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, -1, particle);
     
     if (!new PathFindingStartEvent(task).callEvent())
       return null;
@@ -283,7 +283,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
     stopEntityMovement(entity);
     final var task = new EntityMovementTask(entity, end, safeMode, allowedMaterials, ignoredMaterials, speed);
 
-    if (!new EntityMovementStartEvent(task).callEvent())
+    if (!new PathFindingStartEvent(task).callEvent())
       return null;
     
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 2L);
