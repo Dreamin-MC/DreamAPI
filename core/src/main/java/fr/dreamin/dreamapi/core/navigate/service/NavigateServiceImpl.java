@@ -1,6 +1,7 @@
 package fr.dreamin.dreamapi.core.navigate.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
+import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStartEvent;
 import fr.dreamin.dreamapi.api.navigate.model.*;
 import fr.dreamin.dreamapi.api.navigate.service.NavigateService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
