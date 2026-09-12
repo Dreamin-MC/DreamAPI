@@ -44,6 +44,7 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
 
   private Location lastCalcLocation;
   private final Map<Integer, ItemDisplay> activeDisplays = new HashMap<>();
+  private final TreeSet<Integer> plannedDisplayIndices = new TreeSet<>();
 
   // ###############################################################
   // -------------------------- CANCEL -----------------------------
@@ -53,6 +54,7 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
   public void cancel() {
     super.cancel();
     clearDisplays();
+    this.plannedDisplayIndices.clear();
     if (this.finished)
       new PathFindingFinishEvent(this).callEvent();
     else
@@ -126,6 +128,35 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
 
   public void setSpacing(int spacing) {
     this.spacing = Math.max(1, spacing);
+    computePlannedDisplayIndices();
+    if (this.currentPath != null && !this.currentPath.isEmpty()) {
+      manageDisplays(this.player.getLocation());
+      for (final var entry : this.activeDisplays.entrySet()) {
+        final int idx = entry.getKey();
+        final var display = entry.getValue();
+        if (display != null && display.isValid()) {
+          final int nextIdx = getNextDisplayIndex(idx, this.currentPath.size());
+          if (nextIdx != -1) {
+            final var loc = this.currentPath.get(idx);
+            final var nextLoc = this.currentPath.get(nextIdx);
+            final var dispLoc = display.getLocation();
+            dispLoc.setYaw(AStartPathFinder.getYaw(loc, nextLoc));
+            dispLoc.setPitch(AStartPathFinder.getPitch(loc, nextLoc));
+            display.teleport(dispLoc);
+          } else {
+            final var prevIdx = this.plannedDisplayIndices.lower(idx);
+            if (prevIdx != null) {
+              final var loc = this.currentPath.get(idx);
+              final var prevLoc = this.currentPath.get(prevIdx);
+              final var dispLoc = display.getLocation();
+              dispLoc.setYaw(AStartPathFinder.getYaw(prevLoc, loc));
+              dispLoc.setPitch(AStartPathFinder.getPitch(prevLoc, loc));
+              display.teleport(dispLoc);
+            }
+          }
+        }
+      }
+    }
   }
 
   public void setFacePlayer(boolean facePlayer) {
@@ -210,6 +241,7 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
           this.currentPath = newPath;
           this.currentPathIndex = 0;
           clearDisplays(); // Clear displays only on genuine deviation / initial path
+          computePlannedDisplayIndices();
           new PathFindingRecalcEvent(this, java.util.List.copyOf(newPath)).callEvent();
           manageDisplays(this.player.getLocation());
         }
@@ -269,9 +301,41 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
     return minDist;
   }
 
+  private void computePlannedDisplayIndices() {
+    this.plannedDisplayIndices.clear();
+    if (this.currentPath == null || this.currentPath.isEmpty()) return;
+
+    final int totalPoints = this.currentPath.size();
+    if (totalPoints == 1) {
+      this.plannedDisplayIndices.add(0);
+      return;
+    }
+
+    final int maxIndex = totalPoints - 1;
+    final int spacingStep = Math.max(1, this.spacing);
+
+    if (spacingStep == 1) {
+      for (int i = 0; i < totalPoints; i++) {
+        this.plannedDisplayIndices.add(i);
+      }
+      return;
+    }
+
+    // Evenly distribute intervals along the entire path length so start and end align and gaps remain balanced
+    final int intervals = Math.max(1, (int) Math.round((double) maxIndex / spacingStep));
+    for (int step = 0; step <= intervals; step++) {
+      final int index = (int) Math.round((double) (step * maxIndex) / intervals);
+      this.plannedDisplayIndices.add(index);
+    }
+  }
+
   private boolean shouldDisplayAtIndex(int index, int pathSize) {
-    if (index == pathSize - 1) return true; // Destination is always displayed
-    return (index % this.spacing == 0);
+    return this.plannedDisplayIndices.contains(index);
+  }
+
+  private int getNextDisplayIndex(int currentIndex, int pathSize) {
+    final var next = this.plannedDisplayIndices.higher(currentIndex);
+    return next != null ? next : -1;
   }
 
   private void manageDisplays(final @NotNull Location playerLoc) {
@@ -309,6 +373,22 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
         final var itemToSpawn = getItemForIndex(i, this.currentPath.size());
         if (itemToSpawn != null && itemToSpawn.getType() != Material.AIR) {
           final var spawnLoc = loc.clone().add(0.5, 0.5, 0.5);
+
+          // Point directly towards the NEXT displayed item (yaw and pitch)
+          final int nextDisplayIdx = getNextDisplayIndex(i, this.currentPath.size());
+          if (nextDisplayIdx != -1) {
+            final var nextLoc = this.currentPath.get(nextDisplayIdx);
+            spawnLoc.setYaw(AStartPathFinder.getYaw(loc, nextLoc));
+            spawnLoc.setPitch(AStartPathFinder.getPitch(loc, nextLoc));
+          } else {
+            final var prevDisplayIdx = this.plannedDisplayIndices.lower(i);
+            if (prevDisplayIdx != null) {
+              final var prevLoc = this.currentPath.get(prevDisplayIdx);
+              spawnLoc.setYaw(AStartPathFinder.getYaw(prevLoc, loc));
+              spawnLoc.setPitch(AStartPathFinder.getPitch(prevLoc, loc));
+            }
+          }
+
           final var display = spawnLoc.getWorld().spawn(spawnLoc, ItemDisplay.class, d -> {
             d.setItemStack(itemToSpawn);
             d.setBillboard(this.billboard);

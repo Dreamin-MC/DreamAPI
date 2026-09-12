@@ -345,10 +345,7 @@ public final class AStartPathFinder {
     if (!from.getWorld().equals(to.getWorld()))
       return "N/A";
 
-    var angle = getYaw(from, to);
-
-    if (angle < 90.0)
-      angle += 360.0F;
+    final var angle = getYaw(from, to);
 
     if (angle >= 337.5 || angle < 22.5)
       return "South";
@@ -376,9 +373,11 @@ public final class AStartPathFinder {
 
     final var dx = to.getX() - from.getX();
     final var dz = to.getZ() - from.getZ();
-    final var yaw = Math.toDegrees(Math.atan2(dx, dz)) - 90.0;
 
-    return (float) yaw;
+    if (dx == 0 && dz == 0)
+      return from.getYaw();
+
+    return (float) ((Math.toDegrees(Math.atan2(-dx, dz)) + 360.0) % 360.0);
   }
 
   public static float getPitch(final @NotNull Location from, final @NotNull Location to) {
@@ -390,6 +389,9 @@ public final class AStartPathFinder {
     final var dz = to.getZ() - from.getZ();
 
     final var distanceXZ = Math.sqrt(dx * dx + dz * dz);
+    if (distanceXZ == 0)
+      return dy > 0 ? -90F : (dy < 0 ? 90F : 0F);
+
     final var pitch = -Math.toDegrees(Math.atan2(dy, distanceXZ));
 
     return (float) pitch;
