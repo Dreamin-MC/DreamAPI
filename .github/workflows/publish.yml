@@ -71,7 +71,7 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add README.md
             git commit -m "chore(release): bump version to ${{ env.VERSION }} in README [skip ci]"
-            git push origin main
+            git push origin HEAD:main
           else
             echo "No version changes in README.md to commit."
           fi
