@@ -58,6 +58,9 @@ jobs:
 
       - name: Update README.md versions
         run: |
+          git fetch origin main
+          git checkout -B main origin/main
+
           # 1. Update version badge in README.md
           sed -i -E "s/version-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?/version-${{ env.VERSION }}/" README.md
           
@@ -71,7 +74,7 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add README.md
             git commit -m "chore(release): bump version to ${{ env.VERSION }} in README [skip ci]"
-            git push origin HEAD:main
+            git push origin main || (git pull --rebase origin main && git push origin main)
           else
             echo "No version changes in README.md to commit."
           fi
