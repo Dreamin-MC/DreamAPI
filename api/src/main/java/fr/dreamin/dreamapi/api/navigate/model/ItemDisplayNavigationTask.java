@@ -6,6 +6,7 @@ import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingRecalcEvent;
 import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStopEvent;
 import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingWaypointReachEvent;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,6 +33,15 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
   @Nullable
   private final Consumer<ItemDisplay> animator;
 
+  @Getter
+  private int spacing = 1;
+
+  @Getter
+  private boolean facePlayer = false;
+
+  @Getter
+  private ItemDisplay.Billboard billboard = ItemDisplay.Billboard.FIXED;
+
   private Location lastCalcLocation;
   private final Map<Integer, ItemDisplay> activeDisplays = new HashMap<>();
 
@@ -56,20 +66,20 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
   public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
                                    final boolean safeMode, final double recalcMinDistance,
                                    final @Nullable ItemStack item) {
-    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, -1, null, item, null, null);
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, -1, 1, false, null, item, null, null);
   }
 
   public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
                                    final boolean safeMode, final double recalcMinDistance,
                                    final double displayRadius, final @Nullable ItemStack item) {
-    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, null, item, null, null);
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, 1, false, null, item, null, null);
   }
 
   public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
                                    final boolean safeMode, final double recalcMinDistance,
                                    final double displayRadius,
                                    final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem) {
-    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, startItem, middleItem, endItem, null);
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, 1, false, startItem, middleItem, endItem, null);
   }
 
   public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
@@ -77,7 +87,7 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
                                    final double displayRadius,
                                    final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
                                    final @Nullable Consumer<ItemDisplay> animator) {
-    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, startItem, middleItem, endItem, animator);
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, 1, false, startItem, middleItem, endItem, animator);
   }
 
   public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
@@ -86,15 +96,56 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
                                    final double displayRadius,
                                    final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
                                    final @Nullable Consumer<ItemDisplay> animator) {
+    this(player, targetLocation, safeMode, allowedMaterials, ignoredMaterials, recalcMinDistance, displayRadius, 1, false, startItem, middleItem, endItem, animator);
+  }
+
+  public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
+                                   final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
+                                   final @NotNull Set<Material> ignoredMaterials, final double recalcMinDistance,
+                                   final double displayRadius,
+                                   final int spacing, final boolean facePlayer,
+                                   final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
+                                   final @Nullable Consumer<ItemDisplay> animator) {
     super(targetLocation, new AStartPathFinder(safeMode, allowedMaterials, ignoredMaterials));
     this.player = player;
     this.recalcMinDistance = recalcMinDistance;
     this.displayRadius = displayRadius;
+    this.spacing = Math.max(1, spacing);
+    this.facePlayer = facePlayer;
+    this.billboard = facePlayer ? ItemDisplay.Billboard.CENTER : ItemDisplay.Billboard.FIXED;
     this.startItem = startItem;
     this.middleItem = middleItem;
     this.endItem = endItem;
     this.animator = animator;
     this.lastCalcLocation = player.getLocation().clone();
+  }
+
+  // ###############################################################
+  // -------------------------- SETTERS ----------------------------
+  // ###############################################################
+
+  public void setSpacing(int spacing) {
+    this.spacing = Math.max(1, spacing);
+  }
+
+  public void setFacePlayer(boolean facePlayer) {
+    this.facePlayer = facePlayer;
+    this.billboard = facePlayer ? ItemDisplay.Billboard.CENTER : ItemDisplay.Billboard.FIXED;
+    for (final var display : this.activeDisplays.values()) {
+      if (display != null && display.isValid()) {
+        display.setBillboard(this.billboard);
+      }
+    }
+  }
+
+  public void setBillboard(final @NotNull ItemDisplay.Billboard billboard) {
+    this.billboard = billboard;
+    this.facePlayer = (billboard == ItemDisplay.Billboard.CENTER);
+    for (final var display : this.activeDisplays.values()) {
+      if (display != null && display.isValid()) {
+        display.setBillboard(billboard);
+      }
+    }
   }
 
   // ###############################################################
@@ -116,9 +167,13 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
 
     final var playerLoc = this.player.getLocation();
 
-    updateCurrentIndex(playerLoc);
+    // 1. Update waypoint index bidirectionally (advancing and backtracking)
+    final double closestDistSq = updateCurrentIndex(playerLoc);
+
+    // 2. Synchronize visible displays (no flickering: removes passed, restores backed up, spawns ahead)
     manageDisplays(playerLoc);
 
+    // 3. Tick animation
     if (this.animator != null) {
       for (final var display : this.activeDisplays.values()) {
         if (display.isValid())
@@ -126,16 +181,26 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
       }
     }
 
-    final var distMoved = playerLoc.distanceSquared(this.lastCalcLocation);
-    if (distMoved < (this.recalcMinDistance * this.recalcMinDistance))
-      return;
+    // 4. Trigger recalculation ONLY if:
+    // - Initial start (no path yet)
+    // - Player deviated significantly from the path (> recalcMinDistance)
+    final double maxDeviationSq = this.recalcMinDistance * this.recalcMinDistance;
+    final boolean needsRecalc = (this.currentPath == null || this.currentPath.isEmpty() || closestDistSq > maxDeviationSq);
 
-    this.lastCalcLocation = playerLoc.clone();
+    if (needsRecalc) {
+      triggerRecalc();
+    }
+  }
 
-    if (this.recalculating) return;
+  /**
+   * Triggers an asynchronous path recalculation immediately.
+   * Can be called on startup or when deviation is detected.
+   */
+  public void triggerRecalc() {
+    if (this.recalculating || !this.player.isOnline()) return;
     this.recalculating = true;
 
-    final var playerBlockLoc = playerLoc.getBlock().getLocation();
+    final var playerBlockLoc = this.player.getLocation().getBlock().getLocation();
     final var targetBlockLoc = this.targetLocation.getBlock().getLocation();
 
     Bukkit.getScheduler().runTaskAsynchronously(DreamAPI.getAPI().plugin(), () -> {
@@ -144,8 +209,9 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
         if (!newPath.isEmpty()) {
           this.currentPath = newPath;
           this.currentPathIndex = 0;
-          clearDisplays(); // Clear old path displays
+          clearDisplays(); // Clear displays only on genuine deviation / initial path
           new PathFindingRecalcEvent(this, java.util.List.copyOf(newPath)).callEvent();
+          manageDisplays(this.player.getLocation());
         }
         this.recalculating = false;
       });
@@ -156,26 +222,56 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
   // ----------------------- PRIVATE METHODS -----------------------
   // ###############################################################
 
-  private void updateCurrentIndex(final @NotNull Location playerLoc) {
-    if (this.currentPath == null || this.currentPath.isEmpty()) return;
+  /**
+   * Updates {@link #currentPathIndex} to the waypoint closest to {@code playerLoc},
+   * scanning bidirectionally to support both advancing and backtracking.
+   *
+   * @return squared distance to the closest waypoint, or Double.MAX_VALUE if no path.
+   */
+  private double updateCurrentIndex(final @NotNull Location playerLoc) {
+    if (this.currentPath == null || this.currentPath.isEmpty()) return Double.MAX_VALUE;
 
     double minDist = Double.MAX_VALUE;
     int bestIndex = this.currentPathIndex;
 
-    for (int i = this.currentPathIndex; i < this.currentPath.size(); i++) {
+    // 1. Search in local window around currentPathIndex (prevents jumping across walls/hairpins)
+    final int windowStart = Math.max(0, this.currentPathIndex - 6);
+    final int windowEnd = Math.min(this.currentPath.size() - 1, this.currentPathIndex + 6);
+
+    for (int i = windowStart; i <= windowEnd; i++) {
       final var dist = playerLoc.distanceSquared(this.currentPath.get(i));
       if (dist < minDist) {
         minDist = dist;
         bestIndex = i;
       }
-      else if (dist > minDist + 9)
-        break;
+    }
+
+    // 2. If player is further than deviation distance in the local window, scan the full path
+    final double maxDeviationSq = this.recalcMinDistance * this.recalcMinDistance;
+    if (minDist > maxDeviationSq) {
+      for (int i = 0; i < this.currentPath.size(); i++) {
+        final var dist = playerLoc.distanceSquared(this.currentPath.get(i));
+        if (dist < minDist) {
+          minDist = dist;
+          bestIndex = i;
+        }
+      }
     }
 
     if (bestIndex != this.currentPathIndex) {
+      final int prevIndex = this.currentPathIndex;
       this.currentPathIndex = bestIndex;
-      new PathFindingWaypointReachEvent(this, this.currentPath.get(bestIndex), bestIndex).callEvent();
+      if (bestIndex > prevIndex) {
+        new PathFindingWaypointReachEvent(this, this.currentPath.get(bestIndex), bestIndex).callEvent();
+      }
     }
+
+    return minDist;
+  }
+
+  private boolean shouldDisplayAtIndex(int index, int pathSize) {
+    if (index == pathSize - 1) return true; // Destination is always displayed
+    return (index % this.spacing == 0);
   }
 
   private void manageDisplays(final @NotNull Location playerLoc) {
@@ -183,21 +279,27 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
 
     final var displayRadiusSq = this.displayRadius > 0 ? this.displayRadius * this.displayRadius : Double.MAX_VALUE;
 
-    // Remove displays that are out of bounds or behind the player
+    // 1. Remove displays that are behind the player, out of display radius, or not matching spacing
     final var it = this.activeDisplays.entrySet().iterator();
     while (it.hasNext()) {
       final var entry = it.next();
       final var index = entry.getKey();
       final var display = entry.getValue();
 
-      if (index < this.currentPathIndex || (this.displayRadius > 0 && display.getLocation().distanceSquared(playerLoc) > displayRadiusSq)) {
+      if (index < this.currentPathIndex
+          || (this.displayRadius > 0 && display.getLocation().distanceSquared(playerLoc) > displayRadiusSq)
+          || !shouldDisplayAtIndex(index, this.currentPath.size())) {
         display.remove();
         it.remove();
       }
     }
 
-    // Spawn new displays within radius
+    // 2. Spawn displays within radius that match the spacing
     for (int i = this.currentPathIndex; i < this.currentPath.size(); i++) {
+      if (!shouldDisplayAtIndex(i, this.currentPath.size())) {
+        continue;
+      }
+
       final var loc = this.currentPath.get(i);
       if (this.displayRadius > 0 && loc.distanceSquared(playerLoc) > displayRadiusSq) {
         continue;
@@ -209,7 +311,7 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
           final var spawnLoc = loc.clone().add(0.5, 0.5, 0.5);
           final var display = spawnLoc.getWorld().spawn(spawnLoc, ItemDisplay.class, d -> {
             d.setItemStack(itemToSpawn);
-            d.setBillboard(ItemDisplay.Billboard.CENTER);
+            d.setBillboard(this.billboard);
             try {
               d.setVisibleByDefault(false);
             } catch (NoSuchMethodError ignored) {}

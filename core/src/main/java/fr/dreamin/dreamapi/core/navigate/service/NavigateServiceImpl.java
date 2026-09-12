@@ -150,6 +150,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
       return null;
     
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 10L);
+    task.triggerRecalc();
     this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
     return task;
   }
@@ -181,6 +182,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
       return null;
     
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 10L);
+    task.triggerRecalc();
     this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
     return task;
   }
@@ -203,6 +205,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
       return null;
       
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 10L);
+    task.triggerRecalc();
     this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
     return task;
   }
@@ -281,15 +284,35 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
       final @NotNull Set<Material> allowedMaterials, final @NotNull Set<Material> ignoredMaterials,
       final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
       final @Nullable Consumer<ItemDisplay> animator) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, displayRadius, 1, false, allowedMaterials, ignoredMaterials, startItem, middleItem, endItem, animator);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance, final double displayRadius,
+      final int spacing, final boolean facePlayer, final @Nullable ItemStack item) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, displayRadius, spacing, facePlayer, Set.of(), Set.of(), null, item, null, null);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance, final double displayRadius,
+      final int spacing, final boolean facePlayer,
+      final @NotNull Set<Material> allowedMaterials, final @NotNull Set<Material> ignoredMaterials,
+      final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
+      final @Nullable Consumer<ItemDisplay> animator) {
 
     final var task = new ItemDisplayNavigationTask(
         player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, displayRadius,
-        startItem, middleItem, endItem, animator);
+        spacing, facePlayer, startItem, middleItem, endItem, animator);
 
     if (!new PathFindingStartEvent(task).callEvent())
       return null;
 
     task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 1L);
+    task.triggerRecalc();
     this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
     return task;
   }

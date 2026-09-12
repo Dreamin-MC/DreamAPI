@@ -180,6 +180,21 @@ public interface NavigateService extends DreamService {
                                                                  @Nullable ItemStack startItem, @Nullable ItemStack middleItem, @Nullable ItemStack endItem,
                                                                  @Nullable Consumer<ItemDisplay> animator);
 
+  /** Starts an item display navigation with custom spacing (in waypoints) and facePlayer toggle. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius, int spacing, boolean facePlayer,
+                                                                 @Nullable ItemStack item);
+
+  /** Full signature for item display navigation with custom spacing and facePlayer toggle. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius, int spacing, boolean facePlayer,
+                                                                 @NotNull Set<Material> allowedMaterials,
+                                                                 @NotNull Set<Material> ignoredMaterials,
+                                                                 @Nullable ItemStack startItem, @Nullable ItemStack middleItem, @Nullable ItemStack endItem,
+                                                                 @Nullable Consumer<ItemDisplay> animator);
+
   /** Stops all active navigations for this player. */
   void stopNavigation(@NotNull Player player);
 

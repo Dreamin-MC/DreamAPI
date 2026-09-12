@@ -143,25 +143,34 @@ public final class PathFindingTask extends AbstractNavigateTask {
 
     final var playerLoc = this.player.getLocation();
 
-    // Keep the current path index up to date with the player's position
-    updateCurrentIndex(playerLoc);
+    // Keep the current path index up to date with the player's position (bidirectional)
+    final double closestDistSq = updateCurrentIndex(playerLoc);
 
     // Always render the remaining path — never blank during recalculation
     if (this.dustOptions != null || this.particle != null)
       displayPathParticles();
 
-    // Trigger a recalculation only when the player has moved far enough
-    final var distMoved = playerLoc.distanceSquared(this.lastCalcLocation);
-    if (distMoved < (this.recalcMinDistance * this.recalcMinDistance))
-      return;
+    // Trigger recalculation ONLY if:
+    // 1) Path is not yet computed (initial calculation)
+    // 2) Player has deviated from the path (> recalcMinDistance)
+    final double maxDeviationSq = this.recalcMinDistance * this.recalcMinDistance;
+    final boolean needsRecalc = (this.currentPath == null || this.currentPath.isEmpty() || closestDistSq > maxDeviationSq);
 
-    this.lastCalcLocation = playerLoc.clone();
+    if (needsRecalc) {
+      triggerRecalc();
+    }
+  }
 
-    if (this.recalculating) return;
+  /**
+   * Triggers an asynchronous path recalculation immediately.
+   * Can be called on startup or when deviation is detected.
+   */
+  public void triggerRecalc() {
+    if (this.recalculating || !this.player.isOnline()) return;
     this.recalculating = true;
 
     // Capture block locations on the main thread BEFORE going async (Bukkit API is not thread-safe)
-    final var playerBlockLoc = playerLoc.getBlock().getLocation();
+    final var playerBlockLoc = this.player.getLocation().getBlock().getLocation();
     final var targetBlockLoc = this.targetLocation.getBlock().getLocation();
 
     Bukkit.getScheduler().runTaskAsynchronously(DreamAPI.getAPI().plugin(), () -> {
@@ -171,9 +180,11 @@ public final class PathFindingTask extends AbstractNavigateTask {
         if (!newPath.isEmpty()) {
           this.currentPath = newPath;
           this.currentPathIndex = 0;
-          new PathFindingRecalcEvent(this, List.copyOf(newPath));
+          new PathFindingRecalcEvent(this, List.copyOf(newPath)).callEvent();
           if (this.onRecalc != null)
             this.onRecalc.accept(List.copyOf(newPath));
+          if (this.dustOptions != null || this.particle != null)
+            displayPathParticles();
         }
         this.recalculating = false;
       });
@@ -185,32 +196,50 @@ public final class PathFindingTask extends AbstractNavigateTask {
   // ###############################################################
 
   /**
-   * Updates {@link #currentPathIndex} to the index of the waypoint
-   * closest to {@code playerLoc}, scanning forward from the current index only
-   * to prevent backtracking.
+   * Updates {@link #currentPathIndex} to the index of the waypoint closest to {@code playerLoc},
+   * scanning bidirectionally to support both advancing and backtracking.
+   *
+   * @return the squared distance to the closest waypoint, or Double.MAX_VALUE if no path.
    */
-  private void updateCurrentIndex(final @NotNull Location playerLoc) {
-    if (this.currentPath == null || this.currentPath.isEmpty()) return;
+  private double updateCurrentIndex(final @NotNull Location playerLoc) {
+    if (this.currentPath == null || this.currentPath.isEmpty()) return Double.MAX_VALUE;
 
     double minDist = Double.MAX_VALUE;
     int bestIndex = this.currentPathIndex;
 
-    for (int i = this.currentPathIndex; i < this.currentPath.size(); i++) {
+    // 1. Search in a local window around currentPathIndex (prevents jumping across walls/hairpins)
+    final int windowStart = Math.max(0, this.currentPathIndex - 6);
+    final int windowEnd = Math.min(this.currentPath.size() - 1, this.currentPathIndex + 6);
+
+    for (int i = windowStart; i <= windowEnd; i++) {
       final var dist = playerLoc.distanceSquared(this.currentPath.get(i));
       if (dist < minDist) {
         minDist = dist;
         bestIndex = i;
       }
-      else if (dist > minDist + 9) {
-        // Stop scanning once distance starts growing significantly (3 blocks ahead)
-        break;
+    }
+
+    // 2. If player is further than deviation distance in the local window, scan the full path
+    final double maxDeviationSq = this.recalcMinDistance * this.recalcMinDistance;
+    if (minDist > maxDeviationSq) {
+      for (int i = 0; i < this.currentPath.size(); i++) {
+        final var dist = playerLoc.distanceSquared(this.currentPath.get(i));
+        if (dist < minDist) {
+          minDist = dist;
+          bestIndex = i;
+        }
       }
     }
 
     if (bestIndex != this.currentPathIndex) {
+      final int prevIndex = this.currentPathIndex;
       this.currentPathIndex = bestIndex;
-      new PathFindingWaypointReachEvent(this, this.currentPath.get(bestIndex), bestIndex).callEvent();
+      if (bestIndex > prevIndex) {
+        new PathFindingWaypointReachEvent(this, this.currentPath.get(bestIndex), bestIndex).callEvent();
+      }
     }
+
+    return minDist;
   }
 
   /** Renders only the remaining path ahead of the player (from {@link #currentPathIndex}). */

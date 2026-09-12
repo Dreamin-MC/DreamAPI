@@ -427,6 +427,15 @@ public final class ServiceAnnotationProcessor implements Listener {
         continue;
       }
 
+      // Inject external service registered in Bukkit ServicesManager
+      try {
+        final var bukkitService = Bukkit.getServicesManager().load(param);
+        if (bukkitService != null) {
+          args[i] = bukkitService;
+          continue;
+        }
+      } catch (Throwable ignored) {}
+
       throw new RuntimeException(
         String.format("[DreamService] Unable to resolve dependency: %s for constructor %s", param.getName(), constructor)
       );
