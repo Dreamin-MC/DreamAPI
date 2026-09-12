@@ -81,10 +81,10 @@ public final class WorldDefinition {
   }
 
   public @Nullable String getGeneratorSettingsJson() {
-    return switch (this.type) {
-      case FLAT -> buildFlatWorldGeneratorSettingsJson();
-      default -> null;
-    };
+    if (this.type == WorldType.FLAT)
+      return buildFlatWorldGeneratorSettingsJson();
+    else
+      return null;
   }
 
   // ###############################################################

@@ -83,14 +83,12 @@ public final class GlowingEntityManager {
 
       if (!colorChanged && !optionsChanged) return;
 
-      if (color != null) {
-        if (glowData.getColor() != null && !glowData.getColor().equals(color))
-          removeTeamColor(viewer, entityIdentifier, glowData.getColor(), playerData);
+      if (glowData.getColor() != null && !glowData.getColor().equals(color))
+        removeTeamColor(viewer, entityIdentifier, glowData.getColor(), playerData);
 
-        glowData.setColor(color);
-        glowData.setOptions(options);
-        applyTeamColor(viewer, entityIdentifier, color, options, playerData);
-      }
+      glowData.setColor(color);
+      glowData.setOptions(options);
+      applyTeamColor(viewer, entityIdentifier, color, options, playerData);
     }
   }
 

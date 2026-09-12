@@ -28,8 +28,6 @@ public final class ShapelessFakeGUI extends GuiInterface {
   public Gui guiUpper(@NotNull Player player) {
 
     final var ing = this.recipe.getIngredients();
-    if (ing == null)
-      throw new IllegalStateException("ShapelessFakeGUI called on non-shapeless recipe: " + this.recipe.getKey());
 
     final var A = get(ing, 0);
     final var B = get(ing, 1);

@@ -6,6 +6,8 @@ import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.navigate.model.AStartPathFinder;
+import fr.dreamin.dreamapi.api.navigate.model.PathFindingTask;
+import fr.dreamin.dreamapi.api.navigate.model.ItemDisplayNavigationTask;
 import fr.dreamin.dreamapi.api.navigate.service.NavigateService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -118,8 +120,13 @@ public final class NavigateCmd {
       player.sendMessage(Component.text("  Path size   : %s waypoints".formatted(pathSize), NamedTextColor.AQUA));
       player.sendMessage(Component.text("  Path index  : %s / %s (remaining: %s)".formatted(pathIndex, pathSize, remaining), NamedTextColor.AQUA));
       player.sendMessage(Component.text("  Recalculating: %s".formatted(recalculating), recalculating ? NamedTextColor.YELLOW : NamedTextColor.GREEN));
-      player.sendMessage(Component.text("  RecalcDistance: %s blocks".formatted(task.getRecalcMinDistance()), NamedTextColor.AQUA));
-      player.sendMessage(Component.text("  Mode        : %s".formatted(task.getDustOptions() != null ? "Particle display" : "Callback"), NamedTextColor.AQUA));
+      if (task instanceof PathFindingTask pfTask) {
+        player.sendMessage(Component.text("  RecalcDistance: %s blocks".formatted(pfTask.getRecalcMinDistance()), NamedTextColor.AQUA));
+        player.sendMessage(Component.text("  Mode        : %s".formatted(pfTask.getDustOptions() != null ? "Particle display" : "Callback"), NamedTextColor.AQUA));
+      } else if (task instanceof ItemDisplayNavigationTask idTask) {
+        player.sendMessage(Component.text("  RecalcDistance: %s blocks".formatted(idTask.getRecalcMinDistance()), NamedTextColor.AQUA));
+        player.sendMessage(Component.text("  Mode        : ItemDisplay", NamedTextColor.AQUA));
+      }
     }
   }
 

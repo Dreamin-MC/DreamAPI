@@ -53,18 +53,15 @@ public final class CraftingVanillaGUI implements VanillaGuiInterface {
 
   private void fillShaped(final @NotNull CraftingInventory inv) {
     final var shape = this.recipe.getShape();
-    if (shape == null) return;
 
     var slot = 1;
 
     for (final var row : shape) {
-      for (final var def : row) {
+      for (final var def : row)
         inv.setItem(slot++, safe(def));
-      }
 
-      while ((slot - 1) % 3 != 1) {
+      while ((slot - 1) % 3 != 1)
         inv.setItem(slot++, null);
-      }
 
     }
 
@@ -76,7 +73,6 @@ public final class CraftingVanillaGUI implements VanillaGuiInterface {
 
   private void fillShapeless(final @NotNull CraftingInventory inv) {
     final var ingredients = this.recipe.getIngredients();
-    if (ingredients == null) return;
 
     var slot = 1;
 

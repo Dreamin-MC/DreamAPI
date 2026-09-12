@@ -54,6 +54,33 @@ public final class ItemDisplayNavigationTask extends AbstractNavigateTask {
   // ###############################################################
 
   public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
+                                   final boolean safeMode, final double recalcMinDistance,
+                                   final @Nullable ItemStack item) {
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, -1, null, item, null, null);
+  }
+
+  public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
+                                   final boolean safeMode, final double recalcMinDistance,
+                                   final double displayRadius, final @Nullable ItemStack item) {
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, null, item, null, null);
+  }
+
+  public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
+                                   final boolean safeMode, final double recalcMinDistance,
+                                   final double displayRadius,
+                                   final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem) {
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, startItem, middleItem, endItem, null);
+  }
+
+  public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
+                                   final boolean safeMode, final double recalcMinDistance,
+                                   final double displayRadius,
+                                   final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
+                                   final @Nullable Consumer<ItemDisplay> animator) {
+    this(player, targetLocation, safeMode, Set.of(), Set.of(), recalcMinDistance, displayRadius, startItem, middleItem, endItem, animator);
+  }
+
+  public ItemDisplayNavigationTask(final @NotNull Player player, final @NotNull Location targetLocation,
                                    final boolean safeMode, final @NotNull Set<Material> allowedMaterials,
                                    final @NotNull Set<Material> ignoredMaterials, final double recalcMinDistance,
                                    final double displayRadius,

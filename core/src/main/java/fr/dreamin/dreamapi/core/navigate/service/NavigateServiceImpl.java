@@ -1,11 +1,7 @@
 package fr.dreamin.dreamapi.core.navigate.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStartEvent;
-import fr.dreamin.dreamapi.api.navigate.event.player.PathFindingStartEvent;
-import fr.dreamin.dreamapi.api.navigate.model.AStartPathFinder;
-import fr.dreamin.dreamapi.api.navigate.model.EntityMovementTask;
-import fr.dreamin.dreamapi.api.navigate.model.PathFindingTask;
+import fr.dreamin.dreamapi.api.navigate.model.*;
 import fr.dreamin.dreamapi.api.navigate.service.NavigateService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
@@ -16,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +21,15 @@ import java.util.function.Consumer;
 
 import org.bukkit.scheduler.BukkitTask;
 
+import org.bukkit.entity.ItemDisplay;
+
+
 @DreamAutoService(NavigateService.class)
 public final class NavigateServiceImpl implements DreamService, NavigateService {
 
   private static final Particle.DustOptions DEFAULT_DUST = new Particle.DustOptions(Color.fromRGB(220, 20, 60), 1);
 
-  private final Map<UUID, Set<PathFindingTask>> playerNavigations = new HashMap<>();
+  private final Map<UUID, Set<AbstractNavigateTask>> playerNavigations = new HashMap<>();
   private final Map<UUID, EntityMovementTask> entityMovements = new HashMap<>();
 
   // ###############################################################
@@ -216,16 +216,100 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
     }
   }
 
+  // ###############################################################
+  // ---------------- ITEM DISPLAY NAVIGATION ----------------------
+  // ###############################################################
+
   @Override
-  public void stopNavigation(final @NotNull PathFindingTask task) {
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance,
+      final @Nullable ItemStack item) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, -1, Set.of(), Set.of(), null, item, null, null);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance,
+      final double displayRadius, final @Nullable ItemStack item) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, displayRadius, Set.of(), Set.of(), null, item, null, null);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance,
+      final double displayRadius,
+      final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, displayRadius, Set.of(), Set.of(), startItem, middleItem, endItem, null);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance,
+      final double displayRadius,
+      final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
+      final @Nullable Consumer<ItemDisplay> animator) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, displayRadius, Set.of(), Set.of(), startItem, middleItem, endItem, animator);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance,
+      final double displayRadius, final @NotNull Set<Material> allowedMaterials,
+      final @Nullable ItemStack item) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, displayRadius, allowedMaterials, Set.of(), null, item, null, null);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance,
+      final double displayRadius, final @NotNull Set<Material> allowedMaterials,
+      final @NotNull Set<Material> ignoredMaterials, final @Nullable ItemStack item) {
+    return startItemDisplayNavigation(player, end, safeMode, recalcDistance, displayRadius, allowedMaterials, ignoredMaterials, null, item, null, null);
+  }
+
+  @Override
+  public @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(
+      final @NotNull Player player, final @NotNull Location end,
+      final boolean safeMode, final double recalcDistance, final double displayRadius,
+      final @NotNull Set<Material> allowedMaterials, final @NotNull Set<Material> ignoredMaterials,
+      final @Nullable ItemStack startItem, final @Nullable ItemStack middleItem, final @Nullable ItemStack endItem,
+      final @Nullable Consumer<ItemDisplay> animator) {
+
+    final var task = new ItemDisplayNavigationTask(
+        player, end, safeMode, allowedMaterials, ignoredMaterials, recalcDistance, displayRadius,
+        startItem, middleItem, endItem, animator);
+
+    if (!new PathFindingStartEvent(task).callEvent())
+      return null;
+
+    task.runTaskTimer(DreamAPI.getAPI().plugin(), 0L, 1L);
+    this.playerNavigations.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>()).add(task);
+    return task;
+  }
+
+  @Override
+  public void stopNavigation(final @NotNull AbstractNavigateTask task) {
     if (!task.isCancelled()) task.cancel();
-    final var playerUUID = task.getPlayer().getUniqueId();
-    final var tasks = this.playerNavigations.get(playerUUID);
-    if (tasks != null) {
-      tasks.remove(task);
-      if (tasks.isEmpty())
-        this.playerNavigations.remove(playerUUID);
+
+    // Check player navigations
+    for (final var entry : this.playerNavigations.entrySet()) {
+      if (entry.getValue().remove(task)) {
+        if (entry.getValue().isEmpty()) {
+          this.playerNavigations.remove(entry.getKey());
+        }
+        return;
+      }
     }
+
+    // Check entity movements (in case it is passed here)
+    if (task instanceof EntityMovementTask entityTask)
+      this.entityMovements.remove(entityTask.getEntity().getUniqueId(), entityTask);
   }
 
   @Override
@@ -240,7 +324,7 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   public boolean isNavigating(final @NotNull Player player) {
     final var tasks = this.playerNavigations.get(player.getUniqueId());
     if (tasks == null) return false;
-    tasks.removeIf(PathFindingTask::isCancelled);
+    tasks.removeIf(AbstractNavigateTask::isCancelled);
     if (tasks.isEmpty()) {
       this.playerNavigations.remove(player.getUniqueId());
       return false;
@@ -249,12 +333,11 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   }
 
   @Override
-  public @NotNull Set<PathFindingTask> getNavigationTasks(final @NotNull Player player) {
+  public @NotNull Set<AbstractNavigateTask> getNavigationTasks(final @NotNull Player player) {
     final var tasks = this.playerNavigations.getOrDefault(player.getUniqueId(), new HashSet<>());
-    tasks.removeIf(PathFindingTask::isCancelled);
-    if (tasks.isEmpty()) {
+    tasks.removeIf(AbstractNavigateTask::isCancelled);
+    if (tasks.isEmpty())
       this.playerNavigations.remove(player.getUniqueId());
-    }
     return Set.copyOf(tasks);
   }
 
@@ -301,9 +384,8 @@ public final class NavigateServiceImpl implements DreamService, NavigateService 
   public void stopEntityMovement(final @NotNull EntityMovementTask task) {
     if (!task.isCancelled()) task.cancel();
     final var currentTask = this.entityMovements.get(task.getEntity().getUniqueId());
-    if (currentTask == task) {
+    if (currentTask == task)
       this.entityMovements.remove(task.getEntity().getUniqueId());
-    }
   }
 
   @Override

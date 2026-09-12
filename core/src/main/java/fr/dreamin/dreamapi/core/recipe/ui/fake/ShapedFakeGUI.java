@@ -31,8 +31,6 @@ public final class ShapedFakeGUI extends GuiInterface {
   public Gui guiUpper(@NotNull Player player) {
 
     final var shape = this.recipe.getShape();
-    if (shape == null)
-      throw new IllegalStateException("ShapedFakeGUI called on non-shaped recipe: " + this.recipe.getKey());
 
     final var A = get(shape, 0, 0);
     final var B = get(shape, 0, 1);

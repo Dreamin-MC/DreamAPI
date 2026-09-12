@@ -62,7 +62,7 @@ public final class GlowingBlockManager {
         blockData.setColor(color);
         blockData.setOptions(options);
 
-        if (blockData.isSpawned() && blockData.getEntityId() != null) {
+        if (blockData.isSpawned() && blockData.getEntityId() != null && blockData.getEntityUuid() != null) {
           this.entityManager.setGlowing(
             blockData.getEntityId(),
             blockData.getEntityUuid().toString(),

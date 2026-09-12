@@ -1,13 +1,16 @@
 package fr.dreamin.dreamapi.api.navigate.service;
 
 import fr.dreamin.dreamapi.api.navigate.model.EntityMovementTask;
+import fr.dreamin.dreamapi.api.navigate.model.ItemDisplayNavigationTask;
 import fr.dreamin.dreamapi.api.navigate.model.PathFindingTask;
+import fr.dreamin.dreamapi.api.navigate.model.AbstractNavigateTask;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.function.Consumer;
 
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
+
+import org.bukkit.entity.ItemDisplay;
 
 public interface NavigateService extends DreamService {
 
@@ -128,11 +133,58 @@ public interface NavigateService extends DreamService {
                                             double recalcDistance, @NotNull Set<Material> allowedMaterials, 
                                             @NotNull Set<Material> ignoredMaterials, @NotNull Particle particle);
 
+  // ###############################################################
+  // ---------------- ITEM DISPLAY NAVIGATION ----------------------
+  // ###############################################################
+
+  /** Starts an item display navigation with a single item for all waypoints and unlimited display radius. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 @Nullable ItemStack item);
+
+  /** Starts an item display navigation with a single item and a specific display radius. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius, @Nullable ItemStack item);
+
+  /** Starts an item display navigation with distinct start, middle and end items. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius,
+                                                                 @Nullable ItemStack startItem, @Nullable ItemStack middleItem, @Nullable ItemStack endItem);
+
+  /** Starts an item display navigation with distinct items and a tick animator. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius,
+                                                                 @Nullable ItemStack startItem, @Nullable ItemStack middleItem, @Nullable ItemStack endItem,
+                                                                 @Nullable Consumer<ItemDisplay> animator);
+
+  /** Starts an item display navigation restricted to specific floor materials. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius, @NotNull Set<Material> allowedMaterials,
+                                                                 @Nullable ItemStack item);
+
+  /** Starts an item display navigation with allowed floor materials and ignored materials. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius, @NotNull Set<Material> allowedMaterials,
+                                                                 @NotNull Set<Material> ignoredMaterials, @Nullable ItemStack item);
+
+  /** Full signature for item display navigation. */
+  @Nullable ItemDisplayNavigationTask startItemDisplayNavigation(@NotNull Player player, @NotNull Location end,
+                                                                 boolean safeMode, double recalcDistance,
+                                                                 double displayRadius, @NotNull Set<Material> allowedMaterials,
+                                                                 @NotNull Set<Material> ignoredMaterials,
+                                                                 @Nullable ItemStack startItem, @Nullable ItemStack middleItem, @Nullable ItemStack endItem,
+                                                                 @Nullable Consumer<ItemDisplay> animator);
+
   /** Stops all active navigations for this player. */
   void stopNavigation(@NotNull Player player);
 
   /** Stops a specific navigation task and removes it from the active list. */
-  void stopNavigation(@NotNull PathFindingTask task);
+  void stopNavigation(@NotNull AbstractNavigateTask task);
 
   /** Stops all active player navigations (e.g. on plugin shutdown). */
   void stopAllNavigations();
@@ -141,10 +193,10 @@ public interface NavigateService extends DreamService {
   boolean isNavigating(@NotNull Player player);
 
   /**
-   * Returns all active {@link PathFindingTask}s for this player.
+   * Returns all active {@link AbstractNavigateTask}s for this player.
    * Useful to inspect the current path, path index, destination, etc.
    */
-  @NotNull Set<PathFindingTask> getNavigationTasks(@NotNull Player player);
+  @NotNull Set<AbstractNavigateTask> getNavigationTasks(@NotNull Player player);
 
   // ###############################################################
   // -------------------- ENTITY MOVEMENT --------------------------
