@@ -1,0 +1,5 @@
+description = "DreamAPI - Skin Module"
+
+dependencies {
+  api project(":core")
+}

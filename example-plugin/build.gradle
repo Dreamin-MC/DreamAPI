@@ -10,11 +10,11 @@ description = "Example plugin"
 
 repositories {
   mavenCentral()
-  maven {url = "https://repo.papermc.io/repository/maven-public/"}
-  maven {url = "https://oss.sonatype.org/content/groups/public/"}
-  maven {url = 'https://repo.extendedclip.com/releases/'}
+  maven { url = "https://repo.papermc.io/repository/maven-public/" }
+  maven { url = "https://oss.sonatype.org/content/groups/public/" }
+  maven { url = 'https://repo.extendedclip.com/releases/' }
   maven { url = 'https://repo.codemc.org/repository/maven-public/' }
-  maven {url = 'https://jitpack.io' }
+  maven { url = 'https://jitpack.io' }
 }
 
 def mcVersion = "26.1.2"
@@ -25,9 +25,13 @@ def lombokVersion = "1.18.44"
 dependencies {
   compileOnly("io.papermc.paper:paper-api:$paperVersion")
 
-  implementation project(":api")
   implementation project(":core")
-  implementation project(":plugin-base")
+  implementation project(":command")
+  implementation project(":item")
+  implementation project(":gui")
+  implementation project(":cuboid")
+  implementation project(":recipe")
+  implementation project(":particle")
 
   // Cloud CommandFramework
   implementation("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")
@@ -46,10 +50,6 @@ tasks {
   }
 
   runServer {
-    // Configure the Minecraft version for our task.
-    // This is the only required configuration besides applying the plugin.
-    // Your plugin's jar (or shadowJar if present) will be used automatically.
     minecraftVersion(mcVersion)
   }
-
 }

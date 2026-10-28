@@ -1,0 +1,47 @@
+package fr.dreamin.dreamapi.core.cuboid.module;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import fr.dreamin.dreamapi.api.cuboid.Cuboid;
+import org.bukkit.Location;
+
+import java.io.IOException;
+
+/**
+ * Jackson module for serializing and deserializing Cuboid objects.
+ *
+ * @author Dreamin
+ * @since 1.0.0
+ */
+public final class CuboidModule extends SimpleModule {
+
+  public CuboidModule() {
+    super ("CuboidModule");
+
+    addSerializer(Cuboid.class, new JsonSerializer<>() {
+      @Override
+      public void serialize(final Cuboid value, final JsonGenerator gen, final SerializerProvider serializerProvider) throws IOException {
+        gen.writeStartObject();
+        gen.writeObjectField("locA", value.getLocA());
+        gen.writeObjectField("locB", value.getLocB());
+        gen.writeEndObject();
+      }
+    });
+
+    addDeserializer(Cuboid.class, new JsonDeserializer<>() {
+      @Override
+      public Cuboid deserialize(final JsonParser p, final DeserializationContext ctx) throws IOException {
+        final var node = (JsonNode) p.readValueAsTree();
+
+        final var locA = ctx.readTreeAsValue(node.get("locA"), Location.class);
+        final var locB = ctx.readTreeAsValue(node.get("locB"), Location.class);
+
+        return new Cuboid(locA, locB);
+      }
+    });
+  }
+
+}

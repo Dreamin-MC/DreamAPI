@@ -1,0 +1,11 @@
+description = "DreamAPI - Language & Localization Module"
+
+dependencies {
+  api project(":core")
+  api project(":item")
+  api project(":gui")
+  compileOnly project(":command")
+
+  api("xyz.xenondevs.invui:invui:$invuiVersion")
+  api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+}

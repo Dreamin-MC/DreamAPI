@@ -1,0 +1,5 @@
+description = "DreamAPI - Database & SQL Module"
+
+dependencies {
+  api project(":core")
+}

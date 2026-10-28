@@ -1,0 +1,9 @@
+description = "DreamAPI GUI & Inventory Framework Module"
+
+dependencies {
+  api project(":core")
+  api project(":item")
+  compileOnly project(":command")
+
+  api("xyz.xenondevs.invui:invui:$invuiVersion")
+}

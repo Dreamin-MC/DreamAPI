@@ -30,7 +30,7 @@ public final class InventoryUtils {
   // ###############################################################
 
   public static void copyTo(final @NotNull Inventory origin, final @NotNull Inventory goal, final @Nullable Location outLocation) {
-    for (var item : origin.getContents()) {
+    for (final var item : origin.getContents()) {
       if (item == null) continue;
       if (goal.firstEmpty() == -1) {
         if (outLocation != null)
@@ -47,7 +47,7 @@ public final class InventoryUtils {
   }
 
   public static void dropTo(final @NotNull Inventory inventory, final @NotNull Location location, final boolean clear) {
-    for (var item : inventory.getContents()) {
+    for (final var item : inventory.getContents()) {
       if (item != null) location.getWorld().dropItemNaturally(location, item.clone());
     }
     if (clear) inventory.clear();
@@ -59,7 +59,7 @@ public final class InventoryUtils {
 
   public static void remove(final @NotNull Inventory inv, final @NotNull ItemStack item, final int quantity) {
     var remaining = quantity;
-    for (var slot : inv.getContents()) {
+    for (final var slot : inv.getContents()) {
       if (slot == null) continue;
       if (equals(slot, item, CompareIgnoreAttribute.AMOUNT)) {
         final var remove = Math.min(slot.getAmount(), remaining);
@@ -110,7 +110,7 @@ public final class InventoryUtils {
 
   public static int count(final @NotNull Inventory inv, final @NotNull ItemStack item) {
     var total = 0;
-    for (var slot : inv.getContents()) {
+    for (final var slot : inv.getContents()) {
       if (slot == null) continue;
       if (equals(slot, item, CompareIgnoreAttribute.AMOUNT))
         total += slot.getAmount();
@@ -119,7 +119,7 @@ public final class InventoryUtils {
   }
 
   public static void merge(final @NotNull Inventory from, final @NotNull Inventory to, final @NotNull Predicate<@NotNull ItemStack> filter) {
-    for (var item : from.getContents()) {
+    for (final var item : from.getContents()) {
       if (item == null) continue;
       if (!filter.test(item)) continue;
 

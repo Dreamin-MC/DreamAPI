@@ -1,0 +1,7 @@
+description = "DreamAPI Per-Player WorldBorder Module"
+
+dependencies {
+  api project(":core")
+  api project(":nms")
+  compileOnly project(":command")
+}

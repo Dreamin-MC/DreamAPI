@@ -1,0 +1,5 @@
+description = "DreamAPI - Dialog Module"
+
+dependencies {
+  api project(":core")
+}

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ public class BukkitLocationModule extends SimpleModule {
     addDeserializer(Location.class, new JsonDeserializer<>() {
       @Override
       public Location deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        ObjectNode node = p.getCodec().readTree(p);
+        final var node = (JsonNode) p.getCodec().readTree(p);
 
         final var worldName = node.get("world").asText();
         final var world = Bukkit.getWorld(worldName);

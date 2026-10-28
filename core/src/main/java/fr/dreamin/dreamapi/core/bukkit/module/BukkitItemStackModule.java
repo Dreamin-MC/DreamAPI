@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Module for serializing and deserializing Bukkit ItemStack objects using Jackson.
@@ -30,9 +31,9 @@ public class BukkitItemStackModule extends SimpleModule {
     addDeserializer(ItemStack.class, new JsonDeserializer<>() {
       @Override
       public ItemStack deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws IOException {
-        final ObjectMapper mapper = (ObjectMapper) jsonParser.getCodec();
-        final TypeFactory typeFactory = mapper.getTypeFactory();
-        final var mapType = typeFactory.constructMapType(java.util.Map.class, String.class, Object.class);
+        final var mapper = (ObjectMapper) jsonParser.getCodec();
+        final var typeFactory = mapper.getTypeFactory();
+        final var mapType = typeFactory.constructMapType(Map.class, String.class, Object.class);
 
         return ItemStack.deserialize(mapper.readValue(jsonParser, mapType));
       }

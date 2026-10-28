@@ -147,10 +147,9 @@ public final class DebugServiceImpl implements DreamService, DebugService {
   public void setWriterEnabled(@NotNull Class<? extends DebugWriter> clazz, boolean enabled) {
     this.writerStates.put(clazz, enabled);
 
-    for (final var writer : this.writers) {
+    for (final var writer : this.writers)
       if (writer.getClass().equals(clazz))
         writer.setEnabled(enabled);
-    }
   }
 
   @Override
@@ -184,10 +183,9 @@ public final class DebugServiceImpl implements DreamService, DebugService {
   public void shutdown() {
     this.workerThread.interrupt();
 
-    for (final var writer : this.writers) {
+    for (final var writer : this.writers)
       if (writer instanceof DailyFileDebugWriter dfw)
         dfw.close();
-    }
   }
 
   // ###############################################################

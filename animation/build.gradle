@@ -1,0 +1,8 @@
+description = "DreamAPI - Animation Module"
+
+dependencies {
+  api project(":core")
+
+  api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+  compileOnly("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
+}

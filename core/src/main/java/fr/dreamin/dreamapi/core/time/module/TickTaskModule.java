@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.dreamin.dreamapi.core.time.TickTask;
@@ -29,8 +30,8 @@ public final class TickTaskModule extends SimpleModule {
     addDeserializer((Class<TickTask<?>>)(Class<?>) TickTask.class, new JsonDeserializer<>() {
       @Override
       public TickTask<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        ObjectNode node = p.getCodec().readTree(p);
-        TickTask<?> task = new TickTask() {};
+        final var node = (JsonNode) p.getCodec().readTree(p);
+        final var task = new TickTask() {};
 
         if (node.has("current")) task.reset().limit(node.get("limit").asLong());
         if (node.has("start")) task.startAt(node.get("limit").asLong());

@@ -130,7 +130,7 @@ public final class MojangAPI {
 
     final var json = JsonParser.parseString(response).getAsJsonObject();
     if (json.has("properties")) {
-      for (var el : json.getAsJsonArray("properties")) {
+      for (final var el : json.getAsJsonArray("properties")) {
         final var prop = el.getAsJsonObject();
         final var name = prop.get("name").getAsString();
         final var value = prop.get("value").getAsString();
@@ -162,7 +162,7 @@ public final class MojangAPI {
     }
     reader.close();
 
-    String response = builder.toString();
+    final var response = builder.toString();
     if (response.isEmpty())
       throw new Exception("Response from server is empty.");
 

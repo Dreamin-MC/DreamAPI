@@ -53,7 +53,7 @@ public final class ListenerAnnotationProcessor {
   // ###############################################################
 
   private void scanListeners(final @NotNull Set<Class<?>> classes, final @NotNull AtomicInteger loaded, final @NotNull AtomicInteger failed) {
-    for (final var clazz: classes) {
+    for (final var clazz : classes) {
       try {
         if (!clazz.isAnnotationPresent(DreamEvent.class)) continue;
         if (!Listener.class.isAssignableFrom(clazz)) continue;

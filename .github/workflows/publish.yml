@@ -23,22 +23,53 @@ jobs:
         id: extract_version
         run: |
           TAG="${{ github.ref_name }}"
-          # Remove leading 'v' if present (e.g., v0.5.3 -> 0.5.3, 0.5.3 -> 0.5.3)
-          CLEAN_VERSION="${TAG#v}"
-          echo "VERSION=${CLEAN_VERSION}" >> $GITHUB_ENV
-          echo "TAG=${TAG}" >> $GITHUB_ENV
-          
-          echo "Detected Tag Version : ${CLEAN_VERSION}"
+          KNOWN_MODULES="all animation command core cuboid database dialog glowing gui hologram hooks http item lang navigate nms particle recipe skin world worldborder"
 
-          # Strict Changelog Validation
-          if [ -f "changelog/${CLEAN_VERSION}.md" ]; then
-            CHANGELOG="changelog/${CLEAN_VERSION}.md"
-          elif [ -f "changelog/${TAG}.md" ]; then
-            CHANGELOG="changelog/${TAG}.md"
+          if [[ "$TAG" =~ ^([a-zA-Z0-9_-]+)-v?([0-9]+\.[0-9]+.*)$ ]]; then
+            CANDIDATE_MOD="${BASH_REMATCH[1]}"
+            CLEAN_VERSION="${BASH_REMATCH[2]}"
+            IS_KNOWN=false
+            for m in $KNOWN_MODULES; do
+              if [ "$m" = "$CANDIDATE_MOD" ]; then
+                IS_KNOWN=true
+                break
+              fi
+            done
+
+            if [ "$IS_KNOWN" = true ]; then
+              echo "IS_MODULE=true" >> $GITHUB_ENV
+              echo "MODULE=${CANDIDATE_MOD}" >> $GITHUB_ENV
+              echo "VERSION=${CLEAN_VERSION}" >> $GITHUB_ENV
+              echo "TAG=${TAG}" >> $GITHUB_ENV
+              echo "RELEASE_NAME=DreamAPI ${CANDIDATE_MOD} v${CLEAN_VERSION}" >> $GITHUB_ENV
+              CHANGELOG="changelog/${CANDIDATE_MOD}/${CLEAN_VERSION}.md"
+            else
+              echo "::error::❌ Release aborted: Unknown or retired module '${CANDIDATE_MOD}' in tag '${TAG}'!"
+              exit 1
+            fi
+          elif [[ "$TAG" =~ ^v?([0-9]+\.[0-9]+.*)$ ]]; then
+            CLEAN_VERSION="${BASH_REMATCH[1]}"
+            echo "IS_MODULE=false" >> $GITHUB_ENV
+            echo "MODULE=" >> $GITHUB_ENV
+            echo "VERSION=${CLEAN_VERSION}" >> $GITHUB_ENV
+            echo "TAG=${TAG}" >> $GITHUB_ENV
+            echo "RELEASE_NAME=DreamAPI v${CLEAN_VERSION}" >> $GITHUB_ENV
+            if [ -f "changelog/${CLEAN_VERSION}.md" ]; then
+              CHANGELOG="changelog/${CLEAN_VERSION}.md"
+            elif [ -f "changelog/all/${CLEAN_VERSION}.md" ]; then
+              CHANGELOG="changelog/all/${CLEAN_VERSION}.md"
+            elif [ -f "changelog/${TAG}.md" ]; then
+              CHANGELOG="changelog/${TAG}.md"
+            else
+              CHANGELOG="changelog/${CLEAN_VERSION}.md"
+            fi
           else
-            echo "::error::❌ Release aborted: No changelog found for version '${CLEAN_VERSION}'!"
-            echo "::error::Expected file: changelog/${CLEAN_VERSION}.md"
-            echo "::error::Please create the changelog file before pushing the tag."
+            echo "::error::❌ Release aborted: Invalid tag format '${TAG}'!"
+            exit 1
+          fi
+
+          if [ ! -f "$CHANGELOG" ]; then
+            echo "::error::❌ Release aborted: No changelog found at '${CHANGELOG}' for tag '${TAG}'!"
             exit 1
           fi
 
@@ -49,34 +80,40 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
-          name: DreamAPI ${{ env.VERSION }}
+          name: ${{ env.RELEASE_NAME }}
           body_path: ${{ env.CHANGELOG_FILE }}
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update README.md versions
+      - name: Update versions.properties & README.md
         run: |
           git fetch origin main
           git checkout -B main origin/main
 
-          # 1. Update version badge in README.md
-          sed -i -E "s/version-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?/version-${{ env.VERSION }}/" README.md
-          
-          # 2. Update Maven/Gradle code snippets in README.md
-          sed -i -E "s/(<version>)[^<]+(<\/version>)/\1${{ env.VERSION }}\2/" README.md
-          sed -i -E "s/(com\.github\.Dreamin-MC:DreamAPI:)[^\"'\)]+/\1${{ env.VERSION }}/" README.md
-          sed -i -E "s/(compileOnly ['\"]com\.github\.Dreamin-MC:DreamAPI:)[^'\"]+(['\"])/\1${{ env.VERSION }}\2/" README.md
+          if [ "${{ env.IS_MODULE }}" = "true" ]; then
+            if [ -f "versions.properties" ]; then
+              sed -i -E "s/^(${{ env.MODULE }}=).*/\1${{ env.VERSION }}/" versions.properties
+            fi
+            sed -i -E "s/(com\.github\.Dreamin-MC\.DreamAPI:dreamapi-${{ env.MODULE }}:)[^\"'\)]+/\1${{ env.TAG }}/" README.md
+          else
+            if [ -f "versions.properties" ]; then
+              sed -i -E "s/^([a-zA-Z0-9_-]+=).*/\1${{ env.VERSION }}/" versions.properties
+            fi
+            sed -i -E "s/version-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?/version-${{ env.VERSION }}/" README.md
+            sed -i -E "s/(<version>)[^<]+(<\/version>)/\1${{ env.VERSION }}\2/" README.md
+            sed -i -E "s/(com\.github\.Dreamin-MC(\.DreamAPI)?:[a-zA-Z0-9_-]+:)[^\"'\)]+/\1${{ env.VERSION }}/" README.md
+          fi
 
-          if ! git diff --quiet README.md; then
+          if ! git diff --quiet README.md versions.properties; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add README.md
-            git commit -m "chore(release): bump version to ${{ env.VERSION }} in README [skip ci]"
+            git add README.md versions.properties
+            git commit -m "chore(release): bump ${{ env.MODULE || 'global' }} to ${{ env.VERSION }} in versions.properties & README [skip ci]"
             git push origin main || (git pull --rebase origin main && git push origin main)
           else
-            echo "No version changes in README.md to commit."
+            echo "No version changes in README.md or versions.properties to commit."
           fi
 
       - name: Rollback / Delete remote tag on failure

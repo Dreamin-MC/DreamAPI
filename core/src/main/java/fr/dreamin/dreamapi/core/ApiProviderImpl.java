@@ -2,20 +2,15 @@ package fr.dreamin.dreamapi.core;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.core.hologram.jackson.HologramJacksonModule;
 import fr.dreamin.dreamapi.core.bukkit.module.*;
-import fr.dreamin.dreamapi.core.recipe.module.CustomRecipeModule;
-import fr.dreamin.dreamapi.core.cuboid.module.CuboidModule;
-import fr.dreamin.dreamapi.core.cuboid.module.MemoryCuboidModule;
-import fr.dreamin.dreamapi.core.cuboid.module.MovableCuboidModule;
-import fr.dreamin.dreamapi.core.item.listener.PlayerItemListener;
-import fr.dreamin.dreamapi.core.particle.module.*;
 import fr.dreamin.dreamapi.core.time.module.TickTaskModule;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -29,14 +24,30 @@ import java.util.logging.Logger;
  * at startup (via {@link DreamAPI#setProvider(DreamAPI.IApiProvider)}).
  * </p>
  *
- * <p>
- * if not already initialized.
- * </p>
- *
  * @author Dreamin
  * @since 1.0.0
  */
 public record ApiProviderImpl(Plugin plugin) implements DreamAPI.IApiProvider {
+
+  public static final List<String> OPTIONAL_JACKSON_MODULES = List.of(
+    "fr.dreamin.dreamapi.core.cuboid.module.CuboidModule",
+    "fr.dreamin.dreamapi.core.cuboid.module.MemoryCuboidModule",
+    "fr.dreamin.dreamapi.core.cuboid.module.MovableCuboidModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticleAnimationModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticleChainMorphModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticleOptionsModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticlePathModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticleSequenceItemModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticleSequenceModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticleShapeModule",
+    "fr.dreamin.dreamapi.core.particle.module.ParticleShapeMorphModule",
+    "fr.dreamin.dreamapi.core.recipe.module.CustomRecipeModule",
+    "fr.dreamin.dreamapi.core.hologram.jackson.HologramJacksonModule"
+  );
+
+  public static final List<String> OPTIONAL_LISTENERS = List.of(
+    "fr.dreamin.dreamapi.core.item.listener.PlayerItemListener"
+  );
 
   /**
    * Constructs and registers a new API provider instance.
@@ -62,7 +73,7 @@ public record ApiProviderImpl(Plugin plugin) implements DreamAPI.IApiProvider {
   @Override
   public <T> T getService(@NotNull Class<T> serviceClass) {
     final var sm = Bukkit.getServicesManager();
-    T service = sm.load(serviceClass);
+    final var service = sm.load(serviceClass);
     if (service == null)
       throw new IllegalStateException("Service " + serviceClass.getName() + " is not loaded");
     return service;
@@ -98,30 +109,31 @@ public record ApiProviderImpl(Plugin plugin) implements DreamAPI.IApiProvider {
     Configurations.addModule(new BukkitPotionEffectModule());
     Configurations.addModule(new BukkitComponentModule());
     Configurations.addModule(new BukkitBlockDataModule());
-
-    Configurations.addModule(new CuboidModule());
-    Configurations.addModule(new MemoryCuboidModule());
-    Configurations.addModule(new MovableCuboidModule());
-
-    Configurations.addModule(new ParticleAnimationModule());
-    Configurations.addModule(new ParticleChainMorphModule());
-    Configurations.addModule(new ParticleOptionsModule());
-    Configurations.addModule(new ParticlePathModule());
-    Configurations.addModule(new ParticleSequenceItemModule());
-    Configurations.addModule(new ParticleSequenceModule());
-    Configurations.addModule(new ParticleShapeModule());
-    Configurations.addModule(new ParticleShapeMorphModule());
-
     Configurations.addModule(new TickTaskModule());
 
-    Configurations.addModule(new CustomRecipeModule());
-
-    Configurations.addModule(new HologramJacksonModule());
-
+    for (final var moduleClass : OPTIONAL_JACKSON_MODULES) {
+      try {
+        final var clazz = Class.forName(moduleClass, false, getClass().getClassLoader());
+        final var ctor = clazz.getDeclaredConstructor();
+        ctor.setAccessible(true);
+        final var module = (com.fasterxml.jackson.databind.Module) ctor.newInstance();
+        Configurations.addModule(module);
+      } catch (Throwable ignored) {
+      }
+    }
   }
 
   private void loadListeners() {
-    Bukkit.getPluginManager().registerEvents(new PlayerItemListener(), this.plugin);
+    for (final var listenerClass : OPTIONAL_LISTENERS) {
+      try {
+        final var clazz = Class.forName(listenerClass, false, getClass().getClassLoader());
+        final var ctor = clazz.getDeclaredConstructor();
+        ctor.setAccessible(true);
+        final var listener = (Listener) ctor.newInstance();
+        Bukkit.getPluginManager().registerEvents(listener, this.plugin);
+      } catch (Throwable ignored) {
+      }
+    }
   }
 
 }

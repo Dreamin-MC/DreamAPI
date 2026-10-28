@@ -14,25 +14,23 @@ public final class DataUtils {
   }
 
   public static byte @NotNull [] readByteArray(final @NotNull DataInputStream din) throws IOException {
-    int size = din.readInt();
-    byte[] array = new byte[size];
+    final var size = din.readInt();
+    final var array = new byte[size];
     din.readFully(array);
     return array;
   }
 
   public static void write2DByteArray(final @NotNull DataOutputStream dos, final byte @NotNull [] @NotNull [] array2d) throws IOException {
     dos.writeInt(array2d.length);
-    for (var array : array2d) {
+    for (final var array : array2d)
       writeByteArray(dos, array);
-    }
   }
 
   public static byte @NotNull [] @NotNull [] read2DByteArray(final @NotNull DataInputStream din) throws IOException {
     final var size2d = din.readInt();
     final var array2d = new byte[size2d][];
-    for (var i = 0; i < size2d; i++) {
+    for (var i = 0; i < size2d; i++)
       array2d[i] = readByteArray(din);
-    }
     return array2d;
   }
 

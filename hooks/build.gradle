@@ -1,0 +1,13 @@
+description = "DreamAPI - Third-Party Plugin Hooks Module"
+
+dependencies {
+  api project(":core")
+  api project(":item")
+  api project(":world")
+
+  compileOnly("com.ticxo.modelengine:ModelEngine:$modelEngineVersion")
+  compileOnly("net.citizensnpcs:citizens-main:$citizensVersion")
+  compileOnly("net.luckperms:api:$luckPermsVersion")
+  compileOnly("com.bergerkiller.bukkit:BKCommonLib:$bkCommonLibVersion")
+  compileOnly("com.flowpowered:flow-nbt:$flowNbtVersion")
+}

@@ -165,7 +165,7 @@ public final class GUICmd {
   }
 
   private static @NotNull VirtualInventory createDemoVirtualInventory() {
-    final ItemStack[] items = new ItemStack[18];
+    final var items = new ItemStack[18];
     items[0] = new ItemStack(Material.DIAMOND, 3);
     items[1] = new ItemStack(Material.GOLD_INGOT, 12);
     items[2] = new ItemStack(Material.EMERALD, 7);

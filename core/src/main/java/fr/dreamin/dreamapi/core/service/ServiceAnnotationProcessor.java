@@ -70,7 +70,7 @@ public final class ServiceAnnotationProcessor implements Listener {
     // Step 2: Build dependency graph
     final var graph = new HashMap<Class<?>, List<Class<?>>>();
     for (final var clazz : annotated) {
-      DreamAutoService annotation = clazz.getAnnotation(DreamAutoService.class);
+      final var annotation = clazz.getAnnotation(DreamAutoService.class);
       graph.put(clazz, Arrays.asList(annotation.dependencies()));
     }
 
@@ -83,11 +83,11 @@ public final class ServiceAnnotationProcessor implements Listener {
       return;
     }
 
-    int ok = 0;
-    int fail = 0;
+    var ok = 0;
+    var fail = 0;
 
     // Step 4: Instantiate and register services in the correct order
-    for(Class<?> implClass : loadOrder) {
+    for (final var implClass : loadOrder) {
       try {
         instantiateAndRegisterService(implClass);
         ok++;
@@ -210,7 +210,7 @@ public final class ServiceAnnotationProcessor implements Listener {
 
   /**
    * Creates or instantiates a non-service class using the same
-   * constructor resolution & injection logic as services.
+   * constructor resolution and injection logic as services.
    *
    * This does NOT register the class as a service.
    */
@@ -356,10 +356,9 @@ public final class ServiceAnnotationProcessor implements Listener {
     // 2) If the class has @Inject → use the best constructor
     if (clazz.isAnnotationPresent(Inject.class)) {
       var best = constructors[0];
-      for (final var c : constructors) {
+      for (final var c : constructors)
         if (c.getParameterCount() > best.getParameterCount())
           best = c;
-      }
 
       best.setAccessible(true);
       return best;

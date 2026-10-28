@@ -174,11 +174,10 @@ public final class MathUtils {
     final var z = location.getBlockZ() + 0.5;
     final var yaw = location.getYaw();
 
-    float[] yaws = {0, 45, 90, 135, 180, -45, -90, -135, -180};
+    final var yaws = new float[]{0, 45, 90, 135, 180, -45, -90, -135, -180};
     var closestYaw = yaws[0];
-    for (var yVal : yaws) {
+    for (final var yVal : yaws)
       if (Math.abs(yVal - yaw) < Math.abs(closestYaw - yaw)) closestYaw = yVal;
-    }
 
     return new Location(location.getWorld(), x, y, z, closestYaw, 0);
   }

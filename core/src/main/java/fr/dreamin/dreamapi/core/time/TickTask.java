@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * TickTask - a flexible task system designed for Minecraft ticks.
  * <p>
  * Can be used in two ways:
- * <pre>
+ * <pre>{@code
  * // 1 Builder pattern
  * TickTask.builder(plugin)
  *   .every(1)
@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * }
  *
  * new MyTimer(plugin).start();
- * </pre>
+ * }</pre>
  */
 @Getter
 @Accessors(fluent = true)

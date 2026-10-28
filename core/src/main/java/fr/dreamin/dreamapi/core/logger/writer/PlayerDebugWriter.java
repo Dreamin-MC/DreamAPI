@@ -65,7 +65,7 @@ public final class PlayerDebugWriter implements DebugWriter {
   private Player resolveTarget(final @NotNull String category) {
     if (!category.startsWith("Player=")) return null;
 
-    String key = category.substring("Player=".length());
+    final var key = category.substring("Player=".length());
 
     try {
       final var id = UUID.fromString(key);

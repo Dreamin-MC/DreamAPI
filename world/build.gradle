@@ -1,0 +1,5 @@
+description = "DreamAPI World & Dynamic Game Instance Module"
+
+dependencies {
+  api project(":core")
+}

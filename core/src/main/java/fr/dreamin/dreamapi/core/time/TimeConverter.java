@@ -10,7 +10,7 @@ public final class TimeConverter {
   }
 
   public static long getTime(final long time1, final long time2) {
-    return java.lang.Math.abs(time1 - time2);
+    return Math.abs(time1 - time2);
   }
   public static String getTimeSecMin(final long start, final int cooldown) {
     final var timeBetween = getTime(start, new Date().getTime());
@@ -33,7 +33,7 @@ public final class TimeConverter {
     var secondsVar = seconds;
 
     if (secondsVar > 60) {
-      var minutes = secondsVar / 60;
+      final var minutes = secondsVar / 60;
       secondsVar = secondsVar % 60;
       if (secondsVar < 10) return minutes + ":0" + secondsVar + "min";
       else return minutes + ":" + secondsVar + "min";
@@ -47,7 +47,7 @@ public final class TimeConverter {
       var minutes = seconds / 60;
       seconds = seconds % 60;
       if (minutes > 60) {
-        var hours = minutes / 60;
+        final var hours = minutes / 60;
         minutes = minutes % 60;
 
         return hours + "h" + (minutes > 9 ? minutes + "m" :  "0" + minutes + "m") + (seconds > 9 ? seconds + "s" :  "0" + seconds + "s");

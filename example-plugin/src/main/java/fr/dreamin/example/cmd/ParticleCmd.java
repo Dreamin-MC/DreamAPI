@@ -22,8 +22,8 @@ public final class ParticleCmd {
   private void test(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
-    Location startLoc = player.getLocation().add(0, 1, 0);
-    Location endLoc = startLoc.clone().add(8, 1, 0);
+    final var startLoc = player.getLocation().add(0, 1, 0);
+    final var endLoc = startLoc.clone().add(8, 1, 0);
 
     var path = ParticlePath.between(startLoc, endLoc)
       .ease(InterpolationType.EASE_IN_OUT);
@@ -31,8 +31,8 @@ public final class ParticleCmd {
     var options = ParticleShape.ParticleOptions.ofColor(Color.RED)
       .count(1);
 
-    var shape = ParticleForms.tornado(4.5, 4, 7,60);
-    var cicrlce = ParticleShapes.circle(4, 60);
+    final var shape = ParticleForms.tornado(4.5, 4, 7,60);
+    final var cicrlce = ParticleShapes.circle(4, 60);
 
     ParticleShapeMorph.create()
       .particle(Particle.DUST)
@@ -65,10 +65,10 @@ public final class ParticleCmd {
   private void test2(CommandSender sender) {
     if (!(sender instanceof Player player)) return;
 
-    Location startLoc = player.getLocation().add(0, 1, 0);
-    Location endLoc = player.getLocation().add(0, 1, 0);
+    final var startLoc = player.getLocation().add(0, 1, 0);
+    final var endLoc = player.getLocation().add(0, 1, 0);
 
-    var shape = ParticleForms.tornado(2.5, 1.5, 17,100);
+    final var shape = ParticleForms.tornado(2.5, 1.5, 17,100);
 
     var path = ParticlePath.between(startLoc, endLoc)
       .ease(InterpolationType.EASE_IN_OUT);
@@ -100,18 +100,18 @@ public final class ParticleCmd {
     if (!(sender instanceof Player player)) return;
 
     // 1. Définir les formes
-    ParticleShape circle = ParticleShapes.circle(5, 100);
-    ParticleShape sphere = ParticleForms.hollowSphere(2, 700);
-    ParticleShape heart = ParticleForms.heart(3.5, 100);
+    final var circle = ParticleShapes.circle(5, 100);
+    final var sphere = ParticleForms.hollowSphere(2, 700);
+    final var heart = ParticleForms.heart(3.5, 100);
 
-    Location startLoc = player.getLocation().add(0, 1, 0);
-    Location endLoc = startLoc.clone().add(0, 1, 0);
+    final var startLoc = player.getLocation().add(0, 1, 0);
+    final var endLoc = startLoc.clone().add(0, 1, 0);
 
     var path = ParticlePath.between(startLoc, endLoc)
       .ease(InterpolationType.EASE_IN_OUT);
 
-    Location startLoc1 = player.getLocation().add(9, 1, 0);
-    Location endLoc1 = startLoc.clone().add(15, 1, 0);
+    final var startLoc1 = player.getLocation().add(9, 1, 0);
+    final var endLoc1 = startLoc.clone().add(15, 1, 0);
 
     var path2 = ParticlePath.between(startLoc1, endLoc1)
       .ease(InterpolationType.EASE_IN_OUT);

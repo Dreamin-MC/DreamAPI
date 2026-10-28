@@ -49,11 +49,11 @@ public final class BukkitTransformationModule extends SimpleModule {
     addDeserializer(Transformation.class, new JsonDeserializer<>() {
       @Override
       public Transformation deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        final JsonNode node = p.getCodec().readTree(p);
+        final var node = (JsonNode) p.getCodec().readTree(p);
         if (node == null || node.isNull())
           return defaultTransformation();
 
-        final JsonNode scaleNode = firstPresent(node, "scale");
+        final var scaleNode = firstPresent(node, "scale");
 
         final var translation = readVector3f(
           firstPresent(node, "translation"),

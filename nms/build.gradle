@@ -1,0 +1,8 @@
+description = "DreamAPI NMS & Packet Reflection Module"
+
+dependencies {
+  api project(":core")
+  compileOnly project(":command")
+
+  compileOnly("io.netty:netty-all:$nettyVersion")
+}

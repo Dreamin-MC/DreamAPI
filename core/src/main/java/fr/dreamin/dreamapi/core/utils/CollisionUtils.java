@@ -19,7 +19,7 @@ public final class CollisionUtils {
     BoundingBox topBox = null;
 
     var maxY = Double.NEGATIVE_INFINITY;
-    for (var box : shape.getBoundingBoxes()) {
+    for (final var box : shape.getBoundingBoxes()) {
       if (box.getMaxY() > maxY) {
         maxY = box.getMaxY();
         topBox = box;
@@ -49,7 +49,7 @@ public final class CollisionUtils {
 
     var maxY = Double.NEGATIVE_INFINITY;
 
-    for (var box : shape.getBoundingBoxes()) {
+    for (final var box : shape.getBoundingBoxes()) {
       if (box.contains(localX, box.getMinY(), localZ))
         maxY = Math.max(maxY, box.getMaxY());
     }

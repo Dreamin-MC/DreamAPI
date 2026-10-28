@@ -1,0 +1,8 @@
+description = "DreamAPI Item & Item Builder Module"
+
+dependencies {
+  api project(":core")
+  compileOnly project(":command")
+
+  compileOnly("xyz.xenondevs.invui:invui:$invuiVersion")
+}

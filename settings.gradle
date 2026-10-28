@@ -1,2 +1,26 @@
 rootProject.name = "DreamAPI"
-include("api", "core", "plugin-base", "example-plugin")
+
+include(
+  "core",
+  "nms",
+  "item",
+  "gui",
+  "recipe",
+  "cuboid",
+  "particle",
+  "hologram",
+  "glowing",
+  "worldborder",
+  "world",
+  "navigate",
+  "lang",
+  "dialog",
+  "skin",
+  "database",
+  "http",
+  "command",
+  "animation",
+  "hooks",
+  "all",
+  "example-plugin"
+)

@@ -1,0 +1,8 @@
+description = "DreamAPI - Command Framework Module"
+
+dependencies {
+  api project(":core")
+
+  api("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")
+  api("cloud.commandframework:cloud-annotations:$cloudCommandFrameworkVersion")
+}

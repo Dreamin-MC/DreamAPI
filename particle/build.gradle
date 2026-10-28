@@ -1,0 +1,7 @@
+description = "DreamAPI Particle & Animation FX Module"
+
+dependencies {
+  api project(":core")
+
+  api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+}

@@ -10,9 +10,8 @@ import java.util.function.Predicate;
 public final class ArrayUtils {
 
   public static int findFirstEmptyIndex(@Nullable Object @NotNull [] array) {
-    for (var index = 0; index < array.length; index++) {
+    for (var index = 0; index < array.length; index++)
       if (array[index] == null) return index;
-    }
 
     return -1;
   }
@@ -21,7 +20,7 @@ public final class ArrayUtils {
     final var occurrences = new HashMap<Integer, T>();
 
     for (var index = 0; index < array.length; index++) {
-      T t = array[index];
+      final var t = array[index];
       if (predicate.test(t)) occurrences.put(index, t);
     }
 
@@ -30,7 +29,7 @@ public final class ArrayUtils {
 
   @SuppressWarnings("unchecked")
   public static <T> T[] concat(@Nullable T first, @Nullable T @NotNull[] rest) {
-    T[] result = (T[]) new Object[rest.length + 1];
+    final var result = (T[]) new Object[rest.length + 1];
     result[0] = first;
     System.arraycopy(rest, 0, result, 1, rest.length);
     return result;

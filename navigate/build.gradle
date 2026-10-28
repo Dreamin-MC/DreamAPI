@@ -1,0 +1,6 @@
+description = "DreamAPI - Navigation & Pathfinding Module"
+
+dependencies {
+  api project(":core")
+  compileOnly project(":command")
+}

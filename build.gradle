@@ -10,38 +10,58 @@ java {
   }
 }
 
+def versionsProps = new Properties()
+def versionsFile = rootProject.file("versions.properties")
+if (versionsFile.exists()) {
+  versionsFile.withInputStream { versionsProps.load(it) }
+}
+
 subprojects {
   apply plugin: "java"
-  apply plugin: "com.gradleup.shadow"
   apply plugin: "java-library"
+  apply plugin: "com.gradleup.shadow"
 
   group = "fr.dreamin"
-  version = "0.5.8"
-  description = "DreamAPI - API modulaire for Paper 26.1.2"
+  if (project.hasProperty("${project.name}.version")) {
+    version = project.property("${project.name}.version")
+  } else if (versionsProps.containsKey(project.name)) {
+    version = versionsProps.getProperty(project.name)
+  } else {
+    version = "0.6.0"
+  }
+  description = "DreamAPI - Modular API for Paper 26.1.2+"
 
   repositories {
     mavenCentral()
     maven { url = "https://repo.papermc.io/repository/maven-public/" }
-    maven { url = 'https://repo.xenondevs.xyz/releases' }
-    maven { url = "https://ci.mg-dev.eu/plugin/repository/everything"}
-    maven { url = "https://maven.citizensnpcs.co/repo"}
+    maven { url = "https://repo.xenondevs.xyz/releases" }
+    maven { url = "https://ci.mg-dev.eu/plugin/repository/everything" }
+    maven { url = "https://maven.citizensnpcs.co/repo" }
+    maven { url = "https://mvn.lumine.io/repository/maven-public/" }
+    maven { url = "https://oss.sonatype.org/content/groups/public/" }
   }
 
-  def mcVersion = "26.1.2"
-  def paperVersion = mcVersion + ".build.+"
-  def lombokVersion = "1.18.44"
-  def jetbrainsAnnotationsVersion = "24.1.0"
-  def jacksonVersion = "2.19.1"
-  def httpClientVersion = "5.3.1"
-  def bkCommonLibVersion = "1.21.8-v1-SNAPSHOT"
-  def luckPermsVersion = "5.4"
-  def invuiVersion = "2.1.0"
-  def citizensVersion = "2.0.37-SNAPSHOT"
-  def junitVersion = "5.10.0"
-  def jomlVersion = "1.10.8"
+  ext {
+    mcVersion = "26.1.2"
+    paperVersion = mcVersion + ".build.+"
+    lombokVersion = "1.18.44"
+    jetbrainsAnnotationsVersion = "24.1.0"
+    jacksonVersion = "2.19.1"
+    httpClientVersion = "5.3.1"
+    bkCommonLibVersion = "1.21.8-v1-SNAPSHOT"
+    luckPermsVersion = "5.4"
+    invuiVersion = "2.1.0"
+    citizensVersion = "2.0.37-SNAPSHOT"
+    modelEngineVersion = "R4.1.0"
+    cloudCommandFrameworkVersion = "1.8.4"
+    flowNbtVersion = "1.0.0"
+    nettyVersion = "4.1.68.Final"
+    junitVersion = "5.10.0"
+    junitPlatformVersion = "1.10.0"
+    jomlVersion = "1.10.8"
+  }
 
   dependencies {
-
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
 
     compileOnly("org.projectlombok:lombok:$lombokVersion")
@@ -49,26 +69,13 @@ subprojects {
 
     compileOnly("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
 
-    compileOnly("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-
-    implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
-
-    compileOnly("com.bergerkiller.bukkit:BKCommonLib:$bkCommonLibVersion")
-
-    compileOnly("net.luckperms:api:$luckPermsVersion")
-
-    implementation("xyz.xenondevs.invui:invui:$invuiVersion")
-
-    compileOnly("net.citizensnpcs:citizens-main:$citizensVersion") {
-      exclude group: '*', module: '*'
-    }
-
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    testCompileOnly("io.papermc.paper:paper-api:$paperVersion")
+    testImplementation("io.papermc.paper:paper-api:$paperVersion")
     testImplementation("org.joml:joml:$jomlVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
   }
 
   def targetJavaVersion = JavaVersion.VERSION_25
@@ -78,14 +85,58 @@ subprojects {
     if (JavaVersion.current() < targetJavaVersion) {
       toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion.majorVersion))
     }
+    if (project.name != "example-plugin") {
+      withJavadocJar()
+      withSourcesJar()
+    }
   }
 
   tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
   }
 
+  tasks.withType(Javadoc).configureEach {
+    options.encoding = "UTF-8"
+    options.addStringOption("Xdoclint:none", "-quiet")
+    failOnError = false
+  }
+
   test {
     useJUnitPlatform()
   }
 
+  if (project.name != "example-plugin") {
+    apply plugin: "maven-publish"
+
+    base {
+      archivesName.set("dreamapi-${project.name}")
+    }
+
+    publishing {
+      publications {
+        mavenJava(MavenPublication) {
+          from components.java
+          groupId = project.group
+          artifactId = "dreamapi-${project.name}"
+          version = project.version
+        }
+      }
+    }
+  }
+}
+
+tasks.register("aggregateJavadoc", Javadoc) {
+  group = "documentation"
+  description = "Generates aggregated Javadoc for all DreamAPI library modules."
+  destinationDir = layout.buildDirectory.dir("docs/javadoc").get().asFile
+
+  def sourceModules = subprojects.findAll { it.name != "example-plugin" && it.name != "all" }
+  dependsOn(sourceModules.collect { it.tasks.named("classes") })
+
+  source(sourceModules.collect { it.sourceSets.main.allJava })
+  classpath = files(sourceModules.collect { it.sourceSets.main.compileClasspath })
+
+  options.encoding = "UTF-8"
+  options.addStringOption("Xdoclint:none", "-quiet")
+  failOnError = false
 }

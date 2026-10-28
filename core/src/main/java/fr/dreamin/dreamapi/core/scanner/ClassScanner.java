@@ -13,6 +13,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.jar.JarEntry;
 
 public final class ClassScanner {
 
@@ -33,7 +34,7 @@ public final class ClassScanner {
     validateParentPackageLevels(parentPackageLevels);
 
     final var scanPackage = trimPackage(packageName, parentPackageLevels);
-    final Set<Class<?>> classes = new HashSet<>();
+    final var classes = new HashSet<Class<?>>();
     final var path = scanPackage.replace('.', '/');
     final var classLoader = plugin.getClass().getClassLoader();
     final var context = new ScanContext(scanPackage, recursive, classes, classLoader);
@@ -81,7 +82,7 @@ public final class ClassScanner {
     scanJarEntries(jarFile.entries(), context);
   }
 
-  private static void scanJarEntries(final @NotNull Enumeration<java.util.jar.JarEntry> entries, final @NotNull ScanContext context) throws ClassNotFoundException {
+  private static void scanJarEntries(final @NotNull Enumeration<JarEntry> entries, final @NotNull ScanContext context) throws ClassNotFoundException {
     while (entries.hasMoreElements()) {
       final var entry = entries.nextElement();
       final var name = entry.getName();
@@ -125,10 +126,10 @@ public final class ClassScanner {
   }
 
   private static @NotNull String trimPackage(final @NotNull String packageName, final int parentPackageLevels) {
-    String current = packageName;
+    var current = packageName;
 
     for (int i = 0; i < parentPackageLevels; i++) {
-      final int dot = current.lastIndexOf('.');
+      final var dot = current.lastIndexOf('.');
       if (dot < 0)
         throw new IllegalArgumentException(String.format("Cannot trim %d levels from package '%s'", parentPackageLevels, packageName));
       current = current.substring(0, dot);

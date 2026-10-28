@@ -14,8 +14,9 @@ def jomlVersion = "1.10.8"
 def junitPlatformVersion = "1.10.0"
 def jacksonVersion = "2.19.1"
 
+
 dependencies {
-  implementation project(":api")
+  api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
   implementation("cloud.commandframework:cloud-paper:$cloudCommandFrameworkVersion")
   implementation("cloud.commandframework:cloud-annotations:$cloudCommandFrameworkVersion")

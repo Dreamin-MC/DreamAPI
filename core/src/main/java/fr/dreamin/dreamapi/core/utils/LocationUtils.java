@@ -15,7 +15,7 @@ public final class LocationUtils {
    */
   public static float getOppositeYaw(final float yaw) {
     // Normalize the yaw to be within [0, 360)
-    float normalizedYaw = ((yaw % 360) + 360) % 360;
+    final var normalizedYaw = ((yaw % 360) + 360) % 360;
 
     // Add 180 degrees to get the opposite direction, then normalize again
     return (normalizedYaw + 180) % 360;
@@ -30,9 +30,8 @@ public final class LocationUtils {
    * @return true if a location is within the radius, false otherwise.
    */
   public static boolean hasLocationInRayon(final List<@NotNull Location> locList, final Location centerLoc, final double radius) {
-    for (var location : locList) {
+    for (final var location : locList)
       if (centerLoc.distance(location) <= radius) return true;
-    }
     return false;
   }
 
@@ -44,7 +43,7 @@ public final class LocationUtils {
    * @return The adjusted location at ground level.
    */
   public static @Nullable Location findNearestGroundLocation(final @NotNull Location start) {
-    final int maxDepth = 400;
+    final var maxDepth = 400;
     final var baseY = start.getBlockY();
 
     for (var i = 0; i < maxDepth; i++) {

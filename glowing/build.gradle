@@ -1,0 +1,9 @@
+description = "DreamAPI Glowing Entity & Block Outline Module"
+
+dependencies {
+  api project(":core")
+  api project(":nms")
+  compileOnly project(":command")
+
+  compileOnly("io.netty:netty-all:$nettyVersion")
+}

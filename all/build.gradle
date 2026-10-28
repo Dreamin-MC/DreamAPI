@@ -1,0 +1,24 @@
+description = "DreamAPI - All-in-one Umbrella Library"
+
+dependencies {
+  api project(":core")
+  api project(":nms")
+  api project(":item")
+  api project(":gui")
+  api project(":recipe")
+  api project(":cuboid")
+  api project(":particle")
+  api project(":hologram")
+  api project(":glowing")
+  api project(":worldborder")
+  api project(":world")
+  api project(":navigate")
+  api project(":lang")
+  api project(":dialog")
+  api project(":skin")
+  api project(":database")
+  api project(":http")
+  api project(":command")
+  api project(":animation")
+  api project(":hooks")
+}

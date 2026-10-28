@@ -1,0 +1,10 @@
+description = "DreamAPI Custom Recipe Management Module"
+
+dependencies {
+  api project(":core")
+  api project(":item")
+  api project(":gui")
+
+  api("xyz.xenondevs.invui:invui:$invuiVersion")
+  api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+}

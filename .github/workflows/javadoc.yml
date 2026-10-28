@@ -1,0 +1,52 @@
+name: Publish Javadoc to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  javadoc:
+    name: Build & Deploy Javadoc
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'gradle'
+
+      - name: Generate Aggregated and Per-Module Javadoc
+        run: ./gradlew aggregateJavadoc javadoc -x test
+
+      - name: Stage GitHub Pages Directory
+        run: |
+          mkdir -p build/gh-pages-staging/modules
+          if [ -d "build/docs/javadoc" ]; then
+            cp -r build/docs/javadoc/* build/gh-pages-staging/
+          fi
+          for mod in core nms item gui recipe cuboid particle hologram glowing worldborder world navigate lang dialog skin database http command animation hooks; do
+            if [ -d "${mod}/build/docs/javadoc" ]; then
+              mkdir -p "build/gh-pages-staging/modules/${mod}"
+              cp -r "${mod}/build/docs/javadoc/"* "build/gh-pages-staging/modules/${mod}/"
+            fi
+          done
+          touch build/gh-pages-staging/.nojekyll
+
+      - name: Deploy to GitHub Pages (gh-pages)
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: build/gh-pages-staging
+          clean: true
