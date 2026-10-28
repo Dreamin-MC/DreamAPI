@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.recipe;
 
-import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
-import fr.dreamin.dreamapi.api.recipe.RecipeTag;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeCategory;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeTag;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;

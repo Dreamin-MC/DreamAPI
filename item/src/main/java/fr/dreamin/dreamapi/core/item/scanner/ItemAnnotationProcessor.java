@@ -1,8 +1,9 @@
 package fr.dreamin.dreamapi.core.item.scanner;
 
-import fr.dreamin.dreamapi.api.item.*;
 import fr.dreamin.dreamapi.api.item.annotations.DreamItem;
 import fr.dreamin.dreamapi.api.item.annotations.OnDreamItemUse;
+import fr.dreamin.dreamapi.api.item.model.*;
+import fr.dreamin.dreamapi.api.item.service.ItemRegistryService;
 import fr.dreamin.dreamapi.core.service.ServiceAnnotationProcessor;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.Plugin;

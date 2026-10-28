@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.recipe.ui.vanilla;
 
-import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
 import fr.dreamin.dreamapi.core.gui.VanillaGuiInterface;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;

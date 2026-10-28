@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.core.particle.ParticleSequenceItem;
+import fr.dreamin.dreamapi.core.particle.model.ParticleSequenceItem;
 import fr.dreamin.dreamapi.core.time.TickTask;
 import fr.dreamin.dreamapi.core.time.module.TickTaskModule;
 

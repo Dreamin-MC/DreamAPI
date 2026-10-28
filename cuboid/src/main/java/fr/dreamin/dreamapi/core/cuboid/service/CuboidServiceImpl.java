@@ -5,7 +5,7 @@ import fr.dreamin.dreamapi.api.cuboid.service.CuboidService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;
-import fr.dreamin.dreamapi.api.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.cuboid.model.Cuboid;
 import fr.dreamin.dreamapi.core.cuboid.event.*;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import lombok.RequiredArgsConstructor;

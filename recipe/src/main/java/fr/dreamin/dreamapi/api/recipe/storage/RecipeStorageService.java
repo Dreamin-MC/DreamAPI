@@ -1,8 +1,8 @@
 package fr.dreamin.dreamapi.api.recipe.storage;
 
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
-import fr.dreamin.dreamapi.api.recipe.RecipeType;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 

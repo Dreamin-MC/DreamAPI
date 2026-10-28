@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.api.recipe.condition;
 
-import fr.dreamin.dreamapi.api.recipe.RecipeCraftingType;
-import fr.dreamin.dreamapi.api.recipe.RecipeType;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeCraftingType;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;

@@ -4,7 +4,7 @@ import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeCategoryRegistryService;
 import fr.dreamin.dreamapi.core.recipe.DefaultRecipeCategories;
-import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeCategory;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

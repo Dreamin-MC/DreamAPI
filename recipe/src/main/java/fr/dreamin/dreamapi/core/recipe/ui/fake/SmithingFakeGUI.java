@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.recipe.ui.fake;
 
-import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
-import fr.dreamin.dreamapi.api.recipe.IngredientDefinition;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.IngredientDefinition;
 import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import lombok.RequiredArgsConstructor;

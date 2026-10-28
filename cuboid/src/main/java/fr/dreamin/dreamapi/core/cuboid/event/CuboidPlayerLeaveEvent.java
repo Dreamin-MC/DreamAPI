@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.cuboid.event;
 
-import fr.dreamin.dreamapi.api.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.cuboid.model.Cuboid;
 import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.Location;

@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.api.item.annotations;
 
-import fr.dreamin.dreamapi.api.item.ItemAction;
+import fr.dreamin.dreamapi.api.item.model.ItemAction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

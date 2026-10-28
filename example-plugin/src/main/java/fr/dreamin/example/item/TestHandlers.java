@@ -1,7 +1,7 @@
 package fr.dreamin.example.item;
 
-import fr.dreamin.dreamapi.api.item.ItemAction;
-import fr.dreamin.dreamapi.api.item.ItemContext;
+import fr.dreamin.dreamapi.api.item.model.ItemAction;
+import fr.dreamin.dreamapi.api.item.model.ItemContext;
 import fr.dreamin.dreamapi.api.item.annotations.OnDreamItemUse;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;

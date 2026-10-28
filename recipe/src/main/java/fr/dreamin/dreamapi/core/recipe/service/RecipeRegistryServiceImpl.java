@@ -1,9 +1,12 @@
 package fr.dreamin.dreamapi.core.recipe.service;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.recipe.*;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeConditionContext;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeConditionResult;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeCraftingType;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeRegistry;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeTag;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;

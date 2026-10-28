@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
 import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
-import fr.dreamin.dreamapi.core.particle.ParticlePath;
-import fr.dreamin.dreamapi.core.particle.ParticleShape;
-import fr.dreamin.dreamapi.core.particle.ParticleShapeMorph;
+import fr.dreamin.dreamapi.core.particle.model.ParticlePath;
+import fr.dreamin.dreamapi.core.particle.model.ParticleShape;
+import fr.dreamin.dreamapi.core.particle.model.ParticleShapeMorph;
 import org.bukkit.Particle;
 
 import java.io.IOException;

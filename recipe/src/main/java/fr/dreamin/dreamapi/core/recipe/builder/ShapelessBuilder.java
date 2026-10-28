@@ -1,10 +1,10 @@
 package fr.dreamin.dreamapi.core.recipe.builder;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.item.ItemDefinition;
-import fr.dreamin.dreamapi.api.item.ItemRegistryService;
-import fr.dreamin.dreamapi.api.recipe.*;
+import fr.dreamin.dreamapi.api.item.model.ItemDefinition;
+import fr.dreamin.dreamapi.api.item.service.ItemRegistryService;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeCondition;
+import fr.dreamin.dreamapi.api.recipe.model.*;
 import fr.dreamin.dreamapi.core.recipe.impl.CustomRecipeImpl;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

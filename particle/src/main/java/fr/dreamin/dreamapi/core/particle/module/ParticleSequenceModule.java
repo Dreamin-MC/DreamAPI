@@ -7,8 +7,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.core.particle.ParticleSequence;
-import fr.dreamin.dreamapi.core.particle.ParticleSequenceItem;
+import fr.dreamin.dreamapi.core.particle.model.ParticleSequence;
+import fr.dreamin.dreamapi.core.particle.model.ParticleSequenceItem;
 
 import java.io.IOException;
 import java.util.HashMap;

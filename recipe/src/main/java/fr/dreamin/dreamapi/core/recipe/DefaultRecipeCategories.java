@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.recipe;
 
 import fr.dreamin.dreamapi.api.recipe.service.RecipeCategoryRegistryService;
-import fr.dreamin.dreamapi.api.recipe.RecipeTag;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeTag;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 

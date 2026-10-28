@@ -2,7 +2,7 @@ package fr.dreamin.dreamapi.core.recipe.module;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
 
 public final class CustomRecipeModule extends SimpleModule {
 

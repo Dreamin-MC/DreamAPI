@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.api.recipe.service;
 
-import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeCategory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import fr.dreamin.dreamapi.api.cuboid.Cuboid;
+import fr.dreamin.dreamapi.api.cuboid.model.Cuboid;
 import org.bukkit.Location;
 
 import java.io.IOException;

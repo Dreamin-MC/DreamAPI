@@ -1,7 +1,8 @@
 package fr.dreamin.dreamapi.core.item.service;
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
-import fr.dreamin.dreamapi.api.item.*;
+import fr.dreamin.dreamapi.api.item.model.*;
+import fr.dreamin.dreamapi.api.item.service.ItemRegistryService;
 import fr.dreamin.dreamapi.api.services.DreamAutoService;
 import fr.dreamin.dreamapi.api.services.DreamService;
 import fr.dreamin.dreamapi.api.annotations.Inject;

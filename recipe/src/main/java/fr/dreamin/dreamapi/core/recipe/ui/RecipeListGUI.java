@@ -2,8 +2,7 @@ package fr.dreamin.dreamapi.core.recipe.ui;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
-import fr.dreamin.dreamapi.api.recipe.RecipeTag;
-import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeCategory;
 import fr.dreamin.dreamapi.core.recipe.ui.fake.FurnaceFakeGUI;
 import fr.dreamin.dreamapi.core.recipe.ui.fake.ShapedFakeGUI;
 import fr.dreamin.dreamapi.core.recipe.ui.fake.ShapelessFakeGUI;
@@ -32,7 +31,6 @@ import xyz.xenondevs.invui.item.ItemProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 public final class RecipeListGUI extends GuiInterface {

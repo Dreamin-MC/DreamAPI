@@ -2,9 +2,9 @@ package fr.dreamin.dreamapi.core.modelengine.listener;
 
 import com.ticxo.modelengine.api.events.BaseEntityInteractEvent;
 import fr.dreamin.dreamapi.api.dependency.RequiresDependency;
-import fr.dreamin.dreamapi.api.item.ItemAction;
-import fr.dreamin.dreamapi.api.item.ItemContext;
-import fr.dreamin.dreamapi.api.item.ItemRegistryService;
+import fr.dreamin.dreamapi.api.item.model.ItemAction;
+import fr.dreamin.dreamapi.api.item.model.ItemContext;
+import fr.dreamin.dreamapi.api.item.service.ItemRegistryService;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

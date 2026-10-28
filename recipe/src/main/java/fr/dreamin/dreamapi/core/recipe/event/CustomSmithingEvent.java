@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.core.recipe.event;
 
-import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
 import fr.dreamin.dreamapi.api.event.ToolsCancelEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

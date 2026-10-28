@@ -11,7 +11,7 @@ import fr.dreamin.dreamapi.api.cmd.DreamCmd;
 import fr.dreamin.dreamapi.api.worldborder.model.IWorldBorder;
 import fr.dreamin.dreamapi.api.worldborder.model.Position;
 import fr.dreamin.dreamapi.api.worldborder.model.WorldBorderData;
-import fr.dreamin.dreamapi.api.worldborder.model.WorldBorderService;
+import fr.dreamin.dreamapi.api.worldborder.service.WorldBorderService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;

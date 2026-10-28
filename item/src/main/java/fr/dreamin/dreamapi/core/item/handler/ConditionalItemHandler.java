@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.item.handler;
 
-import fr.dreamin.dreamapi.api.item.ItemContext;
-import fr.dreamin.dreamapi.api.item.ItemHandler;
+import fr.dreamin.dreamapi.api.item.model.ItemContext;
+import fr.dreamin.dreamapi.api.item.model.ItemHandler;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 

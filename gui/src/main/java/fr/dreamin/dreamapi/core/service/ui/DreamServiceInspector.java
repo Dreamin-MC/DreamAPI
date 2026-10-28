@@ -152,13 +152,13 @@ public class DreamServiceInspector {
         for (final var dep : deps)
           componentDeps.add(Component.text("- " + dep.getClass().getSimpleName(), NamedTextColor.GOLD));
 
-      final var dependants = manager.getAllLoadedServices().entrySet().stream()
-        .filter(e -> {
-          final var a = e.getKey().getAnnotation(DreamAutoService.class);
+      final var dependants = manager.getAllLoadedServices().keySet().stream()
+        .filter(aClass -> {
+          final var a = aClass.getAnnotation(DreamAutoService.class);
           if (a == null) return false;
           return Arrays.asList(a.dependencies()).contains(clazz);
         })
-        .map(e -> e.getKey().getSimpleName())
+        .map(Class::getSimpleName)
         .toList();
 
       return Gui.builder()

@@ -1,6 +1,6 @@
 package fr.dreamin.dreamapi.api.world.service;
 
-import fr.dreamin.dreamapi.api.world.WorldDefinition;
+import fr.dreamin.dreamapi.api.world.model.WorldDefinition;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

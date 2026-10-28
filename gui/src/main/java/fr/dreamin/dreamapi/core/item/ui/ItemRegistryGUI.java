@@ -1,8 +1,8 @@
 package fr.dreamin.dreamapi.core.item.ui;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.item.ItemRegistryService;
-import fr.dreamin.dreamapi.api.item.RegisteredItem;
+import fr.dreamin.dreamapi.api.item.service.ItemRegistryService;
+import fr.dreamin.dreamapi.api.item.model.RegisteredItem;
 import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;

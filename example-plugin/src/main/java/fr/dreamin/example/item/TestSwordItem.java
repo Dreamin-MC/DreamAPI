@@ -1,9 +1,9 @@
 package fr.dreamin.example.item;
 
-import fr.dreamin.dreamapi.api.item.ItemAction;
-import fr.dreamin.dreamapi.api.item.ItemDefinition;
-import fr.dreamin.dreamapi.api.item.ItemDefinitionSupplier;
-import fr.dreamin.dreamapi.api.item.ItemTag;
+import fr.dreamin.dreamapi.api.item.model.ItemAction;
+import fr.dreamin.dreamapi.api.item.model.ItemDefinition;
+import fr.dreamin.dreamapi.api.item.model.ItemDefinitionSupplier;
+import fr.dreamin.dreamapi.api.item.model.ItemTag;
 import fr.dreamin.dreamapi.api.item.annotations.DreamItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import lombok.RequiredArgsConstructor;

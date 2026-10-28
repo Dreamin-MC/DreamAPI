@@ -8,8 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import fr.dreamin.dreamapi.api.cuboid.MemoryCuboid;
+import fr.dreamin.dreamapi.api.cuboid.model.MemoryCuboid;
 import org.bukkit.Location;
 
 import java.io.IOException;

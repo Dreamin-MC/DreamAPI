@@ -1,7 +1,7 @@
 package fr.dreamin.example.item;
 
-import fr.dreamin.dreamapi.api.item.ItemAction;
-import fr.dreamin.dreamapi.api.item.ItemDefinition;
+import fr.dreamin.dreamapi.api.item.model.ItemAction;
+import fr.dreamin.dreamapi.api.item.model.ItemDefinition;
 import fr.dreamin.dreamapi.api.item.annotations.DreamItem;
 import fr.dreamin.dreamapi.core.item.builder.ItemBuilder;
 import org.bukkit.Material;

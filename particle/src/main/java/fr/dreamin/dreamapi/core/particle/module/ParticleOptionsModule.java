@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import fr.dreamin.dreamapi.core.particle.ParticleShape;
+import fr.dreamin.dreamapi.core.particle.model.ParticleShape;
 import org.bukkit.Color;
 import org.bukkit.util.Vector;
 

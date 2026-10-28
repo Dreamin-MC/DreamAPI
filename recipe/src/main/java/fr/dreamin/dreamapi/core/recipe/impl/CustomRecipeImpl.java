@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.recipe.impl;
 
-import fr.dreamin.dreamapi.api.recipe.*;
 import fr.dreamin.dreamapi.api.recipe.condition.RecipeCondition;
+import fr.dreamin.dreamapi.api.recipe.model.*;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;

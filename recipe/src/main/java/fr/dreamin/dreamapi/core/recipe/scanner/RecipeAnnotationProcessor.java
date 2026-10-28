@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.recipe.scanner;
 
 import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
-import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
 import fr.dreamin.dreamapi.api.recipe.annotation.DreamRecipe;
 import fr.dreamin.dreamapi.core.service.ServiceAnnotationProcessor;
 import lombok.RequiredArgsConstructor;

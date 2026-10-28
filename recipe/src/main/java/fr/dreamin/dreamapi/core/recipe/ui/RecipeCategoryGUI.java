@@ -3,7 +3,7 @@ package fr.dreamin.dreamapi.core.recipe.ui;
 import fr.dreamin.dreamapi.api.DreamAPI;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeRegistryService;
 import fr.dreamin.dreamapi.api.recipe.service.RecipeCategoryRegistryService;
-import fr.dreamin.dreamapi.api.recipe.RecipeCategory;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeCategory;
 import fr.dreamin.dreamapi.api.gui.model.GuiInterface;
 import fr.dreamin.dreamapi.core.gui.item.NextItem;
 import fr.dreamin.dreamapi.core.gui.item.PreviousItem;

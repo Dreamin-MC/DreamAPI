@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import fr.dreamin.dreamapi.api.recipe.IngredientDefinition;
-import fr.dreamin.dreamapi.api.recipe.IngredientPredicate;
+import fr.dreamin.dreamapi.api.recipe.model.IngredientDefinition;
+import fr.dreamin.dreamapi.api.recipe.model.IngredientPredicate;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;

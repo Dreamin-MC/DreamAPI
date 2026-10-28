@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import fr.dreamin.dreamapi.api.recipe.IngredientDefinition;
+import fr.dreamin.dreamapi.api.recipe.model.IngredientDefinition;
 import fr.dreamin.dreamapi.core.recipe.data.FurnaceData;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 public final class FurnaceModule extends SimpleModule {
 

@@ -1,8 +1,8 @@
 package fr.dreamin.dreamapi.core.recipe.impl;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.recipe.CustomRecipe;
-import fr.dreamin.dreamapi.api.recipe.RecipeRegistry;
+import fr.dreamin.dreamapi.api.recipe.model.CustomRecipe;
+import fr.dreamin.dreamapi.api.recipe.model.RecipeRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
