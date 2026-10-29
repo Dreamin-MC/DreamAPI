@@ -116,3 +116,5 @@ Desktop.ini
 
 # Test scripts
 test-*.js
+/OPTIMIZATION_AND_ROADMAP_PLAN.md
+/.agents/

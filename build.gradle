@@ -27,7 +27,7 @@ subprojects {
   } else if (versionsProps.containsKey(project.name)) {
     version = versionsProps.getProperty(project.name)
   } else {
-    version = "0.6.0"
+    version = "0.1.0"
   }
   description = "DreamAPI - Modular API for Paper 26.1.2+"
 

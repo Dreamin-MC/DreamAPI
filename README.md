@@ -1,6 +1,6 @@
 # DreamAPI
 
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/Dreamin-MC/DreamAPI)
 [![JitPack](https://jitpack.io/v/Dreamin-MC/DreamAPI.svg)](https://jitpack.io/#Dreamin-MC/DreamAPI)
 [![Java](https://img.shields.io/badge/java-25-orange.svg)](https://www.oracle.com/java/)
 [![Paper](https://img.shields.io/badge/paper-26.1.2-green.svg)](https://papermc.io/)
@@ -138,7 +138,7 @@ You can depend on the complete umbrella library or select individual modules:
 ```groovy
 dependencies {
     compileOnly "io.papermc.paper:paper-api:26.1.2.build.+"
-    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-all:0.6.0"
+    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-all:0.1.0"
 }
 ```
 
@@ -146,10 +146,10 @@ dependencies {
 ```groovy
 dependencies {
     compileOnly "io.papermc.paper:paper-api:26.1.2.build.+"
-    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-core:0.6.0"
-    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-item:0.6.0"
-    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-gui:0.6.0"
-    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-glowing:0.6.0"
+    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-core:0.1.0"
+    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-item:0.1.0"
+    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-gui:0.1.0"
+    implementation "com.github.Dreamin-MC.DreamAPI:dreamapi-glowing:0.1.0"
 }
 ```
 

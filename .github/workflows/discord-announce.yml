@@ -4,14 +4,37 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version or module tag to announce (e.g. 0.6.0, core-v0.6.0, item-v1.0.0)'
+        description: 'Version or module tag to announce (e.g. 0.1.0, core-v0.1.0, item-v0.1.0)'
         required: true
         type: string
       module:
-        description: 'Optional module name (e.g. core, item, gui). Leave empty for global or if included in version tag.'
+        description: 'Module to announce (auto = infer from tag / default to all)'
         required: false
-        default: ''
-        type: string
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - all
+          - animation
+          - command
+          - core
+          - cuboid
+          - database
+          - dialog
+          - glowing
+          - gui
+          - hologram
+          - hooks
+          - http
+          - item
+          - lang
+          - navigate
+          - nms
+          - particle
+          - recipe
+          - skin
+          - world
+          - worldborder
       color:
         description: 'Hex color (e.g. #9e6bff)'
         required: false
@@ -53,8 +76,11 @@ jobs:
 
           webhook_url = (os.environ.get("DISCORD_WEBHOOK") or "").strip()
           raw_version = (os.environ.get("VERSION_INPUT") or "").strip()
-          module_input = (os.environ.get("MODULE_INPUT") or "").strip()
+          module_input = (os.environ.get("MODULE_INPUT") or "").strip().lower()
           custom_color = (os.environ.get("COLOR_INPUT") or "#9e6bff").strip()
+
+          if module_input in ("", "auto", "none"):
+              module_input = ""
 
           known_modules = {
               "all", "animation", "command", "core", "cuboid", "database",
@@ -64,35 +90,69 @@ jobs:
           }
 
           mod_match = re.match(r'^([a-zA-Z0-9_-]+)-v?([0-9]+\.[0-9]+.*)$', raw_version)
-          if mod_match and mod_match.group(1) in known_modules:
-              module_name = mod_match.group(1)
+          if mod_match and mod_match.group(1).lower() in known_modules:
+              module_name = mod_match.group(1).lower()
               clean_version = mod_match.group(2)
               tag = raw_version
           elif module_input and module_input in known_modules:
               module_name = module_input
               clean_version = raw_version.lstrip("v")
-              tag = f"{module_name}-v{clean_version}"
+              if module_name == "all" and (raw_version.startswith("v") or not raw_version.startswith("all-")):
+                  tag = f"v{clean_version}"
+              else:
+                  tag = f"{module_name}-v{clean_version}"
           else:
-              module_name = ""
+              module_name = "all"
               clean_version = raw_version.lstrip("v")
-              tag = f"v{clean_version}" if raw_version.startswith("v") else clean_version
+              tag = f"v{clean_version}"
+
+          # Read versions.properties for fallback or metadata validation
+          versions_props = {}
+          vp_path = "versions.properties"
+          if os.path.isfile(vp_path):
+              with open(vp_path, "r", encoding="utf-8") as f:
+                  for line in f:
+                      line = line.strip()
+                      if line and not line.startswith("#") and "=" in line:
+                          k, v = line.split("=", 1)
+                          versions_props[k.strip().lower()] = v.strip()
+
+          if not clean_version and module_name in versions_props:
+              clean_version = versions_props[module_name]
 
           repo = os.environ.get("REPO", "Dreamin-MC/DreamAPI")
           server_url = os.environ.get("SERVER_URL", "https://github.com")
 
+          # Dynamically extract Paper/Minecraft and Java metadata from build.gradle
           mc_ver = "26.1.2+"
           java_ver = "25"
+          build_gradle_path = "build.gradle"
+          if os.path.isfile(build_gradle_path):
+              with open(build_gradle_path, "r", encoding="utf-8") as f:
+                  bg_content = f.read()
+              mc_match = re.search(r'mcVersion\s*=\s*["\']([^"\']+)["\']', bg_content)
+              if mc_match:
+                  mc_ver = f"{mc_match.group(1)}+"
+              else:
+                  desc_match = re.search(r'Paper\s+([0-9\.]+\+?)', bg_content)
+                  if desc_match:
+                      mc_ver = desc_match.group(1)
+
+              java_match = re.search(r'JavaLanguageVersion\.of\((\d+)\)', bg_content)
+              if not java_match:
+                  java_match = re.search(r'JavaVersion\.VERSION_(\d+)', bg_content)
+              if java_match:
+                  java_ver = java_match.group(1)
 
           release_url = f"{server_url}/{repo}/releases/tag/{tag}"
 
-          if module_name:
-              changelog_file = f"changelog/{module_name}/{clean_version}.md"
+          # Strictly resolve changelog from <module>/changelog/<version>.md or all/changelog/<version>.md
+          if module_name and module_name != "all":
+              changelog_file = f"{module_name}/changelog/{clean_version}.md"
               release_title = f"DreamAPI [{module_name}] `v{clean_version}`"
               embed_title = f"🎙️ DreamAPI [{module_name}] v{clean_version}"
           else:
-              changelog_file = f"changelog/{clean_version}.md"
-              if not os.path.isfile(changelog_file):
-                  changelog_file = f"changelog/all/{clean_version}.md"
+              changelog_file = f"all/changelog/{clean_version}.md"
               release_title = f"DreamAPI `v{clean_version}`"
               embed_title = f"🎙️ DreamAPI v{clean_version}"
 
@@ -100,7 +160,11 @@ jobs:
           if os.path.isfile(changelog_file):
               with open(changelog_file, "r", encoding="utf-8") as f:
                   changelog_text = f.read().strip()
-              changelog_text = re.sub(r'^#\s+Changelog[^\n]*\n+', '', changelog_text, flags=re.IGNORECASE)
+              changelog_text = re.sub(r'^#\s+Changelog[^\n]*\n+', '', changelog_text, flags=re.IGNORECASE).strip()
+              print(f"Loaded changelog from: {changelog_file} ({len(changelog_text)} bytes)")
+          else:
+              print(f"::warning::Changelog file not found at '{changelog_file}'")
+              changelog_text = f"*No changelog file found at `{changelog_file}`.* See [GitHub Release Details]({release_url})."
 
           max_changelog_len = 1750
           if len(changelog_text) > max_changelog_len:
@@ -134,7 +198,7 @@ jobs:
                           {
                               "type": 10,
                               "content": (
-                                  f"# 🚀 {release_title}\n"
+                                  f"# 🚀 [{release_title}]({release_url})\n"
                                   f"> *Modular Paper Plugin API & Services Foundation for Minecraft*\n\n"
                                   f"🎮 **Minecraft / Paper :** `{mc_ver}`   •   ☕ **Java :** `{java_ver}`"
                               )
@@ -146,7 +210,7 @@ jobs:
                           },
                           {
                               "type": 10,
-                              "content": changelog_text or "No changelog provided."
+                              "content": changelog_text
                           }
                       ]
                   }
@@ -160,7 +224,7 @@ jobs:
                       "title": embed_title,
                       "url": release_url,
                       "color": brand_color,
-                      "description": changelog_text or "No changelog provided.",
+                      "description": changelog_text,
                       "fields": [
                           {"name": "🎮 Paper / Minecraft", "value": f"`{mc_ver}`", "inline": True},
                           {"name": "☕ Java", "value": f"`{java_ver}`", "inline": True},
@@ -189,6 +253,9 @@ jobs:
               status = send_payload(target_url, v2_payload)
               print(f"Discord announcement sent successfully with Components V2! HTTP {status}")
           except urllib.error.HTTPError as e:
-              status = send_payload(target_url, classic_payload)
+              err_body = e.read().decode('utf-8', errors='replace')
+              print(f"Components V2 failed (HTTP {e.code}: {e.reason}): {err_body}")
+              print("Falling back to classic embed notification...")
+              status = send_payload(webhook_url, classic_payload)
               print(f"Classic embed notification sent successfully! HTTP {status}")
           EOF

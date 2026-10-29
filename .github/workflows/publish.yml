@@ -23,6 +23,7 @@ jobs:
         id: extract_version
         run: |
           TAG="${{ github.ref_name }}"
+          echo "TAG=${TAG}" >> $GITHUB_ENV
           KNOWN_MODULES="all animation command core cuboid database dialog glowing gui hologram hooks http item lang navigate nms particle recipe skin world worldborder"
 
           if [[ "$TAG" =~ ^([a-zA-Z0-9_-]+)-v?([0-9]+\.[0-9]+.*)$ ]]; then
@@ -40,9 +41,8 @@ jobs:
               echo "IS_MODULE=true" >> $GITHUB_ENV
               echo "MODULE=${CANDIDATE_MOD}" >> $GITHUB_ENV
               echo "VERSION=${CLEAN_VERSION}" >> $GITHUB_ENV
-              echo "TAG=${TAG}" >> $GITHUB_ENV
               echo "RELEASE_NAME=DreamAPI ${CANDIDATE_MOD} v${CLEAN_VERSION}" >> $GITHUB_ENV
-              CHANGELOG="changelog/${CANDIDATE_MOD}/${CLEAN_VERSION}.md"
+              CHANGELOG="${CANDIDATE_MOD}/changelog/${CLEAN_VERSION}.md"
             else
               echo "::error::❌ Release aborted: Unknown or retired module '${CANDIDATE_MOD}' in tag '${TAG}'!"
               exit 1
@@ -52,17 +52,8 @@ jobs:
             echo "IS_MODULE=false" >> $GITHUB_ENV
             echo "MODULE=" >> $GITHUB_ENV
             echo "VERSION=${CLEAN_VERSION}" >> $GITHUB_ENV
-            echo "TAG=${TAG}" >> $GITHUB_ENV
             echo "RELEASE_NAME=DreamAPI v${CLEAN_VERSION}" >> $GITHUB_ENV
-            if [ -f "changelog/${CLEAN_VERSION}.md" ]; then
-              CHANGELOG="changelog/${CLEAN_VERSION}.md"
-            elif [ -f "changelog/all/${CLEAN_VERSION}.md" ]; then
-              CHANGELOG="changelog/all/${CLEAN_VERSION}.md"
-            elif [ -f "changelog/${TAG}.md" ]; then
-              CHANGELOG="changelog/${TAG}.md"
-            else
-              CHANGELOG="changelog/${CLEAN_VERSION}.md"
-            fi
+            CHANGELOG="all/changelog/${CLEAN_VERSION}.md"
           else
             echo "::error::❌ Release aborted: Invalid tag format '${TAG}'!"
             exit 1
@@ -96,7 +87,7 @@ jobs:
             if [ -f "versions.properties" ]; then
               sed -i -E "s/^(${{ env.MODULE }}=).*/\1${{ env.VERSION }}/" versions.properties
             fi
-            sed -i -E "s/(com\.github\.Dreamin-MC\.DreamAPI:dreamapi-${{ env.MODULE }}:)[^\"'\)]+/\1${{ env.TAG }}/" README.md
+            sed -i -E "s/(com\.github\.Dreamin-MC\.DreamAPI:dreamapi-${{ env.MODULE }}:)[^\"'\)]+/\1${{ env.VERSION }}/" README.md
           else
             if [ -f "versions.properties" ]; then
               sed -i -E "s/^([a-zA-Z0-9_-]+=).*/\1${{ env.VERSION }}/" versions.properties
@@ -121,9 +112,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Workflow failed or was cancelled. Deleting remote tag '${{ env.TAG }}' to prevent inconsistent release state..."
+          TARGET_TAG="${{ env.TAG || github.ref_name }}"
+          echo "Workflow failed or was cancelled. Deleting remote tag '${TARGET_TAG}' to prevent inconsistent release state..."
           curl -s -X DELETE \
             -H "Authorization: token ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.TAG }}" || true
-          echo "Remote tag '${{ env.TAG }}' deleted from GitHub."
+            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${TARGET_TAG}" || true
+          echo "Remote tag '${TARGET_TAG}' deleted from GitHub."
