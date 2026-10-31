@@ -1,24 +1,28 @@
 package fr.dreamin.dreamapi.api.map;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Expiry;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.Scheduler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 /**
  * A thread-safe map whose entries automatically expire after a given duration.
  * <p>
- * Expiration is handled by a single periodic background task (daemon thread),
- * avoiding the overhead of scheduling one task per entry.
+ * Backed by a Caffeine W-TinyLFU cache using a shared background daemon scheduler,
+ * avoiding the overhead of creating one thread per map instance.
  * An optional expiry callback can be provided to be notified when an entry is removed.
  * </p>
  *
@@ -27,13 +31,19 @@ import java.util.function.BiConsumer;
  */
 public final class ExpiringMap<K, V> {
 
-  private final @NotNull ConcurrentHashMap<K, V> map = new ConcurrentHashMap<>();
-  private final @NotNull ConcurrentHashMap<K, Long> expirations = new ConcurrentHashMap<>();
+  private record ExpiringEntry<V>(@NotNull V value, @NotNull Duration duration, long expireAtMillis) {}
 
-  private final ScheduledExecutorService scheduler;
+  private static final ScheduledExecutorService SHARED_SCHEDULER = Executors.newSingleThreadScheduledExecutor(r -> {
+    final var thread = new Thread(r, "DreamAPI-ExpiringMap-Cleanup");
+    thread.setDaemon(true);
+    return thread;
+  });
+
+  private final Cache<K, ExpiringEntry<V>> cache;
+  private final ConcurrentHashMap<K, ExpiringEntry<V>> trackedEntries = new ConcurrentHashMap<>();
 
   /** Optional callback invoked with (key, value) when an entry expires. */
-  private @Nullable BiConsumer<K, V> expiryListener;
+  private volatile @Nullable BiConsumer<K, V> expiryListener;
 
   // -------------------------------------------------------------------------
   // Constructors
@@ -66,16 +76,36 @@ public final class ExpiringMap<K, V> {
       throw new IllegalArgumentException("Cleanup interval must be positive");
 
     this.expiryListener = expiryListener;
+    this.cache = Caffeine.newBuilder()
+      .scheduler(Scheduler.forScheduledExecutorService(SHARED_SCHEDULER))
+      .executor(Runnable::run)
+      .expireAfter(new Expiry<K, ExpiringEntry<V>>() {
+        @Override
+        public long expireAfterCreate(final @NotNull K key, final @NotNull ExpiringEntry<V> value, final long currentTime) {
+          return value.duration().toNanos();
+        }
 
-    // Daemon thread so the JVM can exit without explicitly calling shutdown()
-    this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-      final var thread = new Thread(r, "ExpiringMap-cleanup");
-      thread.setDaemon(true);
-      return thread;
-    });
+        @Override
+        public long expireAfterUpdate(final @NotNull K key, final @NotNull ExpiringEntry<V> value, final long currentTime, final long currentDuration) {
+          return value.duration().toNanos();
+        }
 
-    final var intervalMs = cleanupInterval.toMillis();
-    this.scheduler.scheduleAtFixedRate(this::cleanupExpiredNow, intervalMs, intervalMs, TimeUnit.MILLISECONDS);
+        @Override
+        public long expireAfterRead(final @NotNull K key, final @NotNull ExpiringEntry<V> value, final long currentTime, final long currentDuration) {
+          return currentDuration;
+        }
+      })
+      .removalListener((final @Nullable K key, final @Nullable ExpiringEntry<V> value, final @NotNull RemovalCause cause) -> {
+        if (cause == RemovalCause.EXPIRED && key != null && value != null) {
+          final var tracked = this.trackedEntries.remove(key);
+          if (tracked != null) {
+            final var listener = this.expiryListener;
+            if (listener != null)
+              listener.accept(key, value.value());
+          }
+        }
+      })
+      .build();
   }
 
   // -------------------------------------------------------------------------
@@ -94,8 +124,9 @@ public final class ExpiringMap<K, V> {
       throw new IllegalArgumentException("Duration must be positive");
 
     final var expireAt = System.currentTimeMillis() + duration.toMillis();
-    map.put(key, value);
-    expirations.put(key, expireAt);
+    final var entry = new ExpiringEntry<>(value, duration, expireAt);
+    this.trackedEntries.put(key, entry);
+    this.cache.put(key, entry);
   }
 
   /**
@@ -105,7 +136,9 @@ public final class ExpiringMap<K, V> {
    */
   public @Nullable V putIfAbsent(@NotNull K key, @NotNull V value, @NotNull Duration duration) {
     final var existing = get(key);
-    if (existing != null) return existing;
+    if (existing != null)
+      return existing;
+
     put(key, value, duration);
     return null;
   }
@@ -114,23 +147,50 @@ public final class ExpiringMap<K, V> {
    * Returns the value associated with {@code key}, or {@code null} if absent or expired.
    */
   public @Nullable V get(K key) {
-    final var expireAt = expirations.get(key);
-    if (expireAt == null) return null;
+    if (key == null)
+      return null;
 
-    if (expireAt <= System.currentTimeMillis()) {
-      evict(key);
+    final var now = System.currentTimeMillis();
+    final var entry = this.cache.getIfPresent(key);
+    if (entry == null) {
+      final var tracked = this.trackedEntries.get(key);
+      if (tracked != null && tracked.expireAtMillis() <= now) {
+        if (this.trackedEntries.remove(key, tracked)) {
+          this.cache.asMap().remove(key);
+          final var listener = this.expiryListener;
+          if (listener != null)
+            listener.accept(key, tracked.value());
+        }
+      }
       return null;
     }
 
-    return map.get(key);
+    if (entry.expireAtMillis() <= now) {
+      if (this.trackedEntries.remove(key, entry)) {
+        this.cache.asMap().remove(key);
+        final var listener = this.expiryListener;
+        if (listener != null)
+          listener.accept(key, entry.value());
+      }
+      return null;
+    }
+
+    return entry.value();
   }
 
   /**
    * Removes and returns the value for {@code key}, or {@code null} if absent.
    */
   public @Nullable V remove(K key) {
-    expirations.remove(key);
-    return map.remove(key);
+    if (key == null)
+      return null;
+
+    final var tracked = this.trackedEntries.remove(key);
+    this.cache.asMap().remove(key);
+    if (tracked == null || tracked.expireAtMillis() <= System.currentTimeMillis())
+      return null;
+
+    return tracked.value();
   }
 
   /**
@@ -142,9 +202,19 @@ public final class ExpiringMap<K, V> {
     if (duration.isNegative() || duration.isZero())
       throw new IllegalArgumentException("Duration must be positive");
 
-    if (!map.containsKey(key)) return false;
-    expirations.put(key, System.currentTimeMillis() + duration.toMillis());
-    return true;
+    final var now = System.currentTimeMillis();
+    final var updated = this.trackedEntries.computeIfPresent(key, (_, current) -> {
+      if (current.expireAtMillis() <= now)
+        return null;
+      return new ExpiringEntry<>(current.value(), duration, now + duration.toMillis());
+    });
+    if (updated != null) {
+      this.cache.put(key, updated);
+      return true;
+    }
+
+    this.cache.asMap().remove(key);
+    return false;
   }
 
   // -------------------------------------------------------------------------
@@ -157,22 +227,32 @@ public final class ExpiringMap<K, V> {
 
   public boolean isEmpty() {
     cleanupExpiredNow();
-    return map.isEmpty();
+    return this.trackedEntries.isEmpty();
   }
 
   public int size() {
     cleanupExpiredNow();
-    return map.size();
+    return this.trackedEntries.size();
   }
 
   /**
    * Returns the remaining time before {@code key} expires, or {@link Duration#ZERO} if absent/expired.
    */
   public @NotNull Duration getRemaining(K key) {
-    final var expireAt = expirations.get(key);
-    if (expireAt == null) return Duration.ZERO;
-    final var remaining = expireAt - System.currentTimeMillis();
-    return remaining <= 0 ? Duration.ZERO : Duration.ofMillis(remaining);
+    if (key == null)
+      return Duration.ZERO;
+
+    final var entry = this.trackedEntries.get(key);
+    if (entry == null)
+      return Duration.ZERO;
+
+    final var remaining = entry.expireAtMillis() - System.currentTimeMillis();
+    if (remaining <= 0) {
+      cleanupExpiredNow();
+      return Duration.ZERO;
+    }
+
+    return Duration.ofMillis(remaining);
   }
 
   // -------------------------------------------------------------------------
@@ -182,24 +262,28 @@ public final class ExpiringMap<K, V> {
   /** Returns an immutable snapshot of all non-expired entries. */
   public @NotNull Map<K, V> snapshot() {
     cleanupExpiredNow();
-    return Map.copyOf(map);
+    final var now = System.currentTimeMillis();
+    final var result = new HashMap<K, V>();
+    for (final var entry : this.trackedEntries.entrySet())
+      if (entry.getValue().expireAtMillis() > now)
+        result.put(entry.getKey(), entry.getValue().value());
+
+    return Map.copyOf(result);
   }
 
   /** Returns an immutable snapshot of all non-expired keys. */
   public @NotNull Set<K> keySet() {
-    cleanupExpiredNow();
-    return Set.copyOf(map.keySet());
+    return snapshot().keySet();
   }
 
   /** Returns an immutable snapshot of all non-expired values. */
   public @NotNull Collection<V> values() {
-    cleanupExpiredNow();
-    return List.copyOf(map.values());
+    return snapshot().values();
   }
 
   public void clear() {
-    map.clear();
-    expirations.clear();
+    this.trackedEntries.clear();
+    this.cache.invalidateAll();
   }
 
   // -------------------------------------------------------------------------
@@ -208,18 +292,18 @@ public final class ExpiringMap<K, V> {
 
   /** Immediately removes all entries whose TTL has elapsed. */
   public void cleanupExpiredNow() {
+    this.cache.cleanUp();
     final var now = System.currentTimeMillis();
-    for (final var entry : expirations.entrySet()) {
-      if (entry.getValue() <= now) evict(entry.getKey());
+    for (final var entry : this.trackedEntries.entrySet()) {
+      if (entry.getValue().expireAtMillis() <= now) {
+        if (this.trackedEntries.remove(entry.getKey(), entry.getValue())) {
+          this.cache.asMap().remove(entry.getKey());
+          final var listener = this.expiryListener;
+          if (listener != null)
+            listener.accept(entry.getKey(), entry.getValue().value());
+        }
+      }
     }
-  }
-
-  /** Evicts a single entry and fires the expiry listener if present. */
-  private void evict(K key) {
-    final var value = map.remove(key);
-    expirations.remove(key);
-    if (value != null && expiryListener != null)
-      expiryListener.accept(key, value);
   }
 
   // -------------------------------------------------------------------------
@@ -235,11 +319,12 @@ public final class ExpiringMap<K, V> {
   }
 
   /**
-   * Shuts down the background cleanup scheduler.
-   * After calling this, no further automatic cleanup will occur.
-   * The map itself remains usable.
+   * Shuts down the local cache entries and performs immediate maintenance.
+   * The shared background daemon continues running for remaining maps.
    */
   public void shutdown() {
-    scheduler.shutdownNow();
+    this.trackedEntries.clear();
+    this.cache.invalidateAll();
+    this.cache.cleanUp();
   }
 }

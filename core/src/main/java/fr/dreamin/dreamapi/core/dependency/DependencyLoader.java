@@ -31,10 +31,11 @@ public final class DependencyLoader {
     if (!checkVersion(clazz))
       return false;
 
-    final var plugin = DreamAPI.getAPI().plugin();
-
     final var dep = clazz.getAnnotation(RequiresDependency.class);
-    if (dep == null) return true;
+    if (dep == null)
+      return true;
+
+    final var plugin = DreamAPI.isInitialized() ? DreamAPI.getAPI().plugin() : null;
 
     final var name = dep.value();
     final var hard = dep.hard();
@@ -42,7 +43,8 @@ public final class DependencyLoader {
     final var loadAfter = dep.loadAfter();
 
     final var installed = Bukkit.getPluginManager().isPluginEnabled(name);
-    if (!installed) return false;
+    if (!installed)
+      return false;
 
     final var type = DependencyReader.getDeclaredType(name);
 
@@ -52,7 +54,10 @@ public final class DependencyLoader {
         name
       );
 
-      plugin.getLogger().warning(msg);
+      if (plugin != null)
+        plugin.getLogger().warning(msg);
+      else
+        Bukkit.getLogger().warning(msg);
       return false;
     }
 
@@ -62,7 +67,10 @@ public final class DependencyLoader {
         name
       );
 
-      plugin.getLogger().warning(msg);
+      if (plugin != null)
+        plugin.getLogger().warning(msg);
+      else
+        Bukkit.getLogger().warning(msg);
       return false;
     }
 

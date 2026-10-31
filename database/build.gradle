@@ -2,4 +2,7 @@ description = "DreamAPI - Database & SQL Module"
 
 dependencies {
   api project(":core")
+  api("com.zaxxer:HikariCP:$hikariVersion")
+
+  testImplementation("com.h2database:h2:$h2Version")
 }

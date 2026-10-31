@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
+import fr.dreamin.dreamapi.api.util.math.InterpolationType;
 import fr.dreamin.dreamapi.core.particle.model.ParticleChainMorph;
 import fr.dreamin.dreamapi.core.particle.model.ParticlePath;
 import fr.dreamin.dreamapi.core.particle.model.ParticleShape;

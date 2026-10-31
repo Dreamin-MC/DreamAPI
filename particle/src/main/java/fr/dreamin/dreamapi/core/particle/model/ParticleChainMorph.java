@@ -1,7 +1,7 @@
 package fr.dreamin.dreamapi.core.particle.model;
 
-import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
-import fr.dreamin.dreamapi.core.interpolation.Interpolation;
+import fr.dreamin.dreamapi.api.util.math.Interpolation;
+import fr.dreamin.dreamapi.api.util.math.InterpolationType;
 import fr.dreamin.dreamapi.core.time.TickTask;
 import lombok.Getter;
 import lombok.experimental.Accessors;

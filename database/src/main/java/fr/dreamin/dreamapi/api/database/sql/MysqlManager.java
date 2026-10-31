@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Properties;
+
 /**
- * Represents a single MySQL database connection, managed individually.
+ * Represents a MySQL database connection pool managed via HikariCP.
  */
 @Getter
 @Setter
@@ -23,6 +25,10 @@ public final class MysqlManager extends SqlManager {
     super(label, host, port, database, username, password);
   }
 
+  /**
+   * @deprecated autoReconnect is obsolete and ignored by HikariCP. Use standard constructor.
+   */
+  @Deprecated(forRemoval = true)
   public MysqlManager(
     final @NotNull String label,
     final @NotNull String host,
@@ -39,8 +45,23 @@ public final class MysqlManager extends SqlManager {
   @Override
   protected @NotNull String buildJdbcUrl() {
     return String.format(
-      "jdbc:mysql://%s:%d/%s?useSSL=false&autoReconnect=%b&serverTimezone=UTC",
-      host, port, database, autoReconnect
+      "jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC",
+      host, port, database
     );
+  }
+
+  @Override
+  protected void applyProperties(final @NotNull Properties props) {
+    super.applyProperties(props);
+    props.setProperty("cachePrepStmts", "true");
+    props.setProperty("prepStmtCacheSize", "250");
+    props.setProperty("prepStmtCacheSqlLimit", "2048");
+    props.setProperty("useServerPrepStmts", "true");
+    props.setProperty("useLocalSessionState", "true");
+    props.setProperty("rewriteBatchedStatements", "true");
+    props.setProperty("cacheResultSetMetadata", "true");
+    props.setProperty("cacheServerConfiguration", "true");
+    props.setProperty("elideSetAutoCommits", "true");
+    props.setProperty("maintainTimeStats", "false");
   }
 }

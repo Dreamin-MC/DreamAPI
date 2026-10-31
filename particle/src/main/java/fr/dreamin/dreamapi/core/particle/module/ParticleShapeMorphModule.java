@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import fr.dreamin.dreamapi.api.config.Configurations;
-import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
+import fr.dreamin.dreamapi.api.util.math.InterpolationType;
 import fr.dreamin.dreamapi.core.particle.model.ParticlePath;
 import fr.dreamin.dreamapi.core.particle.model.ParticleShape;
 import fr.dreamin.dreamapi.core.particle.model.ParticleShapeMorph;
@@ -20,7 +20,7 @@ public final class ParticleShapeMorphModule extends SimpleModule {
   public ParticleShapeMorphModule() {
     super("ParticleShapeMorphModule");
 
-    addSerializer(ParticleShapeMorph.class, new JsonSerializer<ParticleShapeMorph>() {
+    addSerializer(ParticleShapeMorph.class, new JsonSerializer<>() {
       @Override
       public void serialize(ParticleShapeMorph value, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
         final var result = new HashMap<String, Object>();
@@ -51,7 +51,7 @@ public final class ParticleShapeMorphModule extends SimpleModule {
       }
     });
 
-    addDeserializer(ParticleShapeMorph.class, new JsonDeserializer<ParticleShapeMorph>() {
+    addDeserializer(ParticleShapeMorph.class, new JsonDeserializer<>() {
       @Override
       public ParticleShapeMorph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
         final var node = (JsonNode) jsonParser.getCodec().readTree(jsonParser);

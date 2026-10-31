@@ -99,7 +99,7 @@ public abstract class DreamPlugin extends JavaPlugin {
       new ApiProviderImpl(this);
     }
 
-  final var instance = this;
+    instance = this;
 
     if (isClassPresent("fr.dreamin.dreamapi.api.item.ItemKeys")) {
       try {
@@ -111,7 +111,7 @@ public abstract class DreamPlugin extends JavaPlugin {
     }
 
     try {
-    final var preScannedClasses = ClassScanner.getClasses(this, this.getClass().getPackageName(), true, getClassScanParentPackageLevels());
+      preScannedClasses = ClassScanner.getClasses(this, this.getClass().getPackageName(), true, getClassScanParentPackageLevels());
     } catch (IOException | ClassNotFoundException e) {
       getLogger().severe(String.format("[DreamAPI] Failed to scan classes: %s", e.getMessage()));
       throw new RuntimeException(e);
@@ -121,7 +121,7 @@ public abstract class DreamPlugin extends JavaPlugin {
 
     this.dreamAPI = DreamAPI.getAPI();
 
-  final var serviceManager = new ServiceAnnotationProcessor(this, preScannedClasses);
+    serviceManager = new ServiceAnnotationProcessor(this, preScannedClasses);
     loadServices();
     serviceManager.process();
 
@@ -160,6 +160,14 @@ public abstract class DreamPlugin extends JavaPlugin {
   @Override
   public void onDisable() {
     onDreamDisable();
+    if (instance == this) {
+      instance = null;
+      serviceManager = null;
+      if (preScannedClasses != null) {
+        preScannedClasses.clear();
+        preScannedClasses = null;
+      }
+    }
   }
 
   // ##############################################################

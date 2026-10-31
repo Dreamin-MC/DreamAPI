@@ -1,9 +1,9 @@
-package fr.dreamin.dreamapi.core.interpolation;
+package fr.dreamin.dreamapi.api.util.math;
 
 import fr.dreamin.dreamapi.api.DreamAPI;
-import fr.dreamin.dreamapi.api.interpolation.InterpolationType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,15 +14,16 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Utility class for smooth interpolation of numbers, vectors, and locations.
- * Supports multiple easing curves and a fluent builder interface.
- * Includes synchronous and asynchronous generation modes.
+ * High-performance utility class for smooth mathematical interpolation of scalar values,
+ * vectors, and locations.
+ * Supports multiple easing curves, fluent builder pipelines, and async execution.
  *
  * @author Dreamin
- * @since 0.0.1
- *
+ * @since 1.0.0
  */
 public final class Interpolation {
+
+  private Interpolation() {}
 
   // ###############################################################
   // ------------------- GENERIC INTERPOLATION ---------------------
@@ -70,14 +71,14 @@ public final class Interpolation {
   // ###############################################################
 
   /**
-   * Applies the chosen easing function to a normalized t (0–1).
+   * Applies the chosen easing function to a normalized progress t (0.0 to 1.0).
    */
   public static double applyEasing(final double t, final @NotNull InterpolationType type) {
     return switch (type) {
-      case InterpolationType.LINEAR -> t;
-      case InterpolationType.EASE_IN -> t * t;
-      case InterpolationType.EASE_OUT -> t * (2 - t);
-      case InterpolationType.EASE_IN_OUT -> t < 0.5
+      case LINEAR -> t;
+      case EASE_IN -> t * t;
+      case EASE_OUT -> t * (2 - t);
+      case EASE_IN_OUT -> t < 0.5
         ? 4 * t * t * t
         : 1 - Math.pow(-2 * t + 2, 3) / 2;
     };
@@ -88,6 +89,37 @@ public final class Interpolation {
    */
   public static @NotNull Function<Double, Double> getEasing(final @NotNull InterpolationType type) {
     return t -> applyEasing(t, type);
+  }
+
+  // ###############################################################
+  // ---------------- DIRECT INTERPOLATE CONTRACT ------------------
+  // ###############################################################
+
+  /**
+   * Interpolates a scalar value between start and end using the specified easing curve and progress.
+   *
+   * @param start starting value
+   * @param end ending value
+   * @param progress progress from 0.0 to 1.0
+   * @param type easing curve
+   * @return interpolated scalar
+   */
+  public static double interpolate(final double start, final double end, final double progress, final @NotNull InterpolationType type) {
+    return lerp(start, end, applyEasing(progress, type));
+  }
+
+  /**
+   * Interpolates a Vector between start and end using the specified easing curve and progress.
+   */
+  public static @NotNull Vector interpolate(final @NotNull Vector start, final @NotNull Vector end, final double progress, final @NotNull InterpolationType type) {
+    return lerp(start, end, applyEasing(progress, type));
+  }
+
+  /**
+   * Interpolates a Location between start and end using the specified easing curve and progress.
+   */
+  public static @NotNull Location interpolate(final @NotNull Location start, final @NotNull Location end, final double progress, final @NotNull InterpolationType type) {
+    return lerp(start, end, applyEasing(progress, type));
   }
 
   // ###############################################################
@@ -129,7 +161,7 @@ public final class Interpolation {
     final var list = new ArrayList<Location>(steps + 1);
     final var easing = getEasing(type);
 
-    for (int i = 0; i <= steps; i++) {
+    for (var i = 0; i <= steps; i++) {
       final var t = easing.apply((double) i / steps);
       list.add(lerp(start, end, t));
     }
@@ -153,7 +185,7 @@ public final class Interpolation {
   }
 
   // ###############################################################
-  // ------------------------ INNER CLASS --------------------------
+  // ------------------------ INNER BUILDER ------------------------
   // ###############################################################
 
   /**
@@ -177,10 +209,6 @@ public final class Interpolation {
     public Interpolator over(final int steps) { this.steps = steps; return this; }
     public Interpolator ease(final @NotNull InterpolationType type) { this.type = type; return this; }
 
-    // ###############################################################
-    // ---------------------- BUILD FUNCTIONS ------------------------
-    // ###############################################################
-
     @SuppressWarnings("unchecked")
     public @NotNull List<?> build() {
       if (start instanceof Double a && end instanceof Double b)
@@ -192,18 +220,10 @@ public final class Interpolation {
       throw new IllegalArgumentException("Unsupported interpolation types: " + start + " -> " + end);
     }
 
-    // Type-safe shortcuts
     public @NotNull List<Double> asDoubles() { return (List<Double>) build(); }
     public @NotNull List<Vector> asVectors() { return (List<Vector>) build(); }
     public @NotNull List<Location> asLocations() { return (List<Location>) build(); }
 
-
-    // ------------- ASYNC --------------
-
-    /**
-     * Builds asynchronously using a background thread.
-     */
-    @SuppressWarnings("unchecked")
     public @NotNull CompletableFuture<List<?>> buildAsync() {
       return CompletableFuture.supplyAsync(this::build);
     }
@@ -220,17 +240,26 @@ public final class Interpolation {
       return CompletableFuture.supplyAsync(this::asLocations);
     }
 
-    // ------------- THEN SYNC --------------
-
-    /**
-     * Utility that runs a callback on the main thread once the async interpolation is done.
-     */
     public <T> CompletableFuture<Void> thenSync(
-      @NotNull CompletableFuture<List<T>> future,
-      @NotNull Consumer<List<T>> consumer
+      final @NotNull CompletableFuture<List<T>> future,
+      final @NotNull Consumer<List<T>> consumer
     ) {
       return future.thenAcceptAsync(list -> {
-        Bukkit.getScheduler().runTask(DreamAPI.getAPI().plugin(), () -> consumer.accept(list));
+        final var plugin = DreamAPI.isInitialized() ? DreamAPI.getAPI().plugin() : null;
+        if (plugin != null)
+          Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(list));
+        else
+          consumer.accept(list);
+      });
+    }
+
+    public <T> CompletableFuture<Void> thenSync(
+      final @NotNull Plugin plugin,
+      final @NotNull CompletableFuture<List<T>> future,
+      final @NotNull Consumer<List<T>> consumer
+    ) {
+      return future.thenAcceptAsync(list -> {
+        Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(list));
       });
     }
   }

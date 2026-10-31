@@ -7,12 +7,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @DreamAutoService(PlayerDebugService.class)
 public final class PlayerDebugServiceImpl implements PlayerDebugService, DreamService {
 
-  private final @NotNull Map<UUID, Set<UUID>> debugTargets = new HashMap<>();
+  private final @NotNull Map<UUID, Set<UUID>> debugTargets = new ConcurrentHashMap<>();
 
   // ##############################################################
   // ---------------------- SERVICE METHODS -----------------------
@@ -20,18 +24,15 @@ public final class PlayerDebugServiceImpl implements PlayerDebugService, DreamSe
 
   @Override
   public void startDebug(@NotNull Player target, @NotNull Player executor) {
-    this.debugTargets.computeIfAbsent(target.getUniqueId(), key -> {
-      final var rs = new HashSet<UUID>();
-      rs.add(executor.getUniqueId());
-      return rs;
-    });
+    this.debugTargets.computeIfAbsent(target.getUniqueId(), _ -> ConcurrentHashMap.newKeySet())
+      .add(executor.getUniqueId());
   }
 
   @Override
   public void stopDebug(@NotNull Player target, @NotNull Player executor) {
-    this.debugTargets.computeIfPresent(target.getUniqueId(), (k, v) -> {
-      v.remove(executor.getUniqueId());
-      return v.isEmpty() ? null : v;
+    this.debugTargets.computeIfPresent(target.getUniqueId(), (_, debuggers) -> {
+      debuggers.remove(executor.getUniqueId());
+      return debuggers.isEmpty() ? null : debuggers;
     });
   }
 
@@ -43,28 +44,21 @@ public final class PlayerDebugServiceImpl implements PlayerDebugService, DreamSe
 
   @Override
   public Audience getDebuggers(@NotNull Player target) {
-    final var ids = debugTargets.get(target.getUniqueId());
-    if (ids == null || ids.isEmpty()) return Audience.empty();
-
-    return Audience.audience(
-      ids.stream()
-        .map(Bukkit::getPlayer)
-        .filter(Objects::nonNull)
-        .toList()
-    );
+    return getDebuggers(target.getUniqueId());
   }
 
   @Override
   public Audience getDebuggers(@NotNull UUID targetId) {
     final var ids = this.debugTargets.get(targetId);
-    if (ids == null || ids.isEmpty()) return Audience.empty();
+    if (ids == null || ids.isEmpty())
+      return Audience.empty();
 
-    return Audience.audience(
-      ids.stream()
-        .map(Bukkit::getPlayer)
-        .filter(Objects::nonNull)
-        .toList()
-    );
+    final var debuggers = ids.stream()
+      .map(Bukkit::getPlayer)
+      .filter(Objects::nonNull)
+      .toList();
+
+    return debuggers.isEmpty() ? Audience.empty() : Audience.audience(debuggers);
   }
 
 }

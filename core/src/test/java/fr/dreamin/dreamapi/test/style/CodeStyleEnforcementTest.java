@@ -389,6 +389,17 @@ public class CodeStyleEnforcementTest {
     if (relPath.endsWith("ColorCycleAnimation.java") && fqcn.equals("org.bukkit.Color")) {
       return true;
     }
+    // Collision 3: particle backward-compatible delegate forwarding to core InterpolationType
+    if (relPath.endsWith("InterpolationType.java")
+        && fqcn.equals("fr.dreamin.dreamapi.api.util.math.InterpolationType")) {
+      return true;
+    }
+    // Collision 4: particle backward-compatible delegate forwarding to core Interpolation
+    if (relPath.endsWith("Interpolation.java")
+        && (fqcn.equals("fr.dreamin.dreamapi.api.util.math.Interpolation")
+            || fqcn.equals("fr.dreamin.dreamapi.api.util.math.InterpolationType"))) {
+      return true;
+    }
     return false;
   }
 

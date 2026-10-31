@@ -1,8 +1,11 @@
 package fr.dreamin.dreamapi.core.event.scanner;
 
 import fr.dreamin.dreamapi.api.event.annotation.DreamEvent;
+import fr.dreamin.dreamapi.api.event.annotation.RegisterListener;
+import fr.dreamin.dreamapi.core.dependency.DependencyLoader;
 import fr.dreamin.dreamapi.core.service.ServiceAnnotationProcessor;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +48,6 @@ public final class ListenerAnnotationProcessor {
       failed.get(),
       end - start
     ));
-
   }
 
   // ###############################################################
@@ -55,20 +57,29 @@ public final class ListenerAnnotationProcessor {
   private void scanListeners(final @NotNull Set<Class<?>> classes, final @NotNull AtomicInteger loaded, final @NotNull AtomicInteger failed) {
     for (final var clazz : classes) {
       try {
-        if (!clazz.isAnnotationPresent(DreamEvent.class)) continue;
-        if (!Listener.class.isAssignableFrom(clazz)) continue;
+        final var isAnnotated = clazz.isAnnotationPresent(DreamEvent.class)
+          || clazz.isAnnotationPresent(RegisterListener.class);
+        if (!isAnnotated)
+          continue;
 
-        if (!implementsOnlyListener(clazz)) {
-          throw new IllegalStateException(
-            String.format(
-              "[DreamListener] Class %s is annotated with @DreamEvent but implements more than Listener.",
-              clazz.getName()
-            )
-          );
+        if (!Listener.class.isAssignableFrom(clazz)) {
+          this.log.warning(String.format(
+            "[DreamListener] Class %s is annotated with listener annotation but does not implement org.bukkit.event.Listener.",
+            clazz.getName()
+          ));
+          continue;
+        }
+
+        // Version & dependency gating check
+        if (!DependencyLoader.canLoad(clazz)) {
+          this.log.info(String.format(
+            "[DreamListener] Skipping listener %s: version or dependency requirements not met.",
+            clazz.getName()
+          ));
+          continue;
         }
 
         registerListener(clazz);
-
         loaded.incrementAndGet();
 
       } catch (Exception e) {
@@ -98,11 +109,10 @@ public final class ListenerAnnotationProcessor {
           clazz.getName()
         )
       );
-  }
 
-  private boolean implementsOnlyListener(final @NotNull Class<?> clazz) {
-    final var interfaces = clazz.getInterfaces();
-    return interfaces.length == 1 && interfaces[0] == Listener.class;
+    // Actual Bukkit event registration
+    Bukkit.getPluginManager().registerEvents(listener, this.plugin);
+    this.log.info(String.format("[DreamListener] Successfully registered listener: %s", clazz.getSimpleName()));
   }
 
   private Object getInstance(Class<?> clazz) {
